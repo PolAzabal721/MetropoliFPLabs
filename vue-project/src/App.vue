@@ -309,7 +309,6 @@ export default {
     },
 
     seleccionarRespuesta(encuesta, respuestaId) {
-      // Deselecciona todas las demás respuestas para esta pregunta
       encuesta.respuestas.forEach(respuesta => {
         if (respuesta.id !== respuestaId) {
           respuesta.correcta = false;
@@ -317,7 +316,6 @@ export default {
       });
     },
     enviarRespuestas() {
-      // 
     }
   }
 
