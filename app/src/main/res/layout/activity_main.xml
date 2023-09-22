@@ -57,6 +57,7 @@
                     android:orientation="vertical">
 
                     <RadioGroup
+                        android:id="@+id/radioGroup1"
                         android:layout_width="match_parent"
                         android:layout_height="match_parent">
 
@@ -115,6 +116,7 @@
                     android:orientation="vertical">
 
                     <RadioGroup
+                        android:id="@+id/radioGroup2"
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
                         android:layout_weight="1">
@@ -155,6 +157,7 @@
                 android:textSize="18sp" />
 
             <LinearLayout
+                android:id="@+id/radioGroup"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:orientation="horizontal">
@@ -174,6 +177,7 @@
                     android:orientation="vertical">
 
                     <RadioGroup
+                        android:id="@+id/radioGroup3"
                         android:layout_width="match_parent"
                         android:layout_height="match_parent">
 
@@ -232,6 +236,7 @@
                     android:orientation="vertical">
 
                     <RadioGroup
+                        android:id="@+id/radioGroup4"
                         android:layout_width="match_parent"
                         android:layout_height="match_parent">
 
@@ -290,6 +295,7 @@
                     android:orientation="vertical">
 
                     <RadioGroup
+                        android:id="@+id/radioGroup5"
                         android:layout_width="match_parent"
                         android:layout_height="match_parent">
 
@@ -348,6 +354,7 @@
                     android:orientation="vertical">
 
                     <RadioGroup
+                        android:id="@+id/radioGroup6"
                         android:layout_width="match_parent"
                         android:layout_height="match_parent">
 
@@ -406,6 +413,7 @@
                     android:orientation="vertical">
 
                     <RadioGroup
+                        android:id="@+id/radioGroup7"
                         android:layout_width="match_parent"
                         android:layout_height="match_parent">
 
@@ -464,6 +472,7 @@
                     android:orientation="vertical">
 
                     <RadioGroup
+                        android:id="@+id/radioGroup8"
                         android:layout_width="match_parent"
                         android:layout_height="match_parent">
 
@@ -522,6 +531,7 @@
                     android:orientation="vertical">
 
                     <RadioGroup
+                        android:id="@+id/radioGroup9"
                         android:layout_width="match_parent"
                         android:layout_height="match_parent">
 
@@ -580,6 +590,7 @@
                     android:orientation="vertical">
 
                     <RadioGroup
+                        android:id="@+id/radioGroup10"
                         android:layout_width="match_parent"
                         android:layout_height="match_parent">
 
