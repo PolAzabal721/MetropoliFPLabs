@@ -1,0 +1,72 @@
+[
+  {
+    "correcta": false,
+    "id": 1,
+    "pregunta": "Pregunta 1",
+    "respuesta": "60 km/h",
+    "tiempo": 12
+  },
+  {
+    "correcta": false,
+    "id": 2,
+    "pregunta": "Pregunta 2",
+    "respuesta": "Triángulos de emergencia",
+    "tiempo": 12
+  },
+  {
+    "correcta": false,
+    "id": 3,
+    "pregunta": "Pregunta 3",
+    "respuesta": "10 metros",
+    "tiempo": 12
+  },
+  {
+    "correcta": false,
+    "id": 4,
+    "pregunta": "Pregunta 4",
+    "respuesta": "Obligación",
+    "tiempo": 12
+  },
+  {
+    "correcta": false,
+    "id": 5,
+    "pregunta": "Pregunta 5",
+    "respuesta": "Cambiar de carril",
+    "tiempo": 12
+  },
+  {
+    "correcta": false,
+    "id": 6,
+    "pregunta": "Pregunta 6",
+    "respuesta": "Detenerse y ceder el paso a otros vehículos",
+    "tiempo": 12
+  },
+  {
+    "correcta": false,
+    "id": 7,
+    "pregunta": "Pregunta 7",
+    "respuesta": "0.05%",
+    "tiempo": 12
+  },
+  {
+    "correcta": false,
+    "id": 8,
+    "pregunta": "Pregunta 8",
+    "respuesta": "Adelantar está prohibido",
+    "tiempo": 12
+  },
+  {
+    "correcta": false,
+    "id": 9,
+    "pregunta": "Pregunta 9",
+    "respuesta": "120 km/h",
+    "tiempo": 12
+  },
+  {
+    "correcta": false,
+    "id": 10,
+    "pregunta": "Pregunta 10",
+    "respuesta": "3 metros",
+    "tiempo": 12
+  }
+]
