@@ -21,23 +21,40 @@
         android:textSize="24sp"
         tools:ignore="MissingConstraints" />
 
+    <TextView
+        android:id="@+id/textViewTempo"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:background="#673AB7"
+        android:gravity="center"
+        android:textColor="#FFFFFF"
+        android:textSize="24sp"
+        android:text="TextView" />
+
     <ScrollView
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
         <LinearLayout
+            android:id="@+id/imageView1"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:orientation="vertical">
 
+            <Space
+                android:layout_width="match_parent"
+                android:layout_height="30dp" />
+
             <TextView
-                android:id="@+id/textView2"
+                android:id="@+id/textViewPregunta1"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:text="¿Cuál es la velocidad máxima permitida en una zona residencial?"
                 android:textSize="18sp" />
 
             <LinearLayout
+                android:id="@+id/linearLayout"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:orientation="horizontal">
@@ -84,13 +101,18 @@
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:text="100 km/h" />
+
                     </RadioGroup>
                 </LinearLayout>
 
             </LinearLayout>
 
+            <Space
+                android:layout_width="match_parent"
+                android:layout_height="30dp" />
+
             <TextView
-                android:id="@+id/textView3"
+                android:id="@+id/textViewPregunta2"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:text="Cuál de los siguientes dispositivos es obligatorio llevar en el coche?"
@@ -149,8 +171,12 @@
 
             </LinearLayout>
 
+            <Space
+                android:layout_width="match_parent"
+                android:layout_height="30dp" />
+
             <TextView
-                android:id="@+id/textView33"
+                android:id="@+id/textViewPregunta3"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:text="¿Cuál es la distancia mínima que debes mantener con el vehículo que va delante de ti en una carretera?"
@@ -209,8 +235,12 @@
 
             </LinearLayout>
 
+            <Space
+                android:layout_width="match_parent"
+                android:layout_height="30dp" />
+
             <TextView
-                android:id="@+id/textView44"
+                android:id="@+id/textViewPregunta4"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:text="¿Qué significa una señal de tráfico triangular con un borde rojo?"
@@ -268,8 +298,12 @@
 
             </LinearLayout>
 
+            <Space
+                android:layout_width="match_parent"
+                android:layout_height="30dp" />
+
             <TextView
-                android:id="@+id/textView5"
+                android:id="@+id/textViewPregunta5"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:text="¿Qué significa una luz amarilla intermitente en un semáforo?"
@@ -327,8 +361,12 @@
 
             </LinearLayout>
 
+            <Space
+                android:layout_width="match_parent"
+                android:layout_height="30dp" />
+
             <TextView
-                android:id="@+id/textView6"
+                android:id="@+id/textViewPregunta6"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:text="¿Qué hacer si te aproximas a un cruce y la señal indica 'ceda el paso'?"
@@ -386,8 +424,12 @@
 
             </LinearLayout>
 
+            <Space
+                android:layout_width="match_parent"
+                android:layout_height="30dp" />
+
             <TextView
-                android:id="@+id/textView7"
+                android:id="@+id/textViewPregunta7"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:text="¿Cuál es la distancia mínima que debes mantener con el vehículo que va delante de ti en una carretera?"
@@ -445,8 +487,12 @@
 
             </LinearLayout>
 
+            <Space
+                android:layout_width="match_parent"
+                android:layout_height="30dp" />
+
             <TextView
-                android:id="@+id/textView8"
+                android:id="@+id/textViewPregunta8"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:text="¿Qué significa una línea continua en el centro de la carretera?"
@@ -504,8 +550,12 @@
 
             </LinearLayout>
 
+            <Space
+                android:layout_width="match_parent"
+                android:layout_height="30dp" />
+
             <TextView
-                android:id="@+id/textView9"
+                android:id="@+id/textViewPregunta9"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:text="¿Cuál es la velocidad máxima permitida en una autopista en condiciones normales?"
@@ -563,8 +613,12 @@
 
             </LinearLayout>
 
+            <Space
+                android:layout_width="match_parent"
+                android:layout_height="30dp" />
+
             <TextView
-                android:id="@+id/textView10"
+                android:id="@+id/textViewPregunta10"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:text="¿Cuál es la distancia mínima que debes mantener al adelantar a un ciclista en la carretera?"
@@ -629,7 +683,7 @@
                 android:layout_margin="30dp"
                 android:text="Enviar"
                 android:textSize="20sp"
-                app:cornerRadius="20dp"/>
+                app:cornerRadius="20dp" />
 
         </LinearLayout>
     </ScrollView>

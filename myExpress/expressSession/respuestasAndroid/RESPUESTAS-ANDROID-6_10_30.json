@@ -1,0 +1,72 @@
+[
+  {
+    "correcta": true,
+    "id": 1,
+    "pregunta": "Pregunta 1",
+    "respuesta": "40 km/h",
+    "tiempo": 2
+  },
+  {
+    "correcta": false,
+    "id": 2,
+    "pregunta": "Pregunta 2",
+    "respuesta": "Botiquín de primeros auxilios",
+    "tiempo": 2
+  },
+  {
+    "correcta": false,
+    "id": 3,
+    "pregunta": "Pregunta 3",
+    "respuesta": "100 metros",
+    "tiempo": 2
+  },
+  {
+    "correcta": false,
+    "id": 4,
+    "pregunta": "Pregunta 4",
+    "respuesta": "Prohibición",
+    "tiempo": 2
+  },
+  {
+    "correcta": false,
+    "id": 5,
+    "pregunta": "Pregunta 5",
+    "respuesta": "Cambiar de carril",
+    "tiempo": 2
+  },
+  {
+    "correcta": false,
+    "id": 6,
+    "pregunta": "Pregunta 6",
+    "respuesta": "Continuar sin detenerse",
+    "tiempo": 2
+  },
+  {
+    "correcta": false,
+    "id": 7,
+    "pregunta": "Pregunta 7",
+    "respuesta": "0.08%",
+    "tiempo": 2
+  },
+  {
+    "correcta": false,
+    "id": 8,
+    "pregunta": "Pregunta 8",
+    "respuesta": "Adelantar con precaución",
+    "tiempo": 2
+  },
+  {
+    "correcta": false,
+    "id": 9,
+    "pregunta": "Pregunta 9",
+    "respuesta": "100 km/h",
+    "tiempo": 2
+  },
+  {
+    "correcta": false,
+    "id": 10,
+    "pregunta": "Pregunta 10",
+    "respuesta": "1 metro",
+    "tiempo": 2
+  }
+]
