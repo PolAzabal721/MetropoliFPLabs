@@ -14,21 +14,21 @@
 
                     <v-list class="mx-2">
                         <v-list-item link>
-                            <router-link :to="'/info'" class="colorBTN">
+                            <router-link :to="'/datos'" class="colorBTN">
                                 <v-btn variant="plain">Datos</v-btn>
                             </router-link>
                         </v-list-item>
                         <v-list-item link>
-                            <router-link :to="'/camara/'" class="colorBTN">
+                            <router-link :to="'/camara'" class="colorBTN">
                                 <v-btn variant="plain">Camara</v-btn>
                             </router-link>
                         </v-list-item>
                         <v-list-item link>
-                            <router-link :to="'/'" class="colorBTN">
-                                <v-btn variant="plain">Ubi</v-btn>
+                            <router-link :to="'/ubicacion'" class="colorBTN">
+                                <v-btn variant="plain">Ubicación</v-btn>
                             </router-link> </v-list-item>
                         <v-list-item link>
-                            <router-link :to="'/'" class="colorBTN">
+                            <router-link :to="'/informes'" class="colorBTN">
                                 <v-btn variant="plain">Informes</v-btn>
                             </router-link> </v-list-item>
                     </v-list>

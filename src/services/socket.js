@@ -7,7 +7,12 @@ export const state = reactive({
     tiempoEncendido: false,
     camara: "OFF",
     frame: "",
-    movimiento: ""
+    movimiento: "",
+    latitud: 41.38879,
+    longitud: 2.15899,
+    temperatura: {},
+
+
 });
 
 //192.168.205.140
@@ -24,29 +29,48 @@ socket.on("disconnect", () => {
 // ESTADO MOTOR ROBOT 
 socket.on('actualitzacioMotor', (datos) => {
     state.motor = datos;
-    localStorage.setItem('motor', datos); 
+    localStorage.setItem('motor', datos);
 });
 
 // TIEMPO ENCENDIDO ROBOT 
 socket.on('actualitzacioTempsEnces', (datos) => {
     state.tiempoEncendido = datos;
-    localStorage.setItem('tiempoEncendido', datos); 
+    localStorage.setItem('tiempoEncendido', datos);
 });
 
 // ESTADO CAMARA
 socket.on('actualitzacioCamara', (datos) => {
     state.camara = datos;
-    localStorage.setItem('camara', datos); 
+    localStorage.setItem('camara', datos);
 });
 
 // REPRODUCIR CAMARA ?¿
-socket.on("video_frame", (datos)=>{
+socket.on("video_frame", (datos) => {
     state.frame = datos;
     localStorage.setItem('frame', datos);
 });
 
 // REGISTRO MOVIMIENTOS ?¿
-socket.on("actualitzacioMoviment", (datos)=>{
+socket.on("actualitzacioMoviment", (datos) => {
     state.movimiento = datos;
-    localStorage.setItem('movimiento', datos); 
+    localStorage.setItem('movimiento', datos);
+});
+
+// REGISTRAR LA UBI LATITUD
+socket.on('ubicacionLatitud', (datos) => {
+    state.latitud = datos;
+    localStorage.setItem('ubicacionLatitud', datos);
+});
+
+// REGISTRAR LA UBI LONGITUD
+socket.on('ubicacionLongitud', (datos) => {
+    state.longitud = datos;
+    localStorage.setItem('ubicacionLongitud', datos);
+});
+
+//  PILLA LAS TEMP A TIEMPO REAL 
+socket.on('temperaturaAigua', (datos) => {
+    state.temperatura = datos;
+    localStorage.setItem('temperatura', datos);
+    
 });

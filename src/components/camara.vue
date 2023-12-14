@@ -21,7 +21,7 @@
             <v-container fluid fill-height>
                 <v-row align="center" justify="center">
                     <v-col cols="12" sm="10" md="8">
-                        <v-card height="900" width="900" class="pantallaCamara d-flex align-center mx-auto">
+                        <v-card height="900" width="900" class="d-flex align-center mx-auto">
                             <v-img :src="frame"></v-img>
                         </v-card>
                     </v-col>
@@ -31,7 +31,7 @@
         <!-- Barra lateral con archivos o grabaciones anteriores -->
         <v-navigation-drawer app permanent right>
             <v-card>
-                <v-toolbar class="app-bar-videos" height="60">
+                <v-toolbar height="60">
                     <v-toolbar-title>Videos</v-toolbar-title>
 
                     <v-spacer></v-spacer>
@@ -100,8 +100,6 @@ export default {
         console.log("UPDATED");
     }
 };
-
-
 </script>
 
 <style>
@@ -120,10 +118,5 @@ export default {
     padding: 10px;
     box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.2);
 }
-.app-bar-videos {
-    background-color: rgb(107, 134, 242)
-}
-.pantallaCamara {
-    background-color: blue;
-}
+
 </style>

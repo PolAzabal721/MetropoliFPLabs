@@ -3,23 +3,35 @@ import { createRouter, createWebHistory } from 'vue-router'
 
 const routes = [
   // INICIO
-    {
-      path: '/',
-      component: () => import('@/components/home.vue'),
-    },
+  {
+    path: '/',
+    component: () => import('@/components/home.vue'),
+  },
 
-    // CAMARA
-    {
-      path: '/info/',
-      component: () => import('@/components/info.vue'),
-    },
-  
-    // CAMARA
-    {
-      path: '/camara/',
-      component: () => import('@/components/camara.vue'),
-    },
-  
+  // INFO GENERAL (DATOS)
+  {
+    path: '/datos/',
+    component: () => import('@/components/datos.vue'),
+  },
+
+  // CAMARA
+  {
+    path: '/camara/',
+    component: () => import('@/components/camara.vue'),
+  },
+
+  // UBI DEL ROBOT
+  {
+    path: '/ubicacion/',
+    component: () => import('@/components/ubicacion.vue'),
+  },
+
+  // INFORMES (GRAFICOS Y MAS)
+  {
+    path: '/informes/',
+    component: () => import('@/components/informes.vue'),
+  },
+
 ]
 
 const router = createRouter({
