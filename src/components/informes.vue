@@ -23,11 +23,7 @@
                     <v-col cols="6">
                         <!-- {{ this.temperaturaAigua }} -->
                         <v-card class="mx-auto slidecontainer" height="675" width="800">
-
-
                             <div id="map" style="height: 650px; width: 800px;"></div>
-
-
                             <input type="range" min="0" max="100" value="0" class="slider" id="myRange">
 
                         </v-card>
@@ -41,9 +37,6 @@
                                 <!-- GRAFICO TEMPERATURA -->
                                 <v-card height="500" width="900">
                                     <canvas class="mx-auto" id="myChart" width="850" height="425"></canvas>
-
-                                   
-
                                     <br>
                                     <v-btn class="mx-5" @click="updateChart('horas')">Filtrar Horas</v-btn>
                                     <v-btn @click="updateChart('dias')">Filtrar Días</v-btn>
@@ -52,12 +45,44 @@
                                     <v-btn class="mx-5" @click="updateChart('anios')">Filtrar Años</v-btn>
                                 </v-card>
                                 <br>
-                                <!-- GRAFICO cosa -->
-                                <v-card height="500" width="900">
-
-
+                                <br>
+                                <!-- MAPA TEMPERATURA POR ZONAS -->
+                                <v-card class="mx-auto" height="580" width="900">
+                                    <h1 class="d-flex align-center justify-center">Mapa de calor por zonas</h1>
+                                    <div id="mapa" style="height: 500px; width: 900px;"></div>
+                                    <div class="legend">
+                                        <div class="legend-item">
+                                            <div class="legend-color" style="background-color: blue;"></div>
+                                            <span>0 a 10 grados</span>
+                                        </div>
+                                        <div class="legend-item">
+                                            <div class="legend-color" style="background-color: yellow;"></div>
+                                            <span>10 a 20 grados</span>
+                                        </div>
+                                        <div class="legend-item">
+                                            <div class="legend-color" style="background-color: red;"></div>
+                                            <span>20 a 30 grados</span>
+                                        </div>
+                                    </div>
                                 </v-card>
+                                <br>
+                                <br>
+                                <!-- MAPA TEMPERATURA POR PECES -->
+                                <v-card class="mx-auto" height="700" width="900">
+                                    <h1>Temperatura del Agua: {{ temperatura }}°C</h1>
+                                    <div v-if="especieVisible">
+                                        <h2>Especie asociada: {{ especie }}</h2>
+                                        <!-- Aquí podrías mostrar una imagen o descripción de la especie -->
+                                    </div>
+                                    <canvas class="mx-auto" ref="myChartPeces"  width="850" height="425"></canvas>
+                                </v-card>
+                            <br>
+                            <br>
+                             <!-- 0 -->
+                            <v-card class="mx-auto" height="700" width="900">
 
+
+                            </v-card>
 
                             </v-card>
                         </div>
@@ -70,21 +95,40 @@
 </template>
 
 <script>
-import { socket, state } from '../services/socket';
 import Chart from 'chart.js/auto';
 import "leaflet/dist/leaflet.css";
 import "leaflet/dist/leaflet.js";
 import L from "leaflet";
+import "leaflet.heat";
+import 'leaflet.heat/dist/leaflet-heat';
+import { getDades } from './../services/connectionManager';
+
 
 export default {
+
     data() {
         return {
             route: [],
             sliderValue: 0,
             temperatureData: [20, 30, 50, 10],
+            myChartPeces: null,
+            temperatura: 0,
+            especieVisible: false,
+            especie: ''
         };
     },
     methods: {
+
+        // DATOS TEMP + COORDENADAS + HORARIO (BD)
+        getDatosBD() {
+            getDades().then((response) => {
+                this.productos = response;
+                console.log(response);
+            }).catch((error) => {
+                console.error("Error al obtener productos: ", error);
+            });
+        },
+
         // Calcular la posición X en el gráfico según el índice
         calculateXPosition(index) {
             const totalDataPoints = this.temperatureData.length;
@@ -92,7 +136,6 @@ export default {
             const xPosition = (index / (totalDataPoints - 1)) * chartWidth;
             return xPosition;
         },
-
 
         // INICIO Y CONFIG DEL MAPA
         initMap() {
@@ -168,6 +211,8 @@ export default {
             const polyline = L.polyline(this.route, { color: 'blue' }).addTo(this.map);
             this.map.fitBounds(polyline.getBounds()); // Ajustar el mapa al área de la polilínea
             this.iniciarSlide();
+
+
         },
 
         // SLIDER DEBAJO DEL MAPA
@@ -213,7 +258,7 @@ export default {
             this.myChart.update();
         },
 
-        // Actualizar el gráfico con el filtro seleccionado
+        // Actualizar el gráfico TEMP con el filtro seleccionado
         updateChart(filter) {
             // TIEMPO
             let newLabels = [];
@@ -247,34 +292,169 @@ export default {
             this.myChart.data.labels = newLabels;
             this.myChart.data.datasets[0].data = newData;
             this.myChart.update(); // Actualizar el gráfico
-        }
+        },
+
+        // INICIO Y CONFIG DEL MAPA DE CALOR
+        initMapa() {
+            this.mapa = L.map("mapa").setView([41.38879, 2.15899], 13);
+            L.tileLayer(
+                "https://cartodb-basemaps-{s}.global.ssl.fastly.net/rastertiles/voyager/{z}/{x}/{y}.png",
+                {
+                    maxZoom: 20,
+                }
+            ).addTo(this.mapa);
+
+            // Esperamos a que el mapa esté listo antes de añadir el mapa de calor
+            this.mapa.on('load', () => {
+                this.createHeatMap(); // Agregar mapa de calor
+            });
+
+        },
+
+        // MAPA DE CALOR
+        createHeatMap() {
+            const mapa = this.mapa;
+
+            // Latitud, Longitud, Intensidad de temperatura 
+            const heatMapData = [
+                [41.38879, 2.15899, 30],
+                [41.38880, 2.15900, 30],
+                [41.38881, 2.15901, 30],
+                [41.38882, 2.15902, 30],
+                [41.38883, 2.15903, 30],
+                [41.38884, 2.15904, 30],
+                [41.38885, 2.15905, 30],
+                [41.38886, 2.15906, 30],
+                [41.38887, 2.15907, 30],
+                [41.38888, 2.15908, 30],
+                [41.38889, 2.15909, 30],
+                [41.38890, 2.15910, 30],
+                [41.38891, 2.15911, 30],
+                [41.38892, 2.15912, 30],
+                [41.38893, 2.15913, 30],
+                [41.38894, 2.15914, 30],
+                [41.38895, 2.15915, 30],
+                [41.38896, 2.15916, 30],
+                [41.38897, 2.15917, 30],
+                [41.38898, 2.15918, 30],
+                [41.38899, 2.15919, 30],
+                [41.38900, 2.15920, 30],
+                [41.38901, 2.15921, 30],
+                [41.38902, 2.15922, 30],
+                [41.38903, 2.15923, 30],
+                [41.38904, 2.15924, 30],
+                [41.38905, 2.15925, 30],
+                [41.38906, 2.15926, 30],
+                [41.38907, 2.15927, 30],
+                [41.38908, 2.15928, 30],
+                [41.38909, 2.15929, 30],
+                [41.38910, 2.15930, 30],
+                [41.38911, 2.15931, 30],
+                [41.38912, 2.15932, 30],
+                [41.38913, 2.15933, 30],
+                [41.38914, 2.15934, 30],
+                [41.38915, 2.15935, 30],
+                [41.38916, 2.15936, 30],
+                [41.38917, 2.15937, 30],
+                [41.38918, 2.15938, 30],
+                [41.38919, 2.15939, 30],
+                [41.38920, 2.15940, 30],
+                [41.38921, 2.15941, 30],
+                [41.38922, 2.15942, 30],
+                [41.38923, 2.15943, 30],
+                [41.38924, 2.15944, 30],
+                [41.38925, 2.15945, 30],
+                [41.38926, 2.15946, 30],
+                [41.38927, 2.15947, 30],
+            ];
+
+            // Definir el gradiente de colores según los rangos de temperatura
+            const gradient = {
+                0.1: 'blue',
+                0.5: 'yellow',
+                1.0: 'red'
+            };
+
+            // Configurar el rango máximo de intensidad 
+            const max = 30;
+
+            // Ajustar la opacidad de los colores
+            const opacity = 1; // Valor entre 0 (transparente) y 1 (completamente opaco)
+
+            // Crear la capa de mapa de calor con las configuraciones
+            L.heatLayer(heatMapData, { radius: 30, gradient, max, opacity }).addTo(mapa);
+        },
+
+        // PILLAR TEMP + ESPECIES
+        obtenerTemperatura() {
+            // Simulación de obtención de temperatura (aquí puedes hacer una llamada a una API real)
+            this.temperatura = Math.floor(Math.random() * 30); // Temperatura aleatoria entre 0 y 30 grados Celsius
+
+            // Asociaciones de temperatura con especies
+            if (this.temperatura >= 0 && this.temperatura <= 10) {
+                this.especie = 'Especie A';
+                this.especieVisible = true;
+            } else if (this.temperatura >= 11 && this.temperatura <= 20) {
+                this.especie = 'Especie B';
+                this.especieVisible = true;
+            } else {
+                this.especieVisible = false;
+            }
+
+            // Actualizar el gráfico
+            this.updateChartPez();
+        },
+
+        updateChartPez() {
+            const ctx = this.$refs.myChartPeces.getContext('2d');
+            const chartData = {
+                labels: ['0-10°C', '11-20°C', '>20°C'],
+                datasets: [
+                    {
+                        label: 'Especies asociadas',
+                        backgroundColor: ['#FF6384', '#36A2EB', '#FFCE56'],
+                        data: [
+                            this.temperatura <= 10 ? 1 : 0,
+                            this.temperatura > 10 && this.temperatura <= 20 ? 1 : 0,
+                            this.temperatura > 20 ? 1 : 0
+                        ]
+                    }
+                ]
+            };
+
+            if (this.myChartPeces) {
+                this.myChartPeces.destroy(); // Destruir la instancia anterior del gráfico si existe
+            }
+
+            this.myChartPeces = new Chart(ctx, {
+                type: 'bar',
+                data: chartData,
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false
+                }
+            });
+        },
+
     },
 
     // 
     computed: {
-        estado() {
-            return state.connected
-        },
 
-        // VER TEMP DEL AGUA
-        temperaturaAigua() {
-            return state.temperatura;
-        },
     },
 
     //CONSOLA
     created() {
         console.log("CREADO");
-
-        if (localStorage.getItem('temperatura')) {
-            state.temperatura = localStorage.getItem('temperatura');
-        }
+        //this.getDatosBD();
     },
 
     mounted() {
         console.log("MONTADO");
         this.initMap();
+        this.initMapa();
         this.iniciarSlide();
+
 
         // Crear el gráfico y guardarlo como una propiedad del componente
         this.myChart = new Chart(document.getElementById('myChart'), {
@@ -299,6 +479,20 @@ export default {
         });
         // Se inicia el gráfico con los datos iniciales
         this.updateChart('horas'); // Filtro inicial
+
+        // Inicializa el mapa de calor + fetch de DADES
+        this.$nextTick(() => {
+            this.createHeatMap();
+            this.obtenerTemperatura();
+            //console.log(this.getDatosBD());
+            //this.getDatosBD();
+        });
+
+        // Actualizar la temperatura cada cierto tiempo (puedes ajustar el intervalo)
+        setInterval(() => {
+            this.obtenerTemperatura();
+        }, 5000); // Actualizar cada 5 segundos, por ejemplo
+
     },
 
     updated() {
@@ -308,6 +502,28 @@ export default {
 </script>
 
 <style>
+/* Estilos para la leyenda */
+.legend {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 10px;
+}
+
+.legend-item {
+    display: flex;
+    align-items: center;
+    margin-right: 20px;
+}
+
+.legend-color {
+    width: 20px;
+    height: 20px;
+    margin-right: 5px;
+    border: 1px solid #ccc;
+    /* Bordes para resaltar */
+}
+
+
 .titulo {
     font-size: 24px;
     font-weight: bold;

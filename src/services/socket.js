@@ -15,8 +15,8 @@ export const state = reactive({
 });
 
 //192.168.205.140
-//export const socket = io('http://raspberrypi.local:3169');
-export const socket = io('http://localhost:3169');
+export const socket = io('http://raspberrypi.local:3169');
+//export const socket = io('http://localhost:3169');
 
 
 socket.on("connect", () => {
@@ -80,9 +80,3 @@ socket.on('ubicacionLongitud', (datos) => {
     localStorage.setItem('ubicacionLongitud', datos);
 });
 
-//  PILLA LAS TEMP A TIEMPO REAL 
-socket.on('temperaturaAigua', (datos) => {
-    state.temperatura = datos;
-    localStorage.setItem('temperatura', datos);
-    
-});
