@@ -74,15 +74,15 @@
                                         <h2>Especie asociada: {{ especie }}</h2>
                                         <!-- Aquí podrías mostrar una imagen o descripción de la especie -->
                                     </div>
-                                    <canvas class="mx-auto" ref="myChartPeces"  width="850" height="425"></canvas>
+                                    <canvas class="mx-auto" ref="myChartPeces" width="850" height="425"></canvas>
                                 </v-card>
-                            <br>
-                            <br>
-                             <!-- 0 -->
-                            <v-card class="mx-auto" height="700" width="900">
+                                <br>
+                                <br>
+                                <!-- 0 -->
+                                <v-card class="mx-auto" height="700" width="900">
 
 
-                            </v-card>
+                                </v-card>
 
                             </v-card>
                         </div>
@@ -446,7 +446,8 @@ export default {
     //CONSOLA
     created() {
         console.log("CREADO");
-        //this.getDatosBD();
+        console.log(this.getDatosBD());
+        this.getDatosBD();
     },
 
     mounted() {
