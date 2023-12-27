@@ -15,8 +15,8 @@ export const state = reactive({
 });
 
 //192.168.205.140
-export const socket = io('http://raspberrypi.local:3169');
-//export const socket = io('http://localhost:3169');
+//export const socket = io('http://raspberrypi.local:3169');
+export const socket = io('http://localhost:3169');
 
 
 socket.on("connect", () => {
@@ -48,18 +48,20 @@ socket.on('actualitzacioCamara', (datos) => {
 // REPRODUCIR CAMARA ?¿
 socket.on("video_frame", (datos) => {
     
-    localStorage.setItem('frame', datos);
+    //localStorage.setItem('frame', datos);
     //console.log(datos);
     console.log("hola");
     //this.initializeCamera();
     // Convierte el ArrayBuffer en un Blob
-    const blob = new Blob([datos], { type: 'image/jpeg' });
+    //const blob = new Blob([datos], { type: 'image/jpeg' });
 
     // Crea una URL para el Blob
-    const imageUrl = URL.createObjectURL(blob);
+    //const imageUrl = URL.createObjectURL(blob);
 
     // Actualiza la fuente de la imagen
-    state.frame = imageUrl;
+    //state.frame = imageUrl;
+
+    state.frame = `data:image/jpg;base64,${datos}`
 });
 
 // REGISTRO MOVIMIENTOS ?¿

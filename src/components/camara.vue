@@ -109,8 +109,8 @@ export default {
             return state.connected
         },
         frame() {
-            console.log(state.frame.substring(5))
-            return state.frame.substring(5)
+            console.log(state.frame)
+            return state.frame
         },
 
     },
