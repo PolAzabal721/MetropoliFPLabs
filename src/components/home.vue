@@ -1,12 +1,6 @@
 <template>
         <default-bar />
-        <v-layout>
-            Hola <br><br><br>
-            <br><br>br
-            <br><br>
-            <br><br>AA
-
-        </v-layout>
+        
       
 </template>
 
