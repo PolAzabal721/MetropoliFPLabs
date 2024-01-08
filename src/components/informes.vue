@@ -40,9 +40,8 @@
                                     <br>
                                     <v-btn class="mx-5" @click="updateChart('horas')">Filtrar Horas</v-btn>
                                     <v-btn @click="updateChart('dias')">Filtrar Días</v-btn>
-                                    <v-btn class="mx-5" @click="updateChart('semanas')">Filtrar Semanas</v-btn>
-                                    <v-btn @click="updateChart('meses')">Filtrar Meses</v-btn>
-                                    <v-btn class="mx-5" @click="updateChart('anios')">Filtrar Años</v-btn>
+                                    <v-btn class="mx-5" @click="updateChart('meses')">Filtrar Meses</v-btn>
+                                    <v-btn @click="updateChart('anios')">Filtrar Años</v-btn>
                                 </v-card>
                                 <br>
                                 <br>
@@ -114,7 +113,8 @@ export default {
             myChartPeces: null,
             temperatura: 0,
             especieVisible: false,
-            especie: ''
+            especie: '',
+            dadesGra: []
         };
     },
     methods: {
@@ -122,8 +122,8 @@ export default {
         // DATOS TEMP + COORDENADAS + HORARIO (BD)
         getDatosBD() {
             getDades().then((response) => {
-                this.productos = response;
-                console.log(response);
+                this.dadesGra = response;
+                console.log(this.dadesGra);
             }).catch((error) => {
                 console.error("Error al obtener productos: ", error);
             });
@@ -266,8 +266,6 @@ export default {
                 newLabels = ['10:00', '11:00', '12:00', '13:00']; // Datos para horas
             } else if (filter === 'dias') {
                 newLabels = ['12d', '13d', '14d', '15d']; // Datos para días
-            } else if (filter === 'semanas') {
-                newLabels = ['1sem', '2sem', '3sem', '4sem']; // Datos para semanas
             } else if (filter === 'meses') {
                 newLabels = ['1m', '2m', '3m', '4m']; // Datos para meses
             } else if (filter === 'anios') {
@@ -280,8 +278,6 @@ export default {
                 newData = [20, 30, 50, 10]; // Datos para horas
             } else if (filter === 'dias') {
                 newData = [30, 30, 50, 40]; // Datos para días
-            } else if (filter === 'semanas') {
-                newData = [40, 60, 10, 70]; // Datos para semanas
             } else if (filter === 'meses') {
                 newData = [20, 28, 12, 24]; // Datos para meses
             } else if (filter === 'anios') {
@@ -402,9 +398,9 @@ export default {
             }
 
             // Actualizar el gráfico
-            this.updateChartPez();
+           // this.updateChartPez();
         },
-
+/*
         updateChartPez() {
             const ctx = this.$refs.myChartPeces.getContext('2d');
             const chartData = {
@@ -435,7 +431,7 @@ export default {
                 }
             });
         },
-
+*/
     },
 
     // 
@@ -446,7 +442,6 @@ export default {
     //CONSOLA
     created() {
         console.log("CREADO");
-        console.log(this.getDatosBD());
         this.getDatosBD();
     },
 

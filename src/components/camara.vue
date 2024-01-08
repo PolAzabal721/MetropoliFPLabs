@@ -22,7 +22,6 @@
                 <v-row align="center" justify="center">
                     <v-col cols="12" sm="10" md="8">
                         <v-card height="900" width="900" class="d-flex align-center mx-auto">
-                            <!--<v-img :src="frame"></v-img>-->
                             <img :src="frame" alt="Video en tiempo real">
                         </v-card>
                     </v-col>
@@ -67,37 +66,8 @@ export default {
 
     // METODOS
     methods: {
-        /*initializeCamera() {
-
-            // datos recibidos de la cámara
-            const videoPlayer = this.$refs.videoPlayer;
-            const videoBlob = new Blob([this.camara], { type: 'video/mp4' });
-            videoPlayer.src = URL.createObjectURL(videoBlob);
-        }*/
-        /*initializeCamera() {
-            // datos recibidos de la cámara
-            const videoPlayer = this.$refs.videoPlayer;
-            console.log(state.frame);
-
-            // Verifica si state.frame tiene datos y si es una cadena (base64)
-            if (state.frame && typeof state.frame === 'string') {
-                videoPlayer.src = 'data:image/jpeg;base64,' + state.frame;
-            } else {
-                console.error('Datos del frame no válidos');
-            }
-        }*/
-        // _arrayBufferToBase64(buffer) {
-        //     var binary = '';
-        //     var bytes = new Uint8Array(buffer);
-        //     var len = bytes.byteLength;
-        //     for (var i = 0; i < len; i++) {
-        //         binary += String.fromCharCode(bytes[i]);
-        //     }
-        //     return window.btoa(binary);
-        // },
-
+        // Lógica para mostrar la grabación seleccionada
         showRecording(recording) {
-            // Lógica para mostrar la grabación seleccionada
             console.log('Mostrar grabación:', recording.title);
             // Aquí podrías cargar la grabación en la vista principal o abrir un reproductor, etc.
         }
@@ -121,7 +91,7 @@ export default {
     },
     mounted() {
         console.log("MONTADO");
-        
+
     },
 
     updated() {
