@@ -45,22 +45,9 @@ socket.on('actualitzacioCamara', (datos) => {
     localStorage.setItem('camara', datos);
 });
 
-// REPRODUCIR CAMARA ?¿
+// REPRODUCIR CAMARA 
 socket.on("video_frame", (datos) => {
-    
-    //localStorage.setItem('frame', datos);
-    //console.log(datos);
-    console.log("hola");
-    //this.initializeCamera();
-    // Convierte el ArrayBuffer en un Blob
-    //const blob = new Blob([datos], { type: 'image/jpeg' });
-
-    // Crea una URL para el Blob
-    //const imageUrl = URL.createObjectURL(blob);
-
-    // Actualiza la fuente de la imagen
-    //state.frame = imageUrl;
-
+    //console.log("hola");
     state.frame = `data:image/jpg;base64,${datos}`
 });
 
@@ -70,13 +57,13 @@ socket.on("actualitzacioMoviment", (datos) => {
     localStorage.setItem('movimiento', datos);
 });
 
-// REGISTRAR LA UBI LATITUD
+// REGISTRAR LA UBI LATITUD ?¿
 socket.on('ubicacionLatitud', (datos) => {
     state.latitud = datos;
     localStorage.setItem('ubicacionLatitud', datos);
 });
 
-// REGISTRAR LA UBI LONGITUD
+// REGISTRAR LA UBI LONGITUD ?¿
 socket.on('ubicacionLongitud', (datos) => {
     state.longitud = datos;
     localStorage.setItem('ubicacionLongitud', datos);
