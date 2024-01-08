@@ -22,6 +22,7 @@
                 <v-row align="center" justify="center">
                     <v-col cols="12" sm="10" md="8">
                         <v-card height="900" width="900" class="d-flex align-center mx-auto">
+                            <!--<v-img :src="frame"></v-img>-->
                             <img :src="frame" alt="Video en tiempo real">
                         </v-card>
                     </v-col>
@@ -29,7 +30,7 @@
             </v-container>
         </v-main>
         <!-- Barra lateral con archivos o grabaciones anteriores -->
-        <v-navigation-drawer app permanent right>
+        <v-navigation-drawer >
             <v-card>
                 <v-toolbar height="60">
                     <v-toolbar-title>Videos</v-toolbar-title>
@@ -47,6 +48,21 @@
                 </v-list>
             </v-card>
         </v-navigation-drawer>
+        <v-main>
+
+            <br>
+            <v-container fluid fill-height>
+                <v-row align="center" justify="center">
+                    <v-col cols="12" sm="10" md="8">
+                        <v-card height="900" width="900" class="d-flex align-center mx-auto">
+                            <!--<v-img :src="frame"></v-img>-->
+                            <img :src="frame" alt="Video en tiempo real">
+                        </v-card>
+                    </v-col>
+                </v-row>
+            </v-container>
+        </v-main>
+
         <br><br><br>
     </v-layout>
 </template>
@@ -99,19 +115,11 @@ export default {
     }
 };
 </script>
+<script setup>
+import DefaultBar from '@/components/appbar.vue'
 
+</script>
 <style>
-.titulo {
-    font-size: 24px;
-    font-weight: bold;
-    color: white;
-
-}
-
-.menu {
-    color: white;
-}
-
 .custom-app-bar {
     padding: 10px;
     box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.2);
