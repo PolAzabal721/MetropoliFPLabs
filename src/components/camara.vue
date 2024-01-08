@@ -1,20 +1,10 @@
 <template>
     <v-layout class="rounded rounded-md container">
+
         <v-app-bar>
-            <v-toolbar :elevation="24" class="custom-app-bar"
-                image="https://s1.eestatic.com/2022/12/09/enclave-ods/semanales/724687779_229350113_1706x960.jpg">
-
-
-                <router-link :to="'/'">
-                    <v-btn icon>
-                        <v-icon class="mx-05 menu">mdi-home</v-icon>
-                    </v-btn>
-                </router-link>
-
-
-                <v-toolbar-title class="mx-1 titulo">Sea Shepherd Camera</v-toolbar-title>
-            </v-toolbar>
+            <default-bar />
         </v-app-bar>
+
 
         <v-main>
             <br>
@@ -30,7 +20,7 @@
             </v-container>
         </v-main>
         <!-- Barra lateral con archivos o grabaciones anteriores -->
-        <v-navigation-drawer >
+        <v-navigation-drawer>
             <v-card>
                 <v-toolbar height="60">
                     <v-toolbar-title>Videos</v-toolbar-title>
