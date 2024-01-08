@@ -1,7 +1,8 @@
 <template>
         <default-bar />
         <v-layout>
-      
+          
+
         </v-layout>
       
 </template>
