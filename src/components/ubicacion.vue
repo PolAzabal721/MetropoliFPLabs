@@ -1,20 +1,8 @@
 <template>
+            <default-bar />
+
     <v-layout class="rounded rounded-md container">
-        <v-app-bar>
-            <v-toolbar :elevation="24" class="custom-app-bar"
-                image="https://s1.eestatic.com/2022/12/09/enclave-ods/semanales/724687779_229350113_1706x960.jpg">
-
-
-                <router-link :to="'/'">
-                    <v-btn icon>
-                        <v-icon class="mx-05 menu">mdi-home</v-icon>
-                    </v-btn>
-                </router-link>
-
-
-                <v-toolbar-title class="mx-1 titulo">Sea Shepherd Ubicación</v-toolbar-title>
-            </v-toolbar>
-        </v-app-bar>
+    
 
         <v-main>
             <br>
@@ -105,7 +93,10 @@ export default {
 };
 
 </script>
+<script setup>
+  import DefaultBar from '@/components/appbar.vue'
 
+</script>
 <style>
 .titulo {
     font-size: 24px;
