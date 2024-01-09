@@ -1,7 +1,56 @@
 <template>
-        <default-bar />
-        
-      
+    <default-bar />
+    <v-container class="container">
+        <v-row>
+        </v-row>
+        <v-row>
+            <v-col cols="3"></v-col>
+            <v-col cols="6"> <v-img class="logoPrincipal" src="@/assets/logo2.svg"></v-img></v-col>
+            <v-col cols="3"></v-col>
+        </v-row>
+        <v-row>
+            <v-col cols="3"></v-col>
+            <v-col cols="6" style="text-align: center;"><v-btn class="boto" href="#quisom">Qui som?</v-btn></v-col>
+            <v-col cols="3"></v-col>
+        </v-row>
+        <v-row>
+            <div style="padding-top: 30%;">
+                <h1 style="color: white;"> hola</h1>
+            </div>
+        </v-row>
+        <v-row id="quisom">
+            <v-col cols="auto">
+                <v-card :variant="this.variant">
+                    <v-card-item>
+                        <v-card-title>Qui Som</v-card-title>
+                    </v-card-item>
+                    <v-card-text>
+                        Som un grup d'estudiants de l'<a href="https://institutpedralbes.cat" target="_blank">Institut
+                            Pedralbes</a> que estem creant un "robot" que servirà per a controlar la qualitat de l'aigua de
+                        les nostres platges. El grup el formem 4 estudiants de 2n de DAM, som Andrès _, Biel Palomar, Franc
+                        Villalba i Pol Azabal (ordre alfabètic).
+                        La feina ha estat repartida equitativament i totes les tasques han sigut apuntades a la <a href="#"
+                            target="_blank">bitàcores</a>.
+                        <br>
+                    </v-card-text>
+                </v-card>
+            </v-col>
+        </v-row>
+        <v-row>
+            <v-col cols="auto">
+                <v-card :variant="this.variant">
+                    <v-card-item>
+                        <v-card-title>
+                            Aquest Projecte
+                        </v-card-title>
+                    </v-card-item>
+                    <v-card-text>
+                        Aquest projecte és creat amb la finalitat de presentar-ho al concurs metrópolis. Tots els fons han sgut obtinguts per la nostra part (els 4 integrants) i amb la "donació" d'alguns items per part del nostre professor Pol. El projecte es tracta de ... 
+                    </v-card-text>
+                </v-card>
+            </v-col>
+        </v-row>
+    </v-container>
 </template>
 
 
@@ -11,6 +60,8 @@ export default { //192.168.205.140
     data() {
         return {
             socket: null,
+            variant: "outlined",
+
         };
     },
 
@@ -33,8 +84,23 @@ export default { //192.168.205.140
 </script>
 
 <script setup>
-  import DefaultBar from '@/components/appbar.vue'
+import DefaultBar from '@/components/appbar.vue'
 
 </script>
 <style>
+.container {
+    padding-top: 5% !important;
+}
+
+.logoPrincipal {
+    width: 75%;
+    height: 75%;
+    margin: auto;
+    display: block;
+}
+
+.boto {
+    background-color: #164882;
+    color: white;
+}
 </style>
