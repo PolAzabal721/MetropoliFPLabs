@@ -17,7 +17,7 @@ export const state = reactive({
 
 //192.168.205.140
 //export const socket = io('http://raspberrypi.local:3169');
-export const socket = io('http://localhost:3169');
+export const socket = io('http://192.168.205.140:3169');
 
 
 socket.on("connect", () => {
