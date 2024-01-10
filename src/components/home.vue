@@ -10,17 +10,17 @@
         </v-row>
         <v-row>
             <v-col cols="3"></v-col>
-            <v-col cols="6" style="text-align: center;"><v-btn class="boto" href="#quisom">Qui som?</v-btn></v-col>
+            <v-col cols="6" style="text-align: center;"><v-btn class="boto" href="">Qui som?</v-btn></v-col>
             <v-col cols="3"></v-col>
         </v-row>
         <v-row>
             <div style="padding-top: 30%;">
-                <h1 style="color: white;"> hola</h1>
+                <h1 style="color: white;"> ADEU</h1>
             </div>
         </v-row>
-        <v-row id="quisom">
-            <v-col cols="auto">
-                <v-card :variant="this.variant">
+        <v-row >
+            <v-col cols="12">
+                <v-card variant="outlined">
                     <v-card-item>
                         <v-card-title>Qui Som</v-card-title>
                     </v-card-item>
@@ -37,8 +37,8 @@
             </v-col>
         </v-row>
         <v-row>
-            <v-col cols="auto">
-                <v-card :variant="this.variant">
+            <v-col cols="12">
+                <v-card variant="outlined">
                     <v-card-item>
                         <v-card-title>
                             Aquest Projecte
