@@ -11,6 +11,7 @@ export const state = reactive({
     latitud: 41.38879,
     longitud: 2.15899,
     temperatura: {},
+    movimientos: [],
 
 });
 
@@ -53,7 +54,8 @@ socket.on("video_frame", (datos) => {
 
 // REGISTRO MOVIMIENTOS ?¿
 socket.on("actualitzacioMoviment", (datos) => {
-    state.movimiento = datos;
+    console.log(datos);
+    state.movimientos.push(datos);
     localStorage.setItem('movimiento', datos);
 });
 
@@ -68,4 +70,3 @@ socket.on('ubicacionLongitud', (datos) => {
     state.longitud = datos;
     localStorage.setItem('ubicacionLongitud', datos);
 });
-

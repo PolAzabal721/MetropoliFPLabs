@@ -1,8 +1,8 @@
 <template>
-        <default-bar /> 
+    <default-bar />
 
     <v-layout class="rounded rounded-md container">
-        
+
         <v-main style="height: 100vh;">
             <v-container fluid>
                 <v-row>
@@ -29,10 +29,10 @@
                                     <h2>Historial de movimientos</h2>
                                 </v-card-text>
                             </v-card>
-                            <v-card-text class="vCardText ">
-                                <div v-for="(movimiento, index) in movimientos" :key="index"
+                            <v-card-text class="vCardText " ref="movimientosList">
+                                <div v-for="(movimiento, index) in state.movimientos" :key="index"
                                     :style="{ opacity: 1 - (index * 0.1) }">
-                                    <p>{{ this.movimiento }}</p>
+                                    <p>{{ movimiento }}</p>
                                 </div>
                             </v-card-text>
                         </v-card>
@@ -45,15 +45,29 @@
 
 
 <script>
-import { socket, state } from '../services/socket';
+import { state } from '../services/socket';
 
 export default { //192.168.205.140
     data() {
         return {
             conexion: "Nunca",
-            movimientos: [],
+            //movimientos: [],
         };
     },
+
+    watch: {
+        'state.movimientos': {
+            handler() {
+                this.$nextTick(() => {
+                    // Desplazar hacia arriba el div de movimientos
+                    const movimientosList = this.$refs.movimientosList;
+                    movimientosList.scrollTop = movimientosList.scrollHeight;
+                });
+            },
+            deep: true,
+        },
+    },
+
     created() {
         // Recuperar valores del almacenamiento local al iniciar la página
         if (localStorage.getItem('motor')) {
@@ -113,9 +127,9 @@ export default { //192.168.205.140
         },
 
         // UPDATE DE LOS MOVIMINETOS
-        actualizarMovimiento(nuevoMovimiento) {
-            this.movimientos.push(nuevoMovimiento);
-        },
+        // actualizarMovimiento(nuevoMovimiento) {
+        //     this.movimientos.push(nuevoMovimiento);
+        // },
 
     },
 };
