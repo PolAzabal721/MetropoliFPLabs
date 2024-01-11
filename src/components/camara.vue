@@ -40,17 +40,7 @@
         </v-navigation-drawer>
         <v-main>
 
-            <br>
-            <v-container fluid fill-height>
-                <v-row align="center" justify="center">
-                    <v-col cols="12" sm="10" md="8">
-                        <v-card height="900" width="900" class="d-flex align-center mx-auto">
-                            <!--<v-img :src="frame"></v-img>-->
-                            <img :src="frame" alt="Video en tiempo real">
-                        </v-card>
-                    </v-col>
-                </v-row>
-            </v-container>
+     
         </v-main>
 
         <br><br><br>

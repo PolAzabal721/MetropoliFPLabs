@@ -9,17 +9,15 @@
                     <v-col cols="6">
 
                         <v-card class="mx-5" height="800" width="800">
-                            <v-card height="150" width="800">
-                                <v-card-text class="vCardText">
-                                    <!-- Contenido del segundo v-card (info del robot) -->
-                                    <div>
-                                        <p><b>Estado del robot:</b> {{ motor }}</p>
-                                        <p><b>Estado de la camara:</b> {{ camara }}</p>
-                                        <p><b>Última conexión:</b> {{ ultimaConexion }}</p>
-                                        <p><b>Tiempo encendido:</b> {{ msToTime(timeON) }}</p>
-                                    </div>
-                                </v-card-text>
-                            </v-card>
+                            <v-card-text class="vCardText">
+                                <!-- Contenido del segundo v-card (info del robot) -->
+                                <div>
+                                    <p><b>Estado del robot:</b> {{ motor }}</p>
+                                    <p><b>Estado de la camara:</b> {{ camara }}</p>
+                                    <p><b>Última conexión:</b> {{ ultimaConexion }}</p>
+                                    <p><b>Tiempo encendido:</b> {{ msToTime(timeON) }}</p>
+                                </div>
+                            </v-card-text>
                         </v-card>
                     </v-col>
                     <v-col cols="6">
@@ -36,11 +34,11 @@
                                             <div class="scroll-container">
                                                 <v-list>
                                                     <v-list-item-group v-if="state.movimientos.length > 0">
-                                                        <v-list-item 
+                                                        <v-list-item
                                                             v-for="(movimiento, index) in state.movimientos.slice().reverse()"
                                                             :key="index">
                                                             <v-list-item-content class="message">
-                                                                <v-list-item-title >{{ movimiento
+                                                                <v-list-item-title>{{ movimiento
                                                                 }}</v-list-item-title>
                                                             </v-list-item-content>
                                                         </v-list-item>
