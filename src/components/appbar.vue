@@ -34,7 +34,9 @@
 
 .colorBTN {
     font-weight: bold;
-    color: white
+    color: white;
+    padding: 5px;
+    border-radius: 10px;
 }
 
 .colorBTN:hover {
