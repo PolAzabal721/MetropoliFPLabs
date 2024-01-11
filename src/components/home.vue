@@ -27,7 +27,7 @@
                     <v-card-text>
                         Som un grup d'estudiants de l'<a href="https://institutpedralbes.cat" target="_blank">Institut
                             Pedralbes</a> que estem creant un "robot" que servirà per a controlar la qualitat de l'aigua de
-                        les nostres platges. El grup el formem 4 estudiants de 2n de DAM, som Andrès _, Biel Palomar, Franc
+                        les nostres platges. El grup el formem 4 estudiants de 2n de DAM, som Andrés Orellana, Biel Palomar, Franc
                         Villalba i Pol Azabal (ordre alfabètic).
                         La feina ha estat repartida equitativament i totes les tasques han sigut apuntades a la <a href="https://docs.google.com/spreadsheets/d/1KdVFzHHQKKYCleUj0bco56TI0zNugPlQ01L8Bc0fo_8/edit?usp=sharing"
                             target="_blank">bitàcores</a>.
