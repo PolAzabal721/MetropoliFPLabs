@@ -109,7 +109,7 @@ export default {
             especie: '',
             dadesGra: [],
 
-            // cosa de ruta
+            // areas
             rutaData: {
                 'ruta_1': {
                     'coordenadas': {
@@ -560,7 +560,7 @@ import DefaultBar from '@/components/appbar.vue'
     /* Bordes para resaltar */
 }
 
-¡ .custom-app-bar {
+.custom-app-bar {
     padding: 10px;
     box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.2);
 }
