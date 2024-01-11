@@ -10,13 +10,24 @@
         </v-row>
         <v-row>
             <v-col cols="3"></v-col>
-            <v-col cols="6" style="text-align: center;"><v-btn class="boto" href="">Qui som?</v-btn></v-col>
+            <v-col cols="6" style="text-align: center;"><img class="bounce-out-down flechas" src="@/assets/flechas.png"></v-col>
             <v-col cols="3"></v-col>
         </v-row>
-        <v-row>
-            <div style="padding-top: 30%;">
-                <h1 style="color: white;"> ADEU</h1>
-            </div>
+        <v-row class="mb-12">
+        </v-row>
+        <v-row class="mb-12">
+        </v-row>
+        <v-row class="mb-12">
+        </v-row>
+        <v-row class="mb-12">
+        </v-row>
+        <v-row class="mb-12">
+        </v-row>
+        <v-row class="mb-12">
+        </v-row>
+        <v-row class="mb-12">
+        </v-row>
+        <v-row class="mb-12">
         </v-row>
         <v-row >
             <v-col cols="12">
@@ -47,10 +58,26 @@
                     <v-card-text>
                         Aquest projecte és creat amb la finalitat de presentar-ho al concurs metrópolis. Tots els fons han sgut obtinguts per la nostra part (els 4 integrants) i amb la "donació" d'alguns items per part del nostre professor Pol. El projecte tracta de crear
                         un robot capaç de moure's per l'aigua, recollir i processar dades de la costa litoral mitjançant processos com el reconeixement de diferents espècies marines amb una càmara
-                        amb Intel·ligència Artificial. Sempre amb la finalitat de millorar l'ecosistema del litoral per tal de reduir l'efecte entròpic. Hem anomentat al robot com <b><i>Sea Shepherd</i></b> (pastor aquàtic en anglès)
+                        amb Intel·ligència Artificial. Sempre amb la finalitat de millorar l'ecosistema del litoral per tal de reduir l'efecte entròpic. Hem anomentat al robot com <b><i>Sea Shepherd</i></b> (pastor marí en anglès)
                     </v-card-text>
                 </v-card>
             </v-col>
+        </v-row>
+        <v-row class="mb-12">
+        </v-row>
+        <v-row class="mb-12">
+        </v-row>
+        <v-row class="mb-12">
+        </v-row>
+        <v-row class="mb-12">
+        </v-row>
+        <v-row class="mb-12">
+        </v-row>
+        <v-row class="mb-12">
+        </v-row>
+        <v-row class="mb-12">
+        </v-row>
+        <v-row class="mb-12">
         </v-row>
     </v-container>
 </template>
@@ -104,5 +131,23 @@ import DefaultBar from '@/components/appbar.vue'
 .boto {
     background-color: #164882;
     color: white;
+}
+
+.bounce-out-down {
+  animation: bounce-out-down 4s ease infinite;
+}
+@keyframes bounce-out-down {
+  0% { transform: translateY(0); }
+  20% {
+    opacity: 1;
+    transform: translateY(-20px);
+  }
+  100% {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+}
+.flechas{
+    width:10%;
 }
 </style>

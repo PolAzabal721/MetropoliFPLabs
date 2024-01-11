@@ -13,7 +13,7 @@
                     <v-col cols="12" sm="10" md="8">
                         <v-card height="900" width="900" class="d-flex align-center mx-auto">
                             <!--<v-img :src="frame"></v-img>-->
-                            <img :src="frame" alt="Video en tiempo real">
+                            <img :src="frame" alt="Vídeo en temps real (S'ha d'encendre la càmera)">
                         </v-card>
                     </v-col>
                 </v-row>
@@ -23,7 +23,7 @@
         <v-navigation-drawer>
             <v-card>
                 <v-toolbar height="60">
-                    <v-toolbar-title>Videos</v-toolbar-title>
+                    <v-toolbar-title>Vídeos</v-toolbar-title>
 
                     <v-spacer></v-spacer>
                     <!--<v-btn @click="initializeCamera">boto</v-btn>-->
