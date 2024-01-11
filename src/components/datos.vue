@@ -30,11 +30,31 @@
                                 </v-card-text>
                             </v-card>
                             <v-card-text class="vCardText" ref="movimientosList">
-                                <div class="scroll-container">
-                                    <div v-for="(movimiento, index) in state.movimientos" :key="index">
-                                        <p>{{ movimiento }}</p>
-                                    </div>
-                                </div>
+                                <v-container fluid>
+                                    <v-row>
+                                        <v-col>
+                                            <div class="scroll-container">
+                                                <v-list>
+                                                    <v-list-item-group v-if="state.movimientos.length > 0">
+                                                        <v-list-item 
+                                                            v-for="(movimiento, index) in state.movimientos.slice().reverse()"
+                                                            :key="index">
+                                                            <v-list-item-content class="message">
+                                                                <v-list-item-title >{{ movimiento
+                                                                }}</v-list-item-title>
+                                                            </v-list-item-content>
+                                                        </v-list-item>
+                                                    </v-list-item-group>
+                                                    <v-list-item v-else>
+                                                        <v-list-item-content>
+                                                            <v-list-item-title>No hay movimientos</v-list-item-title>
+                                                        </v-list-item-content>
+                                                    </v-list-item>
+                                                </v-list>
+                                            </div>
+                                        </v-col>
+                                    </v-row>
+                                </v-container>
                             </v-card-text>
                         </v-card>
                     </v-col>
@@ -152,10 +172,18 @@ import DefaultBar from '@/components/appbar.vue'
 }
 
 .scroll-container {
-    /* Altura máxima del v-card */
-    overflow-y: auto;
-    /* Scroll vertical si el contenido excede la altura */
+    overflow-y: auto !important;
     overflow-x: hidden;
-    /* Oculta el scroll horizontal */
+    padding: 1rem;
+    max-height: 600px;
+    /* Ajusta la altura máxima según tus necesidades */
+}
+
+.message {
+    padding: 0.5rem 1rem;
+    background-color: #efefef;
+    border-radius: 8px;
+    margin-bottom: 8px;
+    display: inline-block;
 }
 </style>
