@@ -52,6 +52,7 @@
 import { socket, state } from '../services/socket';
 
 export default {
+
     data() {
         return {
 

@@ -66,6 +66,7 @@
 import { state } from "../services/socket";
 
 export default {
+
   //192.168.205.140
   data() {
     return {};
