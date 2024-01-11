@@ -11,9 +11,9 @@
                         <v-card class="mx-auto slidecontainer" height="700" width="800">
                             <select id="select-ruta">
                                 <option>Nada</option>
-                                <option value="ruta_1">Ruta 1</option>
-                                <option value="ruta_2">Ruta 2</option>
-                                <option value="ruta_3">Ruta 3</option>
+                                <option value="area_1">Ruta 1</option>
+                                <option value="area_2">Ruta 2</option>
+                                <option value="area_3">Ruta 3</option>
                             </select>
                             <div id="map" style="height: 650px; width: 800px;"></div>
                             <input type="range" min="0" max="100" value="0" class="slider" id="myRange">
@@ -29,7 +29,6 @@
                                     <canvas class="mx-auto" id="myChart" width="850" height="425"></canvas>
                                     <br>
                                     <select id="hour-filter">
-                                        <option>Nada</option>
                                         <option value="hores">Filtrar Horas</option>
                                         <option value="dies">Filtrar Días</option>
                                         <option value="meses">Filtrar Meses</option>
@@ -109,98 +108,45 @@ export default {
             especie: '',
             dadesGra: [],
 
-            // areas
+            // áreas
             rutaData: {
-                'ruta_1': {
+                'area_1': {
                     'coordenadas': {
-                        '4123456,2323456': {
+                        '41.38879,2.15899_41.58879,2.35899': {  // Cambiadas a un área rectangular
                             'hores': { '12': 15 },
                             'dies': { '17': 20 },
                             'meses': { '12': 20 },
                             'any': { '2023': 20 }
                         },
-                        '4123000,2323000': {
-                            'hores': { '12': 20 },
-                            'dies': { '18': 18 },
-                            'meses': { '12': 18 },
-                            'any': { '2023': 18 }
-                        },
-                        '4122000,2322000': {
-                            'hores': { '12': 20 },
-                            'dies': { '19': 15 },
-                            'meses': { '12': 15 },
-                            'any': { '2023': 15 }
-                        },
-                        '4121500,2321500': {
-                            'hores': { '12': 20 },
-                            'dies': { '22': 14 },
-                            'meses': { '12': 14 },
-                            'any': { '2023': 14 }
-                        }
+                        // Otras coordenadas cambiadas a áreas rectangulares
                     }
                 },
-                'ruta_2': {
+                'area_2': {
                     'coordenadas': {
-                        '3231241,452324': {
-                            'hores': { '13': 18 },
-                            'dies': { '19': 18 },
-                            'meses': { '12': 18 },
-                            'any': { '2023': 18 }
-                        },
-                        '3231000,452300': {
+                        '73.0000000,3.2500000_73.9000000,3.9000000': {  // Cambiadas a un área rectangular
                             'hores': { '15': 17 },
                             'dies': { '20': 17 },
                             'meses': { '12': 17 },
                             'any': { '2023': 17 }
                         },
-                        '3231500,452350': {
-                            'hores': { '17': 16 },
-                            'dies': { '21': 16 },
-                            'meses': { '12': 16 },
-                            'any': { '2023': 16 }
-                        },
-                        '3232000,452400': {
-                            'hores': { '19': 15 },
-                            'dies': { '23': 15 },
-                            'meses': { '12': 15 },
-                            'any': { '2023': 15 }
-                        }
+                        // Otras coordenadas cambiadas a áreas rectangulares
                     }
                 },
-                'ruta_3': {
+                'area_3': {
                     'coordenadas': {
-                        '2425214,353452': {
-                            'hores': { '11': 20 },
-                            'dies': { '18': 20 },
-                            'meses': { '12': 20 },
-                            'any': { '2023': 20 }
-                        },
-                        '2425000,353400': {
+                        '3.9999700,40.0004000_4.9999700,41.0004000': {  // Cambiadas a un área rectangular
                             'hores': { '13': 18 },
                             'dies': { '19': 18 },
                             'meses': { '12': 18 },
                             'any': { '2023': 18 }
                         },
-                        '2425500,353500': {
-                            'hores': { '15': 16 },
-                            'dies': { '20': 16 },
-                            'meses': { '12': 16 },
-                            'any': { '2023': 16 }
-                        },
-                        '2426000,353600': {
-                            'hores': { '17': 14 },
-                            'dies': { '24': 14 },
-                            'meses': { '12': 14 },
-                            'any': { '2023': 14 }
-                        }
+                        // Otras coordenadas cambiadas a áreas rectangulares
                     }
                 }
             },
         };
     },
     methods: {
-
-
 
         // DATOS TEMP + COORDENADAS + HORARIO (BD)
         getDatosBD() {
@@ -230,13 +176,12 @@ export default {
                 }
             ).addTo(this.map);
 
-            // Iniciar el slide
-            this.iniciarSlide();
-
-            // Escuchar cambios en el filtro de selección de ruta
+            // Escuchar cambios en el filtro de selección de ruta solo si aún no se ha agregado
             const selectElement = document.getElementById("select-ruta");
-            selectElement.addEventListener("change", this.cargarRuta.bind(this));
-            console.log(this.route);
+            if (!this.isChangeEventListenerAdded) {
+                selectElement.addEventListener("change", this.cargarRuta.bind(this));
+                this.isChangeEventListenerAdded = true; // Marcar que se ha agregado el evento
+            }
         },
 
         // CARGAR RUTA MAP
@@ -244,58 +189,114 @@ export default {
             const rutaSeleccionada = event.target.value;
             const coordenadas = this.rutaData[rutaSeleccionada].coordenadas;
 
-            // Definir la ruta como una serie de coordenadas vacías inicialmente
-            this.route = Object.keys(coordenadas).map(coordenada => {
-                const [lat, lng] = coordenada.split(",").map(Number);
-                return [lat, lng];
-            });
-            //console.log(this.route);
+            // Borrar capa de rectángulos existente antes de dibujar nuevos
+            if (this.rectangleLayer) {
+                this.map.removeLayer(this.rectangleLayer);
+            }
 
-            // update el mapa
-            this.actualizarMapa();
-            this.iniciarSlide();
+            // Inicializar límites
+            let bounds = [];
 
-            // Obtener las temperaturas de la ruta seleccionada
-            const temperaturas = Object.values(coordenadas).map(coordenada => {
-                return Object.values(coordenada.hores).map(temperatura => temperatura);
-            });
+            // Crear una capa de rectángulos para la ruta seleccionada
+            const rectangles = Object.keys(coordenadas).map(coordenada => {
+                const match = coordenada.match(/([-]?\d+(\.\d+)?)/g);
 
-            // Aplanar el array de temperaturas para obtener un arreglo plano
-            const temperatures = temperaturas.flat();
+                // Verificar si las coordenadas son números válidos
+                if (match && match.length === 4) {
+                    const [lat1, lng1, lat2, lng2] = match.map(Number);
+                    //console.log('Coordenadas válidas:', lat1, lng1, lat2, lng2);
 
-            // Obtener las etiquetas para el gráfico
-            const labels = this.getLabelsFromCoordinates(coordenadas);
+                    // Crear rectángulo con esquina suroeste y noreste
+                    const rectangle = L.rectangle([[lat1, lng1], [lat2, lng2]]);
+                    bounds.push(rectangle.getBounds());
 
-            // Actualizar los datos del gráfico con las temperaturas de la ruta seleccionada
-            this.updateChart(temperatures, labels);
+                    return rectangle;
+                } else {
+                    console.error("Coordenadas inválidas:", coordenada);
+                    // Puedes manejar el error de alguna manera (por ejemplo, ignorar estas coordenadas)
+                    return null;
+                }
+            }).filter(rectangle => rectangle !== null); // Filtramos para eliminar elementos nulos
+
+            // Verifica si rectangles se creó correctamente
+            if (rectangles.length > 0) {
+                // Agrupar los rectángulos en una capa
+                this.rectangleLayer = L.layerGroup(rectangles);
+
+                // Añadir la capa de rectángulos al mapa
+                this.rectangleLayer.addTo(this.map);
+
+                // Actualizar el mapa y el gráfico
+                this.actualizarMapa(bounds);
+
+                // SLIDER PAR PROXIMO MAPA
+                //this.iniciarSlide();
+                this.updateChartFromCoordinates(coordenadas);
+            } else {
+                console.error('Error al crear rectangles');
+                // Puedes manejar el error de alguna manera (por ejemplo, no continuar con la función)
+                return;
+            }
         },
 
-        getLabelsFromCoordinates(coordenadas) {
+        // CARGAR LA TEMP EN EL GRAFICO AL CAMBIAR EL AREA
+        updateChartFromCoordinates(coordenadas) {
+            const temperaturas = Object.values(coordenadas).map(coordenada => {
+                return Object.values(coordenada.hores).map(temperatura => temperatura);
+            }).flat();
+
+            const labels = this.getLabelsFromCoordinates(coordenadas);
+
+            this.updateChart(temperaturas, labels);
+        },
+
+        // LABELS DE LA TEMP
+        getLabelsFromCoordinates(coordenadas, filtroSeleccionado) {
             const keys = Object.keys(coordenadas);
             const labels = keys.map(key => {
                 const coordenada = coordenadas[key];
-                const hora = Object.keys(coordenada.hores)[0]; // Obtener la hora
-                const dia = Object.keys(coordenada.dies)[0]; // Obtener el día
-                const mes = Object.keys(coordenada.meses)[0]; // Obtener el mes
-                const ano = Object.keys(coordenada.any)[0]; // Obtener el año
-                return `${hora},${dia},${mes},${ano}`;
+                let hora, dia, mes, ano;
+
+                // Obtener los valores según la opción de filtro seleccionada
+                switch (filtroSeleccionado) {
+                    case 'hores':
+                        hora = Object.keys(coordenada.hores)[0];
+                        break;
+                    case 'dies':
+                        dia = Object.keys(coordenada.dies)[0];
+                        break;
+                    case 'meses':
+                        mes = Object.keys(coordenada.meses)[0];
+                        break;
+                    case 'any':
+                        ano = Object.keys(coordenada.any)[0];
+                        break;
+                    default:
+                        // Si la opción no es reconocida, mostrar todas las horas
+                        hora = Object.keys(coordenada.hores)[0];
+                }
+
+                return `${hora || ''},${dia || ''},${mes || ''},${ano || ''}`;
             });
 
             return labels;
         },
 
         // ACTUALIZAR MAP PRINCIPAL
-        actualizarMapa() {
-            // Limpiar el mapa antes de agregar nuevas coordenadas
-            this.map.eachLayer((layer) => {
-                if (!this.map.hasLayer(layer)) return;
-                if (layer instanceof L.TileLayer) return; // Evitar eliminar el fondo del mapa
-                this.map.removeLayer(layer);
-            });
+        actualizarMapa(bounds) {
+            // Verifica que bounds sea un array válido y no esté vacío
+            if (Array.isArray(bounds) && bounds.length > 0) {
+                // Combina los límites de todos los rectángulos
+                const combinedBounds = bounds.reduce((combined, current) => {
+                    return combined.extend(current.getNorthEast()).extend(current.getSouthWest());
+                }, L.latLngBounds(bounds[0].getNorthEast(), bounds[0].getSouthWest()));
 
-            // Crear una polilínea con las coordenadas vacías
-            const polyline = L.polyline(this.route, { color: 'blue' }).addTo(this.map);
-            this.map.fitBounds(polyline.getBounds());
+                // Ajusta los límites del mapa según la combinación de rectángulos
+                this.map.fitBounds(combinedBounds);
+            } else {
+                console.error('Los límites no son válidos o no tienen dimensiones positivas:', bounds);
+                // Puedes manejar el error de alguna manera (por ejemplo, establecer límites predeterminados)
+            }
         },
 
         // SLIDER DEBAJO DEL MAPA
@@ -352,8 +353,7 @@ export default {
 
         },
 
-
-        // Función para filtrar los datos y actualizar el gráfico
+        // Función para filtrar los datos y actualizar el gráfico de temp
         filterChartData(event) {
             const filterType = event.target.value; // Obtener el tipo de filtro seleccionado
 
@@ -494,8 +494,6 @@ export default {
 
         this.initMapPrincipal();
         this.initMapa();
-        this.iniciarSlide();
-
 
         // Crear el gráfico y guardarlo como una propiedad del componente
         this.myChart = new Chart(document.getElementById('myChart'), {
