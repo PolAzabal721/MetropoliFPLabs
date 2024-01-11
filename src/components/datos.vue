@@ -13,10 +13,10 @@
                                 <v-card-text class="vCardText">
                                     <!-- Contenido del segundo v-card (info del robot) -->
                                     <div>
-                                        <p><b>Estado del robot:</b> {{ this.motor }}</p>
-                                        <p><b>Estado de la camara:</b> {{ this.camara }}</p>
-                                        <p><b>Última conexión:</b> {{ conexion }}</p>
-                                        <p><b>Tiempo encendido:</b> {{ msToTime(this.timeON) }}</p>
+                                        <p><b>Estado del robot:</b> {{ motor }}</p>
+                                        <p><b>Estado de la camara:</b> {{ camara }}</p>
+                                        <p><b>Última conexión:</b> {{ ultimaConexion }}</p>
+                                        <p><b>Tiempo encendido:</b> {{ msToTime(timeON) }}</p>
                                     </div>
                                 </v-card-text>
                             </v-card>
@@ -29,11 +29,32 @@
                                     <h2>Historial de movimientos</h2>
                                 </v-card-text>
                             </v-card>
-                            <v-card-text class="vCardText " ref="movimientosList">
-                                <div v-for="(movimiento, index) in state.movimientos" :key="index"
-                                    :style="{ opacity: 1 - (index * 0.1) }">
-                                    <p>{{ movimiento }}</p>
-                                </div>
+                            <v-card-text class="vCardText" ref="movimientosList">
+                                <v-container fluid>
+                                    <v-row>
+                                        <v-col>
+                                            <div class="scroll-container">
+                                                <v-list>
+                                                    <v-list-item-group v-if="state.movimientos.length > 0">
+                                                        <v-list-item 
+                                                            v-for="(movimiento, index) in state.movimientos.slice().reverse()"
+                                                            :key="index">
+                                                            <v-list-item-content class="message">
+                                                                <v-list-item-title >{{ movimiento
+                                                                }}</v-list-item-title>
+                                                            </v-list-item-content>
+                                                        </v-list-item>
+                                                    </v-list-item-group>
+                                                    <v-list-item v-else>
+                                                        <v-list-item-content>
+                                                            <v-list-item-title>No hay movimientos</v-list-item-title>
+                                                        </v-list-item-content>
+                                                    </v-list-item>
+                                                </v-list>
+                                            </div>
+                                        </v-col>
+                                    </v-row>
+                                </v-container>
                             </v-card-text>
                         </v-card>
                     </v-col>
@@ -50,22 +71,8 @@ import { state } from '../services/socket';
 export default { //192.168.205.140
     data() {
         return {
-            conexion: "Nunca",
-            //movimientos: [],
-        };
-    },
 
-    watch: {
-        'state.movimientos': {
-            handler() {
-                this.$nextTick(() => {
-                    // Desplazar hacia arriba el div de movimientos
-                    const movimientosList = this.$refs.movimientosList;
-                    movimientosList.scrollTop = movimientosList.scrollHeight;
-                });
-            },
-            deep: true,
-        },
+        };
     },
 
     created() {
@@ -79,11 +86,11 @@ export default { //192.168.205.140
         if (localStorage.getItem('camara')) {
             state.camara = localStorage.getItem('camara');
         }
-        if (localStorage.getItem('frame')) {
-            state.frame = localStorage.getItem('frame');
-        }
         if (localStorage.getItem('movimiento')) {
             state.movimiento = localStorage.getItem('movimiento');
+        }
+        if (localStorage.getItem('ultimaConexion')) {
+            state.ultimaConexion = localStorage.getItem('ultimaConexion');
         }
     },
     computed: {
@@ -106,9 +113,14 @@ export default { //192.168.205.140
             return state.camara
         },
 
+        // ULTIMA CONEXION
+        ultimaConexion() {
+            return state.ultimaConexion
+        },
+
         // REGISTRO MOVIMIENTOS DEL ROBOT
         movimientosRobot() {
-            // console.log(this.movimiento);
+            console.log(this.movimiento);
             return state.movimiento
         }
     },
@@ -125,12 +137,6 @@ export default { //192.168.205.140
             var hrs = (s - mins) / 60;
             return hrs + ':' + mins + ':' + secs;
         },
-
-        // UPDATE DE LOS MOVIMINETOS
-        // actualizarMovimiento(nuevoMovimiento) {
-        //     this.movimientos.push(nuevoMovimiento);
-        // },
-
     },
 };
 
@@ -163,5 +169,21 @@ import DefaultBar from '@/components/appbar.vue'
 
 .marg {
     margin: 35px 0;
+}
+
+.scroll-container {
+    overflow-y: auto !important;
+    overflow-x: hidden;
+    padding: 1rem;
+    max-height: 600px;
+    /* Ajusta la altura máxima según tus necesidades */
+}
+
+.message {
+    padding: 0.5rem 1rem;
+    background-color: #efefef;
+    border-radius: 8px;
+    margin-bottom: 8px;
+    display: inline-block;
 }
 </style>

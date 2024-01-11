@@ -6,6 +6,7 @@ export const state = reactive({
     motor: "OFF",
     tiempoEncendido: false,
     camara: "OFF",
+    ultimaConexion: "Sin última conexión",
     frame: "",
     movimiento: "",
     latitud: 41.38879,
@@ -18,7 +19,6 @@ export const state = reactive({
 //192.168.205.140
 //export const socket = io('http://raspberrypi.local:3169');
 export const socket = io('http://localhost:3169');
-
 
 socket.on("connect", () => {
     state.connected = true;
@@ -46,13 +46,19 @@ socket.on('actualitzacioCamara', (datos) => {
     localStorage.setItem('camara', datos);
 });
 
+// ULTIMA CONEX DEL ROBOT ?¿
+socket.on('actualitzacioUltimaConex', (datos) => {
+    state.ultimaConexion = datos;
+    localStorage.setItem('ultimaConexion', datos);
+});
+
 // REPRODUCIR CAMARA 
 socket.on("video_frame", (datos) => {
     //console.log("hola");
     state.frame = `data:image/jpg;base64,${datos}`
 });
 
-// REGISTRO MOVIMIENTOS ?¿
+// REGISTRO MOVIMIENTOS
 socket.on("actualitzacioMoviment", (datos) => {
     console.log(datos);
     state.movimientos.push(datos);
