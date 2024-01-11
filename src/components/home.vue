@@ -29,7 +29,7 @@
                             Pedralbes</a> que estem creant un "robot" que servirà per a controlar la qualitat de l'aigua de
                         les nostres platges. El grup el formem 4 estudiants de 2n de DAM, som Andrès _, Biel Palomar, Franc
                         Villalba i Pol Azabal (ordre alfabètic).
-                        La feina ha estat repartida equitativament i totes les tasques han sigut apuntades a la <a href="#"
+                        La feina ha estat repartida equitativament i totes les tasques han sigut apuntades a la <a href="https://docs.google.com/spreadsheets/d/1KdVFzHHQKKYCleUj0bco56TI0zNugPlQ01L8Bc0fo_8/edit?usp=sharing"
                             target="_blank">bitàcores</a>.
                         <br>
                     </v-card-text>
@@ -45,7 +45,9 @@
                         </v-card-title>
                     </v-card-item>
                     <v-card-text>
-                        Aquest projecte és creat amb la finalitat de presentar-ho al concurs metrópolis. Tots els fons han sgut obtinguts per la nostra part (els 4 integrants) i amb la "donació" d'alguns items per part del nostre professor Pol. El projecte es tracta de ... 
+                        Aquest projecte és creat amb la finalitat de presentar-ho al concurs metrópolis. Tots els fons han sgut obtinguts per la nostra part (els 4 integrants) i amb la "donació" d'alguns items per part del nostre professor Pol. El projecte tracta de crear
+                        un robot capaç de moure's per l'aigua, recollir i processar dades de la costa litoral mitjançant processos com el reconeixement de diferents espècies marines amb una càmara
+                        amb Intel·ligència Artificial. Sempre amb la finalitat de millorar l'ecosistema del litoral per tal de reduir l'efecte entròpic. Hem anomentat al robot com <b><i>Sea Shepherd</i></b> (pastor aquàtic en anglès)
                     </v-card-text>
                 </v-card>
             </v-col>
