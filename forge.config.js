@@ -1,7 +1,7 @@
 module.exports = {
   packagerConfig: {
     asar: true,
-    icon: '/src/assets/logo2' // no file extension required
+    icon: 'Sea_Shepherd' // no file extension required
   },
   rebuildConfig: {},
   makers: [
