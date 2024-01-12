@@ -160,13 +160,6 @@ export default {
     },
     methods: {
 
-        //
-        resetFilter() {
-            // Reiniciar el filtro hour-filter a la primera opción
-            const hourFilter = document.getElementById("hour-filter");
-            hourFilter.selectedIndex = 0;
-        },
-
         // DATOS TEMP + COORDENADAS + HORARIO (BD) ?¿
         getDatosBD() {
             getDades().then((response) => {
@@ -423,7 +416,10 @@ export default {
         actualizarRuta(event) {
             if (event && event.target) {
                 this.selectedRoute = event.target.value;
-                this.resetFilter();
+
+                // RESET EL FILTRO DE TIEMP A HORAS SIEMPRE QUE SE CAMBIA DE AREA
+                his.resetFilter();
+
                 this.filterChartData(event);
             } else {
                 console.error("Evento no válido");
@@ -519,6 +515,13 @@ export default {
 
             // Crear la capa de mapa de calor con las configuraciones
             L.heatLayer(heatMapData, { radius: 30, gradient, max, opacity }).addTo(mapa);
+        },
+        
+        // RESET EL FILTRO DE TIEMP A HORAS SIEMPRE QUE SE CAMBIA DE AREA
+        resetFilter() {
+            // Reiniciar el filtro hour-filter a la primera opción
+            const hourFilter = document.getElementById("hour-filter");
+            hourFilter.selectedIndex = 0;
         },
     },
 
