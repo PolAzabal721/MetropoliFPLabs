@@ -25,6 +25,13 @@ import "leaflet/dist/leaflet.js";
 import L from "leaflet";
 
 export default {
+  mounted() {
+    // Change the title when the component is mounted
+    document.title = "Sea Shepherd - Ubicació";
+
+    // Change the favicon when the component is mounted
+    this.changeFavicon("@/assets/logo2.svg");
+  },
   data() {
     return {};
   },
