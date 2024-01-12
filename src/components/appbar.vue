@@ -16,7 +16,7 @@
         </router-link>
         <v-btn :class="estatMotorClass">{{ motor }}</v-btn>
       </div>
-      <div style="width: 25%">
+      <div style="width: 50%">
         <router-link :to="'/datos'" class="colorBTN"> Dades </router-link>
         <router-link :to="'/camara'" class="colorBTN"> Càmera </router-link>
         <router-link :to="'/ubicacion'" class="colorBTN"> Ubicació </router-link>
@@ -79,7 +79,7 @@ export default {
       return state.motor;
     },
     estatMotorClass() {
-      return this.motor === "MOTOR APAGAT" ? "off-btn-red" : "off-btn-green";
+      return this.motor === "OFF" ? "off-btn-red" : "off-btn-green";
     },
   },
 };
