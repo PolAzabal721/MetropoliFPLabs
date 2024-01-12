@@ -31,7 +31,7 @@
                                     <select id="hour-filter">
                                         <option value="hores">Filtrar Hores</option>
                                         <option value="dies">Filtrar Dies</option>
-                                        <option value="mesos">Filtrar Mesos</option>
+                                        <option value="meses">Filtrar Mesos</option>
                                         <option value="any">Filtrar Anys</option>
                                     </select>
                                 </v-card>
@@ -62,8 +62,8 @@
                                     <h1>Temperatura de l'Aigua: {{ temperatura }}°C</h1>
                                     <div v-if="especieVisible">
                                         <h2>Especie associada: {{ especie }}</h2> -->
-                                        <!-- Aquí podrías mostrar una imatge o descripció de l'espècie -->
-                                    <!-- </div>
+                                <!-- Aquí podrías mostrar una imatge o descripció de l'espècie -->
+                                <!-- </div>
                                     <canvas class="mx-auto" ref="myChartPeces" width="850" height="425"></canvas>
                                 </v-card> -->
                             </v-card>
@@ -198,6 +198,28 @@ export default {
         // CARGAR RUTA MAP
         cargarRuta(event) {
             const rutaSeleccionada = event.target.value;
+
+            // Verificar si la opción seleccionada es "Buida"
+            if (rutaSeleccionada === "Buida") {
+                // Limpiar el mapa
+                this.map.eachLayer(layer => {
+                    this.map.removeLayer(layer);
+                });
+
+                // Establecer la vista del mapa en las coordenadas deseadas
+                this.map.setView([41.38879, 2.15899], 18);
+                L.tileLayer(
+                "https://cartodb-basemaps-{s}.global.ssl.fastly.net/rastertiles/voyager/{z}/{x}/{y}.png",
+                {
+                    maxZoom: 20,
+                }
+            ).addTo(this.map);
+
+                // Limpiar el gráfico
+                this.updateChart([], []);
+                return; // Salir de la función si la opción es "Buida"
+            }
+
             const coordenadas = this.rutaData[rutaSeleccionada].coordenadas;
 
             // Borrar capa de rectángulos existente antes de dibujar nuevos
@@ -285,7 +307,6 @@ export default {
             return labels.flat(); // Asegura que la matriz se aplane para obtener una lista plana de temperaturas
         },
 
-
         // ACTUALIZAR MAP PRINCIPAL
         actualizarMapa(bounds) {
             // Verifica que bounds sea un array válido y no esté vacío
@@ -359,7 +380,6 @@ export default {
         },
 
         // Función para filtrar los datos y actualizar el gráfico de temp
-        // Función para filtrar los datos y actualizar el gráfico de temp
         filterChartData(event) {
             const filterType = event.target.value;
 
@@ -391,7 +411,6 @@ export default {
                 console.error("Datos de ruta no válidos");
             }
         },
-
 
         // AYUDA CON EL FILTRO DE TIEMPO (BASICAMENTE FUNCIONA GRACIAS A ESTO) 
         actualizarRuta(event) {
