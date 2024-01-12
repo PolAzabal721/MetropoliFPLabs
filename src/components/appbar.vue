@@ -79,7 +79,7 @@ export default {
       return state.motor;
     },
     estatMotorClass() {
-      return this.motor === "OFF" ? "off-btn-red" : "off-btn-green";
+      return this.motor === "MOTOR APAGAT" ? "off-btn-red" : "off-btn-green";
     },
   },
 };
