@@ -16,7 +16,8 @@
                                 <option value="area_3">Àrea 3</option>
                             </select>
                             <div id="map" style="height: 650px; width: 800px;"></div>
-                            <input type="range" min="0" max="100" value="0" class="slider" id="myRange">
+                            <!-- el slider -->
+                            <!-- <input type="range" min="0" max="100" value="0" class="slider" id="myRange"> -->
                         </v-card>
                     </v-col>
                     <v-col cols="6">
@@ -159,6 +160,13 @@ export default {
     },
     methods: {
 
+        //
+        resetFilter() {
+            // Reiniciar el filtro hour-filter a la primera opción
+            const hourFilter = document.getElementById("hour-filter");
+            hourFilter.selectedIndex = 0;
+        },
+
         // DATOS TEMP + COORDENADAS + HORARIO (BD) ?¿
         getDatosBD() {
             getDades().then((response) => {
@@ -209,11 +217,11 @@ export default {
                 // Establecer la vista del mapa en las coordenadas deseadas
                 this.map.setView([41.38879, 2.15899], 18);
                 L.tileLayer(
-                "https://cartodb-basemaps-{s}.global.ssl.fastly.net/rastertiles/voyager/{z}/{x}/{y}.png",
-                {
-                    maxZoom: 20,
-                }
-            ).addTo(this.map);
+                    "https://cartodb-basemaps-{s}.global.ssl.fastly.net/rastertiles/voyager/{z}/{x}/{y}.png",
+                    {
+                        maxZoom: 20,
+                    }
+                ).addTo(this.map);
 
                 // Limpiar el gráfico
                 this.updateChart([], []);
@@ -401,7 +409,6 @@ export default {
 
                     // Obtener las etiquetas correspondientes al filtro seleccionado
                     const labels = this.getLabelsFromCoordinates(selectedRouteData, filterType);
-
                     // Actualizar el gráfico con los datos filtrados y las etiquetas
                     this.updateChart(filteredData, labels);
                 } else {
@@ -416,7 +423,7 @@ export default {
         actualizarRuta(event) {
             if (event && event.target) {
                 this.selectedRoute = event.target.value;
-
+                this.resetFilter();
                 this.filterChartData(event);
             } else {
                 console.error("Evento no válido");
