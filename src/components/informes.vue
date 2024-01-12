@@ -10,17 +10,17 @@
                         <!-- MAPA PRINCIPAL -->
                         <v-card class="mx-auto slidecontainer" height="700" width="800">
                             <select id="select-ruta">
-                                <option>Nada</option>
-                                <option value="area_1">Ruta 1</option>
-                                <option value="area_2">Ruta 2</option>
-                                <option value="area_3">Ruta 3</option>
+                                <option>Buida</option>
+                                <option value="area_1">Àrea 1</option>
+                                <option value="area_2">Àrea 2</option>
+                                <option value="area_3">Àrea 3</option>
                             </select>
                             <div id="map" style="height: 650px; width: 800px;"></div>
                             <input type="range" min="0" max="100" value="0" class="slider" id="myRange">
                         </v-card>
                     </v-col>
                     <v-col cols="6">
-                        <!-- GRAFICOS -->
+                        <!-- GRÀFICS -->
                         <div class="scroll-container">
                             <v-card class="mx-auto" height="auto" width="900">
 
@@ -29,52 +29,43 @@
                                     <canvas class="mx-auto" id="myChart" width="850" height="425"></canvas>
                                     <br>
                                     <select id="hour-filter">
-                                        <option value="hores">Filtrar Horas</option>
-                                        <option value="dies">Filtrar Días</option>
-                                        <option value="meses">Filtrar Meses</option>
-                                        <option value="any">Filtrar Años</option>
+                                        <option value="hores">Filtrar Hores</option>
+                                        <option value="dies">Filtrar Dies</option>
+                                        <option value="mesos">Filtrar Mesos</option>
+                                        <option value="any">Filtrar Anys</option>
                                     </select>
                                 </v-card>
                                 <br>
                                 <br>
-                                <!-- MAPA TEMPERATURA POR ZONAS -->
+                                <!-- MAPA TEMPERATURA PER ZONES -->
                                 <v-card class="mx-auto" height="580" width="900">
-                                    <h1 class="d-flex align-center justify-center">Mapa de calor por zonas</h1>
+                                    <h1 class="d-flex align-center justify-center">Mapa de calor per zones</h1>
                                     <div id="mapa" style="height: 500px; width: 900px;"></div>
                                     <div class="legend">
                                         <div class="legend-item">
                                             <div class="legend-color" style="background-color: blue;"></div>
-                                            <span>0 a 10 grados</span>
+                                            <span>0 a 10 graus</span>
                                         </div>
                                         <div class="legend-item">
                                             <div class="legend-color" style="background-color: yellow;"></div>
-                                            <span>10 a 20 grados</span>
+                                            <span>10 a 20 graus</span>
                                         </div>
                                         <div class="legend-item">
                                             <div class="legend-color" style="background-color: red;"></div>
-                                            <span>20 a 30 grados</span>
+                                            <span>20 a 30 graus</span>
                                         </div>
                                     </div>
                                 </v-card>
                                 <br>
-                                <br>
-                                <!-- MAPA TEMPERATURA POR PECES -->
-                                <v-card class="mx-auto" height="700" width="900">
-                                    <h1>Temperatura del Agua: {{ temperatura }}°C</h1>
+                                <!-- MAPA TEMPERATURA PER PEIXOS -->
+                                <!-- <v-card class="mx-auto" height="700" width="900">
+                                    <h1>Temperatura de l'Aigua: {{ temperatura }}°C</h1>
                                     <div v-if="especieVisible">
-                                        <h2>Especie asociada: {{ especie }}</h2>
-                                        <!-- Aquí podrías mostrar una imagen o descripción de la especie -->
-                                    </div>
+                                        <h2>Especie associada: {{ especie }}</h2> -->
+                                        <!-- Aquí podrías mostrar una imatge o descripció de l'espècie -->
+                                    <!-- </div>
                                     <canvas class="mx-auto" ref="myChartPeces" width="850" height="425"></canvas>
-                                </v-card>
-                                <br>
-                                <br>
-                                <!-- 0 -->
-                                <v-card class="mx-auto" height="700" width="900">
-
-
-                                </v-card>
-
+                                </v-card> -->
                             </v-card>
                         </div>
 
@@ -112,35 +103,55 @@ export default {
             rutaData: {
                 'area_1': {
                     'coordenadas': {
-                        '41.38879,2.15899_41.58879,2.35899': {  // Cambiadas a un área rectangular
-                            'hores': { '12': 15 },
-                            'dies': { '17': 20 },
-                            'meses': { '12': 20 },
-                            'any': { '2023': 20 }
+                        '41.38879,2.15899_41.58879,2.35899': {
+                            'hores': {
+                                '12': 15,
+                                '15': 10,
+                                '18': 5
+                            },
+                            'dies': {
+                                '17': 30,
+                                '18': 5,
+                                '19': 19
+                            },
+                            'meses': {
+                                '1': 20,
+                                '2': 15,
+                                '3': 10
+                            },
+                            'any': {
+                                '2023': 20,
+                                '2024': 25
+                            }
                         },
-                        // Otras coordenadas cambiadas a áreas rectangulares
                     }
                 },
                 'area_2': {
                     'coordenadas': {
-                        '73.0000000,3.2500000_73.9000000,3.9000000': {  // Cambiadas a un área rectangular
-                            'hores': { '15': 17 },
+                        '73.0000000,3.2500000_73.9000000,3.9000000': {
+                            'hores': {
+                                '15': 17,
+                                '16': 20,
+                            },
                             'dies': { '20': 17 },
-                            'meses': { '12': 17 },
-                            'any': { '2023': 17 }
+                            'meses': { '12': 40 },
+                            'any': { '2023': 10 }
                         },
-                        // Otras coordenadas cambiadas a áreas rectangulares
+
                     }
                 },
                 'area_3': {
                     'coordenadas': {
-                        '3.9999700,40.0004000_4.9999700,41.0004000': {  // Cambiadas a un área rectangular
-                            'hores': { '13': 18 },
+                        '3.9999700,40.0004000_4.9999700,41.0004000': {
+                            'hores': {
+                                '13': 18,
+                                '14': 18
+                            },
                             'dies': { '19': 18 },
                             'meses': { '12': 18 },
                             'any': { '2023': 18 }
                         },
-                        // Otras coordenadas cambiadas a áreas rectangulares
+
                     }
                 }
             },
@@ -148,7 +159,7 @@ export default {
     },
     methods: {
 
-        // DATOS TEMP + COORDENADAS + HORARIO (BD)
+        // DATOS TEMP + COORDENADAS + HORARIO (BD) ?¿
         getDatosBD() {
             getDades().then((response) => {
                 this.dadesGra = response;
@@ -246,7 +257,6 @@ export default {
             }).flat();
 
             const labels = this.getLabelsFromCoordinates(coordenadas);
-
             this.updateChart(temperaturas, labels);
         },
 
@@ -255,32 +265,26 @@ export default {
             const keys = Object.keys(coordenadas);
             const labels = keys.map(key => {
                 const coordenada = coordenadas[key];
-                let hora, dia, mes, ano;
 
-                // Obtener los valores según la opción de filtro seleccionada
+                // Obtener las etiquetas según la opción de filtro seleccionada
                 switch (filtroSeleccionado) {
                     case 'hores':
-                        hora = Object.keys(coordenada.hores)[0];
-                        break;
+                        return Object.keys(coordenada.hores);
                     case 'dies':
-                        dia = Object.keys(coordenada.dies)[0];
-                        break;
+                        return Object.keys(coordenada.dies);
                     case 'meses':
-                        mes = Object.keys(coordenada.meses)[0];
-                        break;
+                        return Object.keys(coordenada.meses);
                     case 'any':
-                        ano = Object.keys(coordenada.any)[0];
-                        break;
+                        return Object.keys(coordenada.any);
                     default:
                         // Si la opción no es reconocida, mostrar todas las horas
-                        hora = Object.keys(coordenada.hores)[0];
+                        return Object.keys(coordenada.hores);
                 }
-
-                return `${hora || ''},${dia || ''},${mes || ''},${ano || ''}`;
             });
 
-            return labels;
+            return labels.flat(); // Asegura que la matriz se aplane para obtener una lista plana de temperaturas
         },
+
 
         // ACTUALIZAR MAP PRINCIPAL
         actualizarMapa(bounds) {
@@ -299,7 +303,7 @@ export default {
             }
         },
 
-        // SLIDER DEBAJO DEL MAPA
+        // SLIDER DEBAJO DEL MAPA ?¿
         iniciarSlide() {
             // Obtener el elemento del slide y el círculo
             var slider = document.getElementById("myRange");
@@ -332,6 +336,7 @@ export default {
             };
         },
 
+        // UPDATE DEL GRAFICO DE TEMP AL MOVER EL SLIDER ?¿
         updateChartBasedOnSlider(positionIndex) {
             // Aquí determinas qué datos utilizar en el gráfico según la posición del slider
             // Por ejemplo, si tienes los datos en un arreglo `temperatureData`, puedes actualizar el gráfico así:
@@ -343,46 +348,59 @@ export default {
 
         // Actualizar el gráfico TEMP con el filtro seleccionado
         updateChart(newData, labels) {
-            // Agregar un event listener al select
             const hourFilter = document.getElementById("hour-filter");
             hourFilter.addEventListener("change", this.filterChartData.bind(this));
             this.myChart.data.datasets[0].data = newData;
             this.myChart.data.labels = labels;
             this.myChart.update();
-            console.log("Datos filtrados:", newData);
+            //console.log(labels);
+            //console.log("Datos filtrados:", newData);
 
         },
 
         // Función para filtrar los datos y actualizar el gráfico de temp
+        // Función para filtrar los datos y actualizar el gráfico de temp
         filterChartData(event) {
-            const filterType = event.target.value; // Obtener el tipo de filtro seleccionado
+            const filterType = event.target.value;
 
             // Obtener los datos de la ruta seleccionada
             const selectedRouteData = this.rutaData[this.selectedRoute]?.coordenadas;
 
             // Verificar que exista un tipo de filtro seleccionado y datos de la ruta
             if (filterType && selectedRouteData) {
-                // Filtrar los datos según el tipo seleccionado (horas, días, meses o años)
-                const filteredData = Object.values(selectedRouteData).flatMap(coordenada => {
-                    return Object.entries(coordenada[filterType]).map(([time, temperature]) => ({
-                        time,
-                        temperature
-                    }));
-                });
+                // Verificar que selectedRouteData no sea undefined o null
+                if (Object.keys(selectedRouteData).length > 0) {
+                    const filteredData = Object.values(selectedRouteData).flatMap(coordenada => {
+                        if (coordenada && coordenada[filterType]) {
+                            return Object.entries(coordenada[filterType]).map(([time, temperature]) => {
+                                return { x: time, y: temperature }; // Asegúrate de tener el formato correcto para Chart.js
+                            });
+                        }
+                        return [];
+                    }).flat(); // Aplana el array de arrays
 
-                // Actualizar el gráfico con los datos filtrados
-                this.updateChart(filteredData);
+                    // Obtener las etiquetas correspondientes al filtro seleccionado
+                    const labels = this.getLabelsFromCoordinates(selectedRouteData, filterType);
+
+                    // Actualizar el gráfico con los datos filtrados y las etiquetas
+                    this.updateChart(filteredData, labels);
+                } else {
+                    console.error("La ruta seleccionada no tiene datos válidos");
+                }
             } else {
-                // Si no se selecciona ningún filtro o no hay datos disponibles, mostrar todos los datos
-                const allData = Object.values(selectedRouteData).flatMap(coordenada => {
-                    return Object.entries(coordenada.hores).map(([time, temperature]) => ({
-                        time,
-                        temperature
-                    }));
-                });
+                console.error("Datos de ruta no válidos");
+            }
+        },
 
-                // Actualizar el gráfico con todos los datos
-                this.updateChart(allData);
+
+        // AYUDA CON EL FILTRO DE TIEMPO (BASICAMENTE FUNCIONA GRACIAS A ESTO) 
+        actualizarRuta(event) {
+            if (event && event.target) {
+                this.selectedRoute = event.target.value;
+
+                this.filterChartData(event);
+            } else {
+                console.error("Evento no válido");
             }
         },
 
@@ -491,6 +509,10 @@ export default {
 
     mounted() {
         console.log("MONTADO");
+
+        // Agregar un evento de cambio al elemento select
+        const selectRuta = document.getElementById('select-ruta');
+        selectRuta.addEventListener('change', this.actualizarRuta);
 
         this.initMapPrincipal();
         this.initMapa();
