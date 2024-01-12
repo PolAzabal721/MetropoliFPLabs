@@ -16,7 +16,7 @@
                                 <option value="area_3">Àrea 3</option>
                             </select>
                             <div id="map" style="height: 650px; width: 800px;"></div>
-                            <input type="range" min="0" max="100" value="0" class="slider" id="myRange">
+                            <!-- <input type="range" min="0" max="100" value="0" class="slider" id="myRange"> -->
                         </v-card>
                     </v-col>
                     <v-col cols="6">
