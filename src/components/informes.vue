@@ -10,10 +10,10 @@
                         <!-- MAPA PRINCIPAL -->
                         <v-card class="mx-auto slidecontainer" height="700" width="800">
                             <select id="select-ruta">
-                                <option>Res</option>
-                                <option value="area_1">Ruta 1</option>
-                                <option value="area_2">Ruta 2</option>
-                                <option value="area_3">Ruta 3</option>
+                                <option>Buida</option>
+                                <option value="area_1">Àrea 1</option>
+                                <option value="area_2">Àrea 2</option>
+                                <option value="area_3">Àrea 3</option>
                             </select>
                             <div id="map" style="height: 650px; width: 800px;"></div>
                             <input type="range" min="0" max="100" value="0" class="slider" id="myRange">
@@ -57,24 +57,15 @@
                                     </div>
                                 </v-card>
                                 <br>
-                                <br>
                                 <!-- MAPA TEMPERATURA PER PEIXOS -->
-                                <v-card class="mx-auto" height="700" width="900">
+                                <!-- <v-card class="mx-auto" height="700" width="900">
                                     <h1>Temperatura de l'Aigua: {{ temperatura }}°C</h1>
                                     <div v-if="especieVisible">
-                                        <h2>Especie associada: {{ especie }}</h2>
+                                        <h2>Especie associada: {{ especie }}</h2> -->
                                         <!-- Aquí podrías mostrar una imatge o descripció de l'espècie -->
-                                    </div>
+                                    <!-- </div>
                                     <canvas class="mx-auto" ref="myChartPeces" width="850" height="425"></canvas>
-                                </v-card>
-                                <br>
-                                <br>
-                                <!-- 0 -->
-                                <v-card class="mx-auto" height="700" width="900">
-
-
-                                </v-card>
-
+                                </v-card> -->
                             </v-card>
                         </div>
 
