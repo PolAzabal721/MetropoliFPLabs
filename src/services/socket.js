@@ -3,7 +3,7 @@ import { reactive } from 'vue';
 
 export const state = reactive({
     connected: false,
-    motor: "OFF",
+    motor: "MOTOR APAGAT",
     tiempoEncendido: false,
     camara: "OFF",
     ultimaConexion: "Sin última conexión",
