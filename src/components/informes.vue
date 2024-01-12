@@ -359,7 +359,6 @@ export default {
         },
 
         // Función para filtrar los datos y actualizar el gráfico de temp
-        // Función para filtrar los datos y actualizar el gráfico de temp
         filterChartData(event) {
             const filterType = event.target.value;
 
