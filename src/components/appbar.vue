@@ -1,5 +1,5 @@
 <template>
-  <v-toolbar
+  <v-toolbar class="barra"
     image="https://s1.eestatic.com/2022/12/09/enclave-ods/semanales/724687779_229350113_1706x960.jpg"
   >
     <div

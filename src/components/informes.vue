@@ -1,5 +1,5 @@
 <template>
-    <default-bar />
+    <default-bar class="barra" />
     <v-layout class="rounded rounded-md container">
 
         <v-main>
@@ -8,7 +8,7 @@
                 <v-row>
                     <v-col cols="6">
                         <!-- MAPA PRINCIPAL -->
-                        <v-card class="mx-auto slidecontainer" height="700" width="800">
+                        <v-card class="mx-auto slidecontainer " height="700" width="800">
                             <select id="select-ruta">
                                 <option>Buida</option>
                                 <option value="area_1">Àrea 1</option>
@@ -587,6 +587,11 @@ export default {
 import DefaultBar from '@/components/appbar.vue'
 </script>
 <style>
+.barra{
+  position: sticky;
+  top: 0px;
+  z-index: 10;
+}
 /* Estilos para la leyenda */
 .legend {
     display: flex;
@@ -619,18 +624,11 @@ import DefaultBar from '@/components/appbar.vue'
     margin: auto;
 }
 
-.scroll-container {
-    max-height: 900px;
-    /* Altura máxima del v-card */
-    overflow-y: auto;
-    /* Scroll vertical si el contenido excede la altura */
-    overflow-x: hidden;
-    /* Oculta el scroll horizontal */
-}
 
 /* Estilos para el slide */
 .slidecontainer {
-    display: flex;
+    top: 15%;
+    position: sticky !important;
     align-items: center;
     justify-content: center;
 }
