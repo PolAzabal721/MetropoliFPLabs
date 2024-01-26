@@ -5,20 +5,24 @@
         <v-main>
             <br>
             <v-container fluid>
+                <v-layout class="container">
 
+                </v-layout>
                 <!-- MAPA PRINCIPAL -->
-                <v-card class="mx-auto slidecontainer " height="700" width="800">
-                    <br>
-                    <div id="map" style="height: 650px; width: 800px;"></div>
+                <v-card class="mx-auto slidecontainer " height="800" width="800">
+                    <v-text-field v-model="nombreLugar" label="Intruce un nombre para el area"></v-text-field>
+                    <v-btn class="ml-04" @click="crearLugar" :disabled="nombreLugar === '' || drawnGeometries.length === 0">
+                        Crear
+                    </v-btn>
+                    <br><br>
 
+                    <v-card class=" slidecontainer " height="700" width="800">
+
+
+                        <div id="map" style="height: 650px; width: 800px;"></div>
+
+                    </v-card>
                 </v-card>
-
-                <!-- NUEVO MAPA -->
-                <v-card class="mx-auto slidecontainer" height="700" width="800">
-                    <br>
-                    <div id="newMap" style="height: 650px; width: 800px;"></div>
-                </v-card>
-
             </v-container>
         </v-main>
     </v-layout>
@@ -35,48 +39,14 @@ export default {
     data() {
         return {
             drawnGeometries: [],
-            // Nuevo mapa para cargar las coordenadas
-            newMap: null,
-            rutaData: {
-
-                "area_1": {
-                    "coordenadas": [
-                        [2.009125, 41.474117],
-                        [2.064743, 41.462283],
-                        [2.038651, 41.403081],
-                        [1.943893, 41.408231],
-                        [1.94458, 41.46537],
-                        [2.009125, 41.474117]
-                    ],
-
-                    "temperaturas": {
-                        "hores": {
-                            "12": 15,
-                            "15": 10,
-                            "18": 5
-                        },
-                        "dies": {
-                            "17": 30,
-                            "18": 5,
-                            "19": 19
-                        },
-                        "meses": {
-                            "1": 20,
-                            "2": 15,
-                            "3": 10
-                        },
-                        "any": {
-                            "2023": 20,
-                            "2024": 25
-                        }
-                    }
-                }
-            },
+            nombreLugar: '',
+            map: null,
         };
     },
     methods: {
         // INICIO Y CONFIG DEL MAPA
         initMap() {
+
             this.map = L.map("map").setView([41.38879, 2.15899], 11);
             L.tileLayer(
                 "https://cartodb-basemaps-{s}.global.ssl.fastly.net/rastertiles/voyager/{z}/{x}/{y}.png",
@@ -102,6 +72,7 @@ export default {
                     circlemarker: false
                 },
             });
+            this.drawControl = drawControl;
             this.map.addControl(drawControl);
 
             this.map.on(L.Draw.Event.CREATED, (event) => {
@@ -111,44 +82,78 @@ export default {
                 // Obtener las coordenadas en formato GeoJSON
                 const geojson = layer.toGeoJSON();
                 this.saveGeometry(geojson);
-                //this.loadCoordinatesOnNewMap();
+
+                // Desactivar el control de dibujo después de crear un dibujo
+                this.map.off(L.Draw.Event.CREATED);
             });
 
+            this.limpiarMapa();
+        },
+
+        // CREAR AREA + NOMBRE
+        crearLugar() {
+            if (this.nombreLugar !== '' && this.drawnGeometries.length > 0) {
+                // Realizar las acciones necesarias para guardar el lugar con nombre y geometrías
+                console.log('Nombre del lugar:', this.nombreLugar);
+                console.log('Geometrías:', this.drawnGeometries);
+
+                // Restablecer el campo de texto y las geometrías dibujadas después de la creación
+                this.nombreLugar = '';
+                this.drawnGeometries = [];
+
+                // Limpiar el mapa
+                this.limpiarMapa();
+            }
+
+            // hacer SELECT y ver si ya hay un nombre igual
+
+            // realizar la inserción en la base de datos si no coinciden los nombres
+        },
+
+        // LIMPIAMOS MAPA
+        limpiarMapa() {
+            // Eliminar las capas dibujadas del mapa
+            if (this.map) {
+                this.map.eachLayer((layer) => {
+                    if (layer instanceof L.Path || layer instanceof L.Marker) {
+                        this.map.removeLayer(layer);
+                    }
+                });
+
+               
+
+                this.map.on(L.Draw.Event.CREATED, (event) => {
+                    const layer = event.layer;
+                    drawnItems.addLayer(layer);
+
+                    // Obtener las coordenadas en formato GeoJSON
+                    const geojson = layer.toGeoJSON();
+                    this.saveGeometry(geojson);
+
+                    // Desactivar el control de dibujo después de crear un dibujo
+                    this.map.off(L.Draw.Event.CREATED);
+                });
+
+
+            }
+
+        },
+
+        // beforeDestroy del mapa
+        beforeDestroy() {
+            // Desvincular eventos del control de dibujo
+            if (this.map && this.drawControl) {
+                this.map.off(L.Draw.Event.CREATED);
+                this.map.removeControl(this.drawControl);
+            }
         },
 
         // GUARDAS DIBUJOS Y INSERTAR EN LA BD
         saveGeometry(geojson) {
             // Guardar solo las coordenadas en el array
             this.drawnGeometries.push(geojson);
-
-            // realizar la inserción en la base de datos
-
-            console.log("Geometría guardada:", this.drawnGeometries);
         },
 
-
-        // Crear un nuevo mapa y cargar las coordenadas guardadas
-        loadCoordinatesOnNewMap() {
-            this.newMap = L.map("newMap").setView([41.38879, 2.15899], 11);
-            L.tileLayer(
-                "https://cartodb-basemaps-{s}.global.ssl.fastly.net/rastertiles/voyager/{z}/{x}/{y}.png",
-                {
-                    maxZoom: 18,
-                }
-            ).addTo(this.newMap);
-
-            // Acceder a la propiedad "geometry" de "rutaData"
-            const coordenadas = this.rutaData.area_1.coordenadas;
-
-            // Crear una capa GeoJSON y agregarla al mapa
-            L.geoJSON({
-                type: "Feature",
-                geometry: {
-                    type: "LineString",
-                    coordinates: coordenadas,
-                },
-            }).addTo(this.newMap);
-        },
     },
     // 
     computed: {
@@ -164,15 +169,11 @@ export default {
         console.log("MONTADO");
 
         this.initMap();
-        this.loadCoordinatesOnNewMap();
     },
 
     updated() {
         console.log("UPDATED");
-
-
     },
-
 };
 </script>
 
