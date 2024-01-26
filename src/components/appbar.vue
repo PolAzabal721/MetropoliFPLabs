@@ -20,6 +20,7 @@
         <router-link :to="'/datos'" class="colorBTN"> Dades </router-link>
         <router-link :to="'/camara'" class="colorBTN"> Càmera </router-link>
         <router-link :to="'/ubicacion'" class="colorBTN"> Ubicació </router-link>
+        <router-link :to="'/creaArea'" class="colorBTN"> Crear area </router-link>
         <router-link :to="'/informes'" class="colorBTN"> Informes </router-link>
       </div>
     </div>

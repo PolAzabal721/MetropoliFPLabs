@@ -38,6 +38,16 @@ const routes = [
     meta: { title: 'Sea Shepherd - Informes'}
 
   },
+
+    // CREAR AREAS (COMO LA RUMBA)
+    {
+      path: '/creaArea/',
+      component: () => import('@/components/creaArea.vue'),
+      meta: { title: 'Sea Shepherd - Crear areas'}
+  
+    },
+
+  // APPABAR DE TODO EL COD
   {
     path: '/appbar/',
     component: () => import('@/components/appbar.vue'),

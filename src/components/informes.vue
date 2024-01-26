@@ -17,16 +17,16 @@
                             </select>
                             <div id="map" style="height: 650px; width: 800px;"></div>
                             <!-- el slider -->
-                            <!-- <input type="range" min="0" max="100" value="0" class="slider" id="myRange"> --> 
+                            <!-- <input type="range" min="0" max="100" value="0" class="slider" id="myRange"> -->
                         </v-card>
                     </v-col>
                     <v-col cols="6">
                         <!-- GRÀFICS -->
                         <div class="scroll-container">
                             <v-card class="mx-auto" height="auto" width="900">
-
                                 <!-- GRAFICO TEMPERATURA -->
-                                <v-card height="500" width="900">
+                                <v-card height="525" width="900">
+                                    <h1 class="d-flex align-center justify-center">Temperatura °C</h1>
                                     <canvas class="mx-auto" id="myChart" width="850" height="425"></canvas>
                                     <br>
                                     <select id="hour-filter">
@@ -36,7 +36,6 @@
                                         <option value="any">Filtrar Anys</option>
                                     </select>
                                 </v-card>
-                                <br>
                                 <br>
                                 <!-- MAPA TEMPERATURA PER ZONES -->
                                 <v-card class="mx-auto" height="580" width="900">
@@ -86,7 +85,6 @@ import "leaflet.heat";
 import 'leaflet.heat/dist/leaflet-heat';
 import { getDades } from './../services/connectionManager';
 
-
 export default {
 
     data() {
@@ -102,58 +100,132 @@ export default {
 
             // áreas
             rutaData: {
-                'area_1': {
-                    'coordenadas': {
-                        '41.38879,2.15899_41.58879,2.35899': {
-                            'hores': {
-                                '12': 15,
-                                '15': 10,
-                                '18': 5
-                            },
-                            'dies': {
-                                '17': 30,
-                                '18': 5,
-                                '19': 19
-                            },
-                            'meses': {
-                                '1': 20,
-                                '2': 15,
-                                '3': 10
-                            },
-                            'any': {
-                                '2023': 20,
-                                '2024': 25
-                            }
+                "area_1": {
+                    "coordenadas": [
+                        [2.009125, 41.474117],
+                        [2.064743, 41.462283],
+                        [2.038651, 41.403081],
+                        [1.943893, 41.408231],
+                        [1.94458, 41.46537],
+                        [2.009125, 41.474117]
+                    ],
+
+                    "temperaturas": {
+                        "hores": {
+                            "12": 15,
+                            "15": 10,
+                            "18": 5
                         },
+                        "dies": {
+                            "17": 30,
+                            "18": 5,
+                            "19": 19
+                        },
+                        "meses": {
+                            "1": 20,
+                            "2": 15,
+                            "3": 10
+                        },
+                        "any": {
+                            "2023": 20,
+                            "2024": 25
+                        }
                     }
                 },
                 'area_2': {
-                    'coordenadas': {
-                        '73.0000000,3.2500000_73.9000000,3.9000000': {
-                            'hores': {
-                                '15': 17,
-                                '16': 20,
-                            },
-                            'dies': { '20': 17 },
-                            'meses': { '12': 40 },
-                            'any': { '2023': 10 }
+                    'coordenadas': [
+                        [2.190742, 41.371012],
+                        [2.192459, 41.3761],
+                        [2.194948, 41.3799],
+                        [2.19821, 41.380608],
+                        [2.199583, 41.381961],
+                        [2.205334, 41.386726],
+                        [2.20336, 41.388401],
+                        [2.206299, 41.389753],
+                        [2.207673, 41.391282],
+                        [2.211771, 41.388851],
+                        [2.190742, 41.371012]
+                    ],
+                    "temperaturas": {
+                        "hores": {
+                            "12": 18,
+                            "15": 12,
+                            "18": 7
                         },
-
+                        "dies": {
+                            "17": 25,
+                            "18": 8,
+                            "19": 22
+                        },
+                        "meses": {
+                            "1": 22,
+                            "2": 18,
+                            "3": 13
+                        },
+                        "any": {
+                            "2023": 22,
+                            "2024": 28
+                        }
                     }
                 },
                 'area_3': {
-                    'coordenadas': {
-                        '3.9999700,40.0004000_4.9999700,41.0004000': {
-                            'hores': {
-                                '13': 18,
-                                '14': 18
-                            },
-                            'dies': { '19': 18 },
-                            'meses': { '12': 18 },
-                            'any': { '2023': 18 }
+                    'coordenadas': [
+                        [1.932993, 41.259955],
+                        [1.943293, 41.262148],
+                        [1.956682, 41.262536],
+                        [1.974707, 41.262923],
+                        [2.004232, 41.262536],
+                        [2.037792, 41.266618],
+                        [2.061396, 41.272084],
+                        [2.098088, 41.282556],
+                        [2.117143, 41.289328],
+                        [2.123151, 41.292875],
+                        [2.130532, 41.295326],
+                        [2.134995, 41.295519],
+                        [2.13697, 41.292875],
+                        [2.137957, 41.287693],
+                        [2.128429, 41.280294],
+                        [2.069378, 41.262231],
+                        [2.021313, 41.253198],
+                        [1.972218, 41.249326],
+                        [1.930332, 41.249068],
+                        [1.903424, 41.245846],
+                        [1.902137, 41.249525],
+                        [1.904969, 41.253138],
+                        [1.915011, 41.255784],
+                        [1.921191, 41.2543],
+                        [1.932993, 41.259955]
+                    ],
+                    "temperaturas": {
+                        "hores": {
+                            "12": 18,
+                            "15": 12,
+                            "18": 7,
+                            "21": 5,
+                            "24": 3
                         },
-
+                        "dies": {
+                            "17": 25,
+                            "18": 8,
+                            "19": 22,
+                            "20": 18,
+                            "21": 15
+                        },
+                        "meses": {
+                            "1": 22,
+                            "2": 18,
+                            "3": 13,
+                            "4": 17,
+                            "5": 23
+                        },
+                        "any": {
+                            "2023": 22,
+                            "2024": 28,
+                            "2025": 26,
+                            "2026": 30
+                        }
                     }
+
                 }
             },
         };
@@ -165,24 +237,17 @@ export default {
             const hourFilter = document.getElementById("hour-filter");
             hourFilter.selectedIndex = 0;
         },
-
-        // DATOS TEMP + COORDENADAS + HORARIO (BD) ?¿
-        getDatosBD() {
-            getDades().then((response) => {
-                this.dadesGra = response;
-                //console.log(this.dadesGra);
-            }).catch((error) => {
-                console.error("Error al obtener productos: ", error);
-            });
-        },
-
-        // Calcular la posición X en el gráfico según el índice
-        calculateXPosition(index) {
-            const totalDataPoints = this.temperatureData.length;
-            const chartWidth = 850; // Ancho del gráfico (ajusta según tu caso)
-            const xPosition = (index / (totalDataPoints - 1)) * chartWidth;
-            return xPosition;
-        },
+        /*
+                // DATOS TEMP + COORDENADAS + HORARIO (BD) ?¿
+                getDatosBD() {
+                    getDades().then((response) => {
+                        this.dadesGra = response;
+                        //console.log(this.dadesGra);
+                    }).catch((error) => {
+                        console.error("Error al obtener productos: ", error);
+                    });
+                },
+                */
 
         // INICIO Y CONFIG DEL MAPA PRINCIPAL
         initMapPrincipal() {
@@ -202,7 +267,7 @@ export default {
             }
         },
 
-        // CARGAR RUTA MAP
+        // CARGAR RUTA MAPA PRINCIPAL
         cargarRuta(event) {
             const rutaSeleccionada = event.target.value;
 
@@ -229,149 +294,54 @@ export default {
 
             const coordenadas = this.rutaData[rutaSeleccionada].coordenadas;
 
-            // Borrar capa de rectángulos existente antes de dibujar nuevos
-            if (this.rectangleLayer) {
-                this.map.removeLayer(this.rectangleLayer);
-            }
+            // Crear una capa GeoJSON y agregarla al mapa
+            const geoJsonLayer = L.geoJSON({
+                type: "Feature",
+                geometry: {
+                    type: "LineString",
+                    coordinates: coordenadas,
+                },
+            }).addTo(this.map);
 
-            // Inicializar límites
-            let bounds = [];
+            // Actualizar el mapa y el gráfico
+            this.actualizarMapa(geoJsonLayer.getBounds());
 
-            // Crear una capa de rectángulos para la ruta seleccionada
-            const rectangles = Object.keys(coordenadas).map(coordenada => {
-                const match = coordenada.match(/([-]?\d+(\.\d+)?)/g);
-
-                // Verificar si las coordenadas son números válidos
-                if (match && match.length === 4) {
-                    const [lat1, lng1, lat2, lng2] = match.map(Number);
-                    //console.log('Coordenadas válidas:', lat1, lng1, lat2, lng2);
-
-                    // Crear rectángulo con esquina suroeste y noreste
-                    const rectangle = L.rectangle([[lat1, lng1], [lat2, lng2]]);
-                    bounds.push(rectangle.getBounds());
-
-                    return rectangle;
-                } else {
-                    console.error("Coordenadas inválidas:", coordenada);
-                    // Puedes manejar el error de alguna manera (por ejemplo, ignorar estas coordenadas)
-                    return null;
-                }
-            }).filter(rectangle => rectangle !== null); // Filtramos para eliminar elementos nulos
-
-            // Verifica si rectangles se creó correctamente
-            if (rectangles.length > 0) {
-                // Agrupar los rectángulos en una capa
-                this.rectangleLayer = L.layerGroup(rectangles);
-
-                // Añadir la capa de rectángulos al mapa
-                this.rectangleLayer.addTo(this.map);
-
-                // Actualizar el mapa y el gráfico
-                this.actualizarMapa(bounds);
-
-                // SLIDER PAR PROXIMO MAPA
-                //this.iniciarSlide();
-                this.updateChartFromCoordinates(coordenadas);
-            } else {
-                console.error('Error al crear rectangles');
-                // Puedes manejar el error de alguna manera (por ejemplo, no continuar con la función)
-                return;
-            }
         },
 
-        // CARGAR LA TEMP EN EL GRAFICO AL CAMBIAR EL AREA
-        updateChartFromCoordinates(coordenadas) {
-            const temperaturas = Object.values(coordenadas).map(coordenada => {
-                return Object.values(coordenada.hores).map(temperatura => temperatura);
-            }).flat();
-
-            const labels = this.getLabelsFromCoordinates(coordenadas);
-            this.updateChart(temperaturas, labels);
+        // ACTUALIZAR MAP PRINCIPAL 
+        actualizarMapa(bounds) {
+            // Verifica que bounds sea un array válido y no esté vacío
+            if (bounds && bounds.isValid()) {
+                // Ajusta los límites del mapa según la capa GeoJSON
+                this.map.fitBounds(bounds);
+            } else {
+                console.error('Los límites no son válidos o no tienen dimensiones positivas:', bounds);
+            }
         },
 
         // LABELS DE LA TEMP
         getLabelsFromCoordinates(coordenadas, filtroSeleccionado) {
             const keys = Object.keys(coordenadas);
             const labels = keys.map(key => {
-                const coordenada = coordenadas[key];
+                const temperaturas = coordenadas[key].temperaturas;
 
                 // Obtener las etiquetas según la opción de filtro seleccionada
                 switch (filtroSeleccionado) {
                     case 'hores':
-                        return Object.keys(coordenada.hores);
+                        return Object.keys(temperaturas.hores);
                     case 'dies':
-                        return Object.keys(coordenada.dies);
+                        return Object.keys(temperaturas.dies);
                     case 'meses':
-                        return Object.keys(coordenada.meses);
+                        return Object.keys(temperaturas.meses);
                     case 'any':
-                        return Object.keys(coordenada.any);
+                        return Object.keys(temperaturas.any);
                     default:
                         // Si la opción no es reconocida, mostrar todas las horas
-                        return Object.keys(coordenada.hores);
+                        return Object.keys(temperaturas.hores);
                 }
             });
 
             return labels.flat(); // Asegura que la matriz se aplane para obtener una lista plana de temperaturas
-        },
-
-        // ACTUALIZAR MAP PRINCIPAL
-        actualizarMapa(bounds) {
-            // Verifica que bounds sea un array válido y no esté vacío
-            if (Array.isArray(bounds) && bounds.length > 0) {
-                // Combina los límites de todos los rectángulos
-                const combinedBounds = bounds.reduce((combined, current) => {
-                    return combined.extend(current.getNorthEast()).extend(current.getSouthWest());
-                }, L.latLngBounds(bounds[0].getNorthEast(), bounds[0].getSouthWest()));
-
-                // Ajusta los límites del mapa según la combinación de rectángulos
-                this.map.fitBounds(combinedBounds);
-            } else {
-                console.error('Los límites no son válidos o no tienen dimensiones positivas:', bounds);
-                // Puedes manejar el error de alguna manera (por ejemplo, establecer límites predeterminados)
-            }
-        },
-
-        // SLIDER DEBAJO DEL MAPA ?¿
-        iniciarSlide() {
-            // Obtener el elemento del slide y el círculo
-            var slider = document.getElementById("myRange");
-
-            const myIcon = L.icon({
-                iconUrl: 'https://i.pinimg.com/originals/53/db/d1/53dbd1bf62b5db6a79ece78ada8b55de.png',
-                iconSize: [45, 45], // Tamaño del icono
-                iconAnchor: [30, 30], // Punto donde el icono se ancla al mapa
-
-            });
-
-            // Coordenadas para el marcador
-            const markerCoords = [41.38879, 2.15899];
-            // marcador
-            const marker = L.marker(markerCoords, { icon: myIcon }).addTo(this.map);
-
-            // Actualizar la posición del marcador cuando se mueve el slider
-            slider.oninput = () => {
-                var progress = slider.value / 100; // Calcular el progreso basado en el valor del slider
-                var positionIndex = Math.floor(progress * (this.route.length - 1)); // Obtener el índice del punto en la ruta
-
-                this.sliderValue = positionIndex * 10;
-
-                // Mover el marcador a la posición correspondiente en la ruta
-                marker.setLatLng(this.route[positionIndex]);
-
-
-                // Aquí actualizamos el gráfico también
-                //  this.updateChartBasedOnSlider(positionIndex);
-            };
-        },
-
-        // UPDATE DEL GRAFICO DE TEMP AL MOVER EL SLIDER ?¿
-        updateChartBasedOnSlider(positionIndex) {
-            // Aquí determinas qué datos utilizar en el gráfico según la posición del slider
-            // Por ejemplo, si tienes los datos en un arreglo `temperatureData`, puedes actualizar el gráfico así:
-            const newData = this.temperatureData.slice(positionIndex, positionIndex + 4); // Obtener datos de temperatura para 4 puntos
-
-            // Actualizar el gráfico con los nuevos datos de temperatura
-            this.updateChart(newData)
         },
 
         // Actualizar el gráfico TEMP con el filtro seleccionado
@@ -383,7 +353,6 @@ export default {
             this.myChart.update();
             //console.log(labels);
             //console.log("Datos filtrados:", newData);
-
         },
 
         // Función para filtrar los datos y actualizar el gráfico de temp
@@ -391,23 +360,18 @@ export default {
             const filterType = event.target.value;
 
             // Obtener los datos de la ruta seleccionada
-            const selectedRouteData = this.rutaData[this.selectedRoute]?.coordenadas;
+            const selectedRouteData = this.rutaData[this.selectedRoute]?.temperaturas;
 
             // Verificar que exista un tipo de filtro seleccionado y datos de la ruta
             if (filterType && selectedRouteData) {
                 // Verificar que selectedRouteData no sea undefined o null
                 if (Object.keys(selectedRouteData).length > 0) {
-                    const filteredData = Object.values(selectedRouteData).flatMap(coordenada => {
-                        if (coordenada && coordenada[filterType]) {
-                            return Object.entries(coordenada[filterType]).map(([time, temperature]) => {
-                                return { x: time, y: temperature }; // Asegúrate de tener el formato correcto para Chart.js
-                            });
-                        }
-                        return [];
-                    }).flat(); // Aplana el array de arrays
+                    const filteredData = Object.entries(selectedRouteData[filterType]).map(([time, temperature]) => {
+                        return { x: time, y: temperature }; // Asegúrate de tener el formato correcto para Chart.js
+                    });
 
                     // Obtener las etiquetas correspondientes al filtro seleccionado
-                    const labels = this.getLabelsFromCoordinates(selectedRouteData, filterType);
+                    const labels = this.getLabelsFromCoordinates({ [this.selectedRoute]: { temperaturas: selectedRouteData } }, filterType);
                     // Actualizar el gráfico con los datos filtrados y las etiquetas
                     this.updateChart(filteredData, labels);
                 } else {
@@ -422,13 +386,22 @@ export default {
         actualizarRuta(event) {
             if (event && event.target) {
                 this.selectedRoute = event.target.value;
-
-                // RESET EL FILTRO DE TIEMP A HORAS SIEMPRE QUE SE CAMBIA DE AREA
-                this.resetFilter();
-
-                this.filterChartData(event);
+                this.resetFilter(); // Asegúrate de reiniciar el filtro de tiempo
+                this.cargarTemperaturas();
             } else {
                 console.error("Evento no válido");
+            }
+        },
+
+        // CARGAR TEMP EN EL GRAFICO
+        cargarTemperaturas() {
+            const selectedRouteData = this.rutaData[this.selectedRoute];
+            if (selectedRouteData) {
+                const temperaturas = selectedRouteData.temperaturas.hores;
+                const labels = Object.keys(temperaturas);
+                this.updateChart(Object.values(temperaturas), labels);
+            } else {
+                console.error("Datos de ruta no válidos");
             }
         },
 
@@ -532,7 +505,7 @@ export default {
     //CONSOLA
     created() {
         console.log("CREADO");
-        this.getDatosBD();
+        //this.getDatosBD();
     },
 
     mounted() {
@@ -551,7 +524,7 @@ export default {
             data: {
                 labels: [""], // Horas
                 datasets: [{
-                    label: 'Temperatura °C',
+                    label: '',
                     data: [], // Datos iniciales de temperatura
                     fill: false,
                     borderColor: 'rgb(75, 192, 192)',
@@ -582,16 +555,19 @@ export default {
 
 };
 </script>
+
 <script setup>
 // APP BAR
 import DefaultBar from '@/components/appbar.vue'
 </script>
+
 <style>
-.barra{
-  position: sticky;
-  top: 0px;
-  z-index: 10;
+.barra {
+    position: sticky;
+    top: 0px;
+    z-index: 10;
 }
+
 /* Estilos para la leyenda */
 .legend {
     display: flex;
