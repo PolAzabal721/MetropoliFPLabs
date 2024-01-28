@@ -33,7 +33,7 @@ import "leaflet/dist/leaflet.css";
 import "leaflet/dist/leaflet.js";
 import L from "leaflet";
 import "leaflet-draw/dist/leaflet.draw.css";
-import "leaflet-draw/dist/leaflet.draw";
+import "leaflet-draw/dist/leaflet.draw-src";
 
 export default {
     data() {
@@ -41,6 +41,8 @@ export default {
             drawnGeometries: [],
             nombreLugar: '',
             map: null,
+            isCreatingArea: false,
+            drawnItems: null,
         };
     },
     methods: {
@@ -65,9 +67,9 @@ export default {
                 },
                 draw: {
                     polygon: true,
-                    circle: true,
+                    circle: false,
                     rectangle: false,
-                    marker: true,
+                    marker: false,
                     polyline: false,
                     circlemarker: false
                 },
@@ -86,28 +88,48 @@ export default {
                 // Desactivar el control de dibujo después de crear un dibujo
                 this.map.off(L.Draw.Event.CREATED);
             });
-
-            this.limpiarMapa();
         },
 
         // CREAR AREA + NOMBRE
-        crearLugar() {
+        async crearLugar() {
             if (this.nombreLugar !== '' && this.drawnGeometries.length > 0) {
-                // Realizar las acciones necesarias para guardar el lugar con nombre y geometrías
-                console.log('Nombre del lugar:', this.nombreLugar);
-                console.log('Geometrías:', this.drawnGeometries);
+                // Set the flag to indicate that an area creation is in progress
+                this.isCreatingArea = true;
 
-                // Restablecer el campo de texto y las geometrías dibujadas después de la creación
-                this.nombreLugar = '';
-                this.drawnGeometries = [];
+                // Save the area to the database (replace with your actual save method)
+                try {
+                    const areaId = await this.saveAreaToDatabase({
+                        nombre: this.nombreLugar,
+                        geometries: this.drawnGeometries,
+                    });
 
-                // Limpiar el mapa
-                this.limpiarMapa();
+                    // Display a success message with the area name and ID
+                    alert(`Área creada: ${this.nombreLugar}, ID: ${areaId}`);
+                    console.log(this.drawnGeometries);
+                    // Reset the form and map
+                    this.nombreLugar = '';
+                    this.drawnGeometries = [];
+                    this.limpiarMapa();
+                } catch (error) {
+                    console.error('Error saving area:', error);
+                    alert('Error al guardar el área');
+                }
+
+                this.isCreatingArea = false;
             }
+        },
 
-            // hacer SELECT y ver si ya hay un nombre igual
-
-            // realizar la inserción en la base de datos si no coinciden los nombres
+        // GUARDAR NOMBRE DE AREA + CORDENADAS (INSERT EN BD)
+        async saveAreaToDatabase(area) {
+            // Simulate an asynchronous API call to save the area and retrieve the ID
+            // Replace this with your actual API call
+            return new Promise((resolve, reject) => {
+                setTimeout(() => {
+                    // Simulate a successful response with the area ID
+                    const areaId = Math.floor(Math.random() * 500) + 1;
+                    resolve(areaId);
+                }, 500);
+            });
         },
 
         // LIMPIAMOS MAPA
@@ -120,8 +142,9 @@ export default {
                     }
                 });
 
-               
-
+                // Inicializa Dibujos para el mapa
+                const drawnItems = new L.FeatureGroup();
+                this.map.addLayer(drawnItems);
                 this.map.on(L.Draw.Event.CREATED, (event) => {
                     const layer = event.layer;
                     drawnItems.addLayer(layer);
@@ -133,18 +156,6 @@ export default {
                     // Desactivar el control de dibujo después de crear un dibujo
                     this.map.off(L.Draw.Event.CREATED);
                 });
-
-
-            }
-
-        },
-
-        // beforeDestroy del mapa
-        beforeDestroy() {
-            // Desvincular eventos del control de dibujo
-            if (this.map && this.drawControl) {
-                this.map.off(L.Draw.Event.CREATED);
-                this.map.removeControl(this.drawControl);
             }
         },
 
