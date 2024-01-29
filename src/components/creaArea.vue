@@ -43,7 +43,7 @@ export default {
       isCreatingArea: false,
       drawnItems: null,
       drawControl: null,
-      areaCreated :false,
+      areaCreated: false,
 
     };
   },
@@ -80,7 +80,7 @@ export default {
 
       // Registra el evento L.Draw.Event.CREATED solo una vez aquí
       this.map.on(L.Draw.Event.CREATED, (event) => {
-      if (!this.areaCreated) {
+        if (!this.areaCreated) {
           const layer = event.layer;
           drawnItems.addLayer(layer);
 
@@ -91,6 +91,16 @@ export default {
           this.drawControl._toolbars.draw.disable();
           this.areaCreated = true;
         }
+      });
+
+      // Registra el evento L.Draw.Event.EDITED
+      this.map.on(L.Draw.Event.EDITED, (event) => {
+        // Actualizar las coordenadas en drawnGeometries después de la edición
+        event.layers.eachLayer((layer) => {
+          this.drawnGeometries = [];
+          const geojson = layer.toGeoJSON();
+          this.saveGeometry(geojson);
+        });
       });
     },
 
@@ -135,7 +145,7 @@ export default {
         }
         this.limpiarMapa();
         this.isCreatingArea = false;
-        
+
       }
     },
 
