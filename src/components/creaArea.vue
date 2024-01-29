@@ -43,6 +43,8 @@ export default {
       isCreatingArea: false,
       drawnItems: null,
       drawControl: null,
+      areaCreated :false,
+
     };
   },
   methods: {
@@ -76,21 +78,18 @@ export default {
 
       this.map.addControl(this.drawControl);
 
-
-
-      // Flag to track whether an area has been created
-      let areaCreated = false;
-
       // Registra el evento L.Draw.Event.CREATED solo una vez aquí
       this.map.on(L.Draw.Event.CREATED, (event) => {
-        if (!areaCreated) {
+      if (!this.areaCreated) {
           const layer = event.layer;
           drawnItems.addLayer(layer);
 
           const geojson = layer.toGeoJSON();
           this.saveGeometry(geojson);
 
-          areaCreated = true;
+          // Disable the drawing controls permanently after creating one figure
+          this.drawControl._toolbars.draw.disable();
+          this.areaCreated = true;
         }
       });
     },
@@ -106,6 +105,8 @@ export default {
 
         // Reiniciar el valor de drawnGeometries
         this.drawnGeometries = [];
+        this.nombreLugar = "";
+        this.areaCreated = false;
       }
     },
 
@@ -134,6 +135,7 @@ export default {
         }
         this.limpiarMapa();
         this.isCreatingArea = false;
+        
       }
     },
 
