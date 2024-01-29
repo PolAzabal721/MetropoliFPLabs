@@ -90,8 +90,6 @@ export default {
           const geojson = layer.toGeoJSON();
           this.saveGeometry(geojson);
 
-          // Disable the drawing controls permanently after creating one figure
-          this.drawControl._toolbars.draw.disable();
           areaCreated = true;
         }
       });
@@ -113,29 +111,32 @@ export default {
 
     // CREAR AREA + NOMBRE
     async crearLugar() {
-      if (!this.isCreatingArea && this.nombreLugar !== '' && this.drawnGeometries.length === 0) {
-        // Indicar que se está creando un área
+      if (this.nombreLugar !== "" && this.drawnGeometries.length > 0) {
+        // indicar que se está creando un área
         this.isCreatingArea = true;
 
         // Guardar el área en la base de datos (reemplazar con tu método de guardado real)
         try {
-          const areaId = await insertarArea(this.drawnGeometries, this.nombreLugar);
+          const areaId = await insertarArea(
+            this.drawnGeometries,
+            this.nombreLugar
+          );
 
           // Mostrar un mensaje de éxito con el nombre
           alert(`Área creada: ${this.nombreLugar}`);
           console.log(this.drawnGeometries);
           // Restablecer el formulario y el mapa
-          this.nombreLugar = '';
+          this.nombreLugar = "";
           this.drawnGeometries = [];
         } catch (error) {
-          console.error('Error saving area:', error);
-          alert('Error al guardar el área');
+          console.error("Error saving area:", error);
+          alert("Error al guardar el área");
         }
-
         this.limpiarMapa();
         this.isCreatingArea = false;
       }
     },
+
     // GUARDAS DIBUJOS
     saveGeometry(geojson) {
       // Guardar solo las coordenadas en el array
