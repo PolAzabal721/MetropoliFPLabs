@@ -7,15 +7,8 @@
         <v-layout class="container"> </v-layout>
         <!-- MAPA PRINCIPAL -->
         <v-card class="mx-auto slidecontainer" height="800" width="800">
-          <v-text-field
-            v-model="nombreLugar"
-            label="Intoduce un nombre para el area"
-          ></v-text-field>
-          <v-btn
-            class="ml-04"
-            @click="crearLugar"
-            :disabled="nombreLugar === '' || drawnGeometries.length === 0"
-          >
+          <v-text-field v-model="nombreLugar" label="Intoduce un nombre para el area"></v-text-field>
+          <v-btn class="ml-04" @click="crearLugar" :disabled="nombreLugar === '' || drawnGeometries.length === 0">
             Crear
           </v-btn>
           <br /><br />
@@ -83,13 +76,24 @@ export default {
 
       this.map.addControl(this.drawControl);
 
+
+
+      // Flag to track whether an area has been created
+      let areaCreated = false;
+
       // Registra el evento L.Draw.Event.CREATED solo una vez aquí
       this.map.on(L.Draw.Event.CREATED, (event) => {
-        const layer = event.layer;
-        drawnItems.addLayer(layer);
+        if (!areaCreated) {
+          const layer = event.layer;
+          drawnItems.addLayer(layer);
 
-        const geojson = layer.toGeoJSON();
-        this.saveGeometry(geojson);
+          const geojson = layer.toGeoJSON();
+          this.saveGeometry(geojson);
+
+          // Disable the drawing controls permanently after creating one figure
+          this.drawControl._toolbars.draw.disable();
+          areaCreated = true;
+        }
       });
     },
 
@@ -109,45 +113,29 @@ export default {
 
     // CREAR AREA + NOMBRE
     async crearLugar() {
-      if (this.nombreLugar !== "" && this.drawnGeometries.length > 0) {
-        // indicar que se está creando un área
+      if (!this.isCreatingArea && this.nombreLugar !== '' && this.drawnGeometries.length === 0) {
+        // Indicar que se está creando un área
         this.isCreatingArea = true;
 
         // Guardar el área en la base de datos (reemplazar con tu método de guardado real)
         try {
-          const areaId = await insertarArea(
-            this.drawnGeometries,
-            this.nombreLugar
-          );
+          const areaId = await insertarArea(this.drawnGeometries, this.nombreLugar);
 
           // Mostrar un mensaje de éxito con el nombre
           alert(`Área creada: ${this.nombreLugar}`);
           console.log(this.drawnGeometries);
           // Restablecer el formulario y el mapa
-          this.nombreLugar = "";
+          this.nombreLugar = '';
           this.drawnGeometries = [];
         } catch (error) {
-          console.error("Error saving area:", error);
-          alert("Error al guardar el área");
+          console.error('Error saving area:', error);
+          alert('Error al guardar el área');
         }
+
         this.limpiarMapa();
         this.isCreatingArea = false;
       }
     },
-
-    // GUARDAR ID + NOMBRE DE AREA + CORDENADAS (INSERT EN BD)
-    async saveAreaToDatabase(area) {
-      // Simular una llamada asíncrona a la API para guardar el área y obtener el ID
-      // Reemplazar esto con tu llamada API real
-      return new Promise((resolve, reject) => {
-        setTimeout(() => {
-          // Simular una respuesta exitosa con el ID del área
-          const areaId = Math.floor(Math.random() * 500) + 1;
-          resolve(areaId);
-        }, 500);
-      });
-    },
-
     // GUARDAS DIBUJOS
     saveGeometry(geojson) {
       // Guardar solo las coordenadas en el array
