@@ -19,6 +19,7 @@
                       prepend-inner-icon="mdi-lock-outline" label="Contraseña" required
                       :append-icon="showPassword ? 'mdi-eye' : 'mdi-eye-off'" @click:append="togglePasswordVisibility()">
         </v-text-field>
+        <v-text-field clearable v-model="telefono" prepend-inner-icon="mdi-email" label="Número de Teléfono" required :rules="telefonoRules"></v-text-field>
         <v-select :items="companies" v-model="companyName" label="Nombre de la empresa"></v-select>
         <button type="submit">Registrarse</button>
         <p @click="showRegister = false" class="register-link">Inicia Sesión</p>
@@ -36,14 +37,18 @@ export default {
     return {
       username: "",
       password: "",
+      telefono: "",
       showPassword: false,
       socket: null,
       showRegister: false, 
       fullName: "", 
       email: "",
       companyName: "", 
-      companies: ["Microsoft", "Google", "Apple"]
-
+      companies: ["Microsoft", "Google", "Apple"],
+      telefonoRules: [
+        v => !!v || 'El número de teléfono es requerido',
+        v => (/^\d+$/g.test(v) && v.length === 9) || 'Por favor ingresa un número de teléfono válido',
+      ],
     };
   },
   created() {
