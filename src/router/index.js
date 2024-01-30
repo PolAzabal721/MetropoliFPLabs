@@ -47,6 +47,14 @@ const routes = [
   
     },
 
+     // CREAR LOGIN
+     {
+      path: '/login/',
+      component: () => import('@/components/login.vue'),
+      meta: { title: 'Sea Shepherd - Login'}
+  
+    },
+
   // APPABAR DE TODO EL COD
   {
     path: '/appbar/',
