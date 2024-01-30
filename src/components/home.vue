@@ -1,8 +1,7 @@
 <template>
     <default-bar />
     <v-container class="container">
-        <v-row>
-        </v-row>
+        
         <v-row>
             <v-col cols="3"></v-col>
             <v-col cols="6"> <v-img class="logoPrincipal" src="@/assets/logo2.svg"></v-img></v-col>

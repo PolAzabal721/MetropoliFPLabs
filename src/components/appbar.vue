@@ -1,15 +1,12 @@
 <template>
   <v-toolbar class="barra"
-    image="https://s1.eestatic.com/2022/12/09/enclave-ods/semanales/724687779_229350113_1706x960.jpg"
-  >
-    <div
-      style="
+    image="https://s1.eestatic.com/2022/12/09/enclave-ods/semanales/724687779_229350113_1706x960.jpg">
+    <div style="
         display: flex;
         justify-content: space-between;
         align-items: center;
         width: 100%;
-      "
-    >
+      ">
       <div style="display: flex; align-items: center">
         <router-link :to="'/home'" class="titulo">
           <v-toolbar-title class="mx-5 titulo">Sea Shepherd</v-toolbar-title>
@@ -17,13 +14,11 @@
         <v-btn :class="estatMotorClass">{{ motor }}</v-btn>
       </div>
       <div style="width: 50%">
-        <router-link :to="'/datos'" class="colorBTN"> Dades </router-link>
-        <router-link :to="'/camara'" class="colorBTN"> Càmera </router-link>
-        <router-link :to="'/ubicacion'" class="colorBTN"> Ubicació </router-link>
-        <router-link :to="'/editarArea'" class="colorBTN"> Editar area </router-link>
-        <router-link :to="'/asignarSubmarino'" class="colorBTN"> Asignar Submarino </router-link>
-        <router-link :to="'/creaArea'" class="colorBTN"> Crear area </router-link>
-        <router-link :to="'/informes'" class="colorBTN"> Informes </router-link>
+        <router-link :to="'/datos'" class="colorBTN"> Dades</router-link>
+        <router-link :to="'/camara'" class="colorBTN"> Càmera</router-link>
+        <router-link :to="'/ubicacion'" class="colorBTN"> Ubicació</router-link>
+        <router-link :to="'/areasHome'" class="colorBTN"> Configurar áreas</router-link>
+        <router-link :to="'/informes'" class="colorBTN"> Informes</router-link>
       </div>
     </div>
   </v-toolbar>

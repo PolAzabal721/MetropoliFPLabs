@@ -6,14 +6,13 @@
       <v-container fluid>
         <v-layout class="container"> </v-layout>
         <!-- MAPA PRINCIPAL -->
-        <v-card class="mx-auto slidecontainer" height="800" width="800">
+        <v-card class="mx-auto" height="800" width="800">
           <v-text-field v-model="nombreLugar" label="Intoduce un nombre para el area"></v-text-field>
           <v-btn class="ml-4 d-flex" @click="crearLugar" :disabled="nombreLugar === '' || drawnGeometries.length === 0">
             Crear
           </v-btn>
           <br/>
-
-          <v-card class="slidecontainer" height="700" width="800">
+          <v-card height="700" width="800">
             <div id="map" style="height: 650px; width: 800px"></div>
           </v-card>
         </v-card>

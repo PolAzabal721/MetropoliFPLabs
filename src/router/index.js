@@ -37,10 +37,18 @@ const routes = [
     component: () => import('@/components/informes.vue'),
     meta: { title: 'Sea Shepherd - Informes' }
 
-  }, 
+  },
 
-    // CREAR AREAS (COMO LA RUMBA)
-    {
+  // HOME AREAS ( ADMINISTRA LA CREACION + EDICION + ELIMINACION DE AREAS )
+  {
+    path: '/areasHome/',
+    component: () => import('@/components/areasHome.vue'),
+    meta: { title: 'Sea Shepherd - Areas' }
+
+  },
+
+  // CREAR AREAS (COMO LA RUMBA)
+  {
     path: '/creaArea/',
     component: () => import('@/components/creaArea.vue'),
     meta: { title: 'Sea Shepherd - Crear areas' }
@@ -55,7 +63,7 @@ const routes = [
 
   },
 
-  // EMPAREJAR AREA CON SUBMARINO
+  // EMPAREJAR AREA CON SUBMARINOS
   {
     path: '/asignarSubmarino/',
     component: () => import('@/components/asignarSubmarino.vue'),
@@ -63,13 +71,13 @@ const routes = [
 
   },
 
-     // CREAR LOGIN
-     {
-      path: '/',
-      component: () => import('@/components/login.vue'),
-      meta: { title: 'Sea Shepherd - Login'}
-  
-    },
+  // CREAR LOGIN
+  {
+    path: '/',
+    component: () => import('@/components/login.vue'),
+    meta: { title: 'Sea Shepherd - Login' }
+
+  },
 
   // APPABAR DE TODO EL COD
   {

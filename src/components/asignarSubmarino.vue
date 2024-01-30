@@ -7,26 +7,28 @@
         <v-row>
           <v-col cols="6">
             <!-- MAPA PRINCIPAL -->
-            <v-card class="mx-auto slidecontainer" height="750" width="800">
-              <v-select
-              id="select-ruta"
-                v-model="nombreLugarBusqueda"
-                :items="areas"
-                label="Selecciona el área que quieras editar"
-                item-text="nombre"
-                item-value="id"
-              ></v-select>
+            <v-card class="mx-auto" height="750" width="800">
+              <v-select id="select-ruta" v-model="nombreLugarBusqueda" :items="areas"
+                label="Selecciona el área que quieras editar" item-text="nombre" item-value="id"></v-select>
               <div id="map" style="height: 650px; width: 800px"></div>
             </v-card>
           </v-col>
           <v-col cols="6">
-            <!-- GRÀFICS -->
-            <div class="scroll-container">
-              <v-card class="mx-auto" height="auto" width="900">
-                <!-- GRAFICO TEMPERATURA -->
-                <v-card height="525" width="900"> </v-card>
-              </v-card>
-            </div>
+            <!-- SUBMARINOS -->
+            <v-card class="mx-auto slidecontainer" height="750" width="800">
+              <v-row>
+                <v-col cols="3" v-for="(submarino, index) in submarinos" :key="index">
+                  <v-card height="125" width="150" class="cardSubmarino "
+                    :style="{ left: submarino.x + 'px', top: submarino.y + 'px' }"
+                    @mousedown.prevent="startDragging($event, index)">
+                    <div class="d-flex flex-column align-center justify-center">
+                      <v-img class="fotoSubmarino" src="../assets/submarinoDibujo.png"></v-img>
+                      <p class="font-weight-bold">{{ submarino.name }}</p>
+                    </div>
+                  </v-card>
+                </v-col>
+              </v-row>
+            </v-card>
           </v-col>
         </v-row>
       </v-container>
@@ -35,7 +37,6 @@
 </template>
 
 <script>
-import Chart from "chart.js/auto";
 import "leaflet/dist/leaflet.css";
 import "leaflet/dist/leaflet.js";
 import L from "leaflet";
@@ -46,7 +47,16 @@ import { fetchAreas } from "@/services/connectionManager.js";
 export default {
   data() {
     return {
-        areas: [],
+      nombreLugarBusqueda: '',
+      areas: [],
+      actualizarRuta: [],
+      submarinos: [
+        { name: 'Submarino 1', x: 0, y: 0 },
+        { name: 'Submarino 2', x: 0, y: 0 },
+        { name: 'Submarino 3', x: 0, y: 0 },
+        { name: 'Submarino 4', x: 0, y: 0 },
+      ],
+      draggingIndex: -1,
       rutaData: {
         area_1: {
           coordenadas: [
@@ -256,7 +266,6 @@ export default {
     // CARGAR RUTA MAPA PRINCIPAL
     cargarRuta(event) {
       const rutaSeleccionada = event.target.value;
-
       // Verificar si la opción seleccionada es "Buida"
       if (rutaSeleccionada === "Buida") {
         // Limpiar el mapa
@@ -306,6 +315,35 @@ export default {
         );
       }
     },
+
+    // Método para iniciar el arrastre al hacer clic en un elemento
+    startDragging(event, index) {
+      this.draggingIndex = index;
+      this.startX = event.clientX;
+      this.startY = event.clientY;
+      document.addEventListener('mousemove', this.handleDragging);
+      document.addEventListener('mouseup', this.stopDragging);
+    },
+
+    // Método para manejar el movimiento del mouse durante el arrastre
+    handleDragging(event) {
+      if (this.draggingIndex !== -1) {
+        const deltaX = event.clientX - this.startX;
+        const deltaY = event.clientY - this.startY;
+        this.submarinos[this.draggingIndex].x += deltaX;
+        this.submarinos[this.draggingIndex].y += deltaY;
+        this.startX = event.clientX;
+        this.startY = event.clientY;
+      }
+    },
+
+    // Método para detener el arrastre al soltar el botón del mouse
+    stopDragging() {
+      document.removeEventListener('mousemove', this.handleDragging);
+      document.removeEventListener('mouseup', this.stopDragging);
+      this.draggingIndex = -1;
+    },
+
   },
 
   //
@@ -316,7 +354,7 @@ export default {
     console.log("CREADO");
     try {
       this.areas = await fetchAreas();
-        console.log(this.areas);
+      console.log(this.areas);
     } catch (error) {
       console.error("Error fetching areas:", error);
       // Manejar el error de acuerdo a tus necesidades
@@ -382,5 +420,26 @@ import DefaultBar from "@/components/appbar.vue";
   position: relative;
   width: 80%;
   margin: auto;
+}
+
+.mx-auto {
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.slidecontainer {
+  background-color: #f1f1f1 !important;
+  border: 1px solid #ccc !important;
+  padding: 20px !important;
+}
+
+.cardSubmarino {
+  cursor: grab !important;
+
+}
+
+.fotoSubmarino {
+  width: 75px !important;
+  height: auto;
 }
 </style>

@@ -8,7 +8,7 @@
                 <v-row>
                     <v-col cols="6">
                         <!-- MAPA PRINCIPAL -->
-                        <v-card class="mx-auto slidecontainer " height="750" width="800">
+                        <v-card class="mx-auto " height="750" width="800">
                             <v-text-field v-model="nombreLugar" label="Intoduce el nombre del area que quieras ver"></v-text-field>
                             <select id="select-ruta">
                                 <option>Buida</option>
@@ -67,6 +67,8 @@ export default {
             especieVisible: false,
             especie: '',
             dadesGra: [],
+            nombreLugar: '',
+            
 
             // áreas
             rutaData: {

@@ -2,7 +2,6 @@
   <div class="login-container" >
     <div class="login">
       <img src="../assets/logo2.svg" alt="Logo" class="logo"> <!-- Añade esta línea -->
-      <h1>Iniciar sesión</h1>
       <form @submit.prevent="login" v-if="!showRegister">
         <v-text-field clearable  v-model="username" prepend-inner-icon="mdi-email" label="Correo" required></v-text-field>
         <v-text-field clearable  v-model="password" :type="showPassword ? 'text' : 'password'"
