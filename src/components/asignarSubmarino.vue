@@ -9,14 +9,15 @@
                     <v-col cols="6">
                         <!-- MAPA PRINCIPAL -->
                         <v-card class="mx-auto slidecontainer " height="750" width="800">
-                            <v-text-field v-model="nombreLugar" label="Intoduce el nombre del area que quieras ver"></v-text-field>
+                            <v-text-field 
+                                label="Intoduce el nombre del area que quieras emparejar"></v-text-field>
                             <select id="select-ruta">
                                 <option>Buida</option>
                                 <option value="area_1">Àrea 1</option>
                                 <option value="area_2">Àrea 2</option>
                                 <option value="area_3">Àrea 3</option>
                             </select>
-                            
+
                             <div id="map" style="height: 650px; width: 800px;"></div>
                         </v-card>
                     </v-col>
@@ -26,15 +27,7 @@
                             <v-card class="mx-auto" height="auto" width="900">
                                 <!-- GRAFICO TEMPERATURA -->
                                 <v-card height="525" width="900">
-                                    <h1 class="d-flex align-center justify-center">Temperatura °C</h1>
-                                    <canvas class="mx-auto" id="myChart" width="850" height="425"></canvas>
-                                    <br>
-                                    <select id="hour-filter">
-                                        <option value="hores">Filtrar Hores</option>
-                                        <option value="dies">Filtrar Dies</option>
-                                        <option value="meses">Filtrar Mesos</option>
-                                        <option value="any">Filtrar Anys</option>
-                                    </select>
+                                  
                                 </v-card>
                             </v-card>
                         </div>
@@ -59,15 +52,6 @@ export default {
 
     data() {
         return {
-            route: [],
-            sliderValue: 0,
-            temperatureData: [],
-            myChartPeces: null,
-            temperatura: 0,
-            especieVisible: false,
-            especie: '',
-            dadesGra: [],
-
             // áreas
             rutaData: {
                 "area_1": {
@@ -238,16 +222,6 @@ export default {
         };
     },
     methods: {
-        // RESET EL FILTRO DE TIEMP A HORAS SIEMPRE QUE SE CAMBIA DE AREA
-        resetFilter() {
-            // Reiniciar el filtro hour-filter a la primera opción
-            const hourFilter = document.getElementById("hour-filter");
-            hourFilter.selectedIndex = 0;
-
-            // Reiniciar las coordenadas y actualizar el mapa
-            this.resetCoordinatesAndMap();
-        },
-
         // RESETEAR EL MAPA 
         resetCoordinatesAndMap() {
             // Limpiar el mapa
@@ -288,6 +262,7 @@ export default {
 
         // CARGAR RUTA MAPA PRINCIPAL
         cargarRuta(event) {
+           
             const rutaSeleccionada = event.target.value;
 
             // Verificar si la opción seleccionada es "Buida"
@@ -337,117 +312,7 @@ export default {
                 console.error('Los límites no son válidos o no tienen dimensiones positivas:', bounds);
             }
         },
-
-        // AYUDA CON EL FILTRO DE TIEMPO (BASICAMENTE FUNCIONA GRACIAS A ESTO) 
-        actualizarRuta(event) {
-            if (event && event.target) {
-                this.selectedRoute = event.target.value;
-                this.resetFilter(); // Asegúrate de reiniciar el filtro de tiempo
-                this.cargarTemperaturas();
-            } else {
-                console.error("Evento no válido");
-            }
-        },
-
-        // CREAR GRAFICO TEMP
-        initGrafico() {
-            // Crear el gráfico y guardarlo como una propiedad del componente
-            this.myChart = new Chart(document.getElementById('myChart'), {
-                type: 'line',
-                data: {
-                    labels: [""], // Horas
-                    datasets: [{
-                        label: '',
-                        data: [], // Datos iniciales de temperatura
-                        fill: false,
-                        borderColor: 'rgb(75, 192, 192)',
-                        tension: 0.1
-                    }]
-                },
-                options: {
-                    scales: {
-                        y: {
-                            beginAtZero: true
-                        }
-                    }
-                }
-            });
-        },
-
-        // LABELS DE LA TEMP
-        getLabelsFromCoordinates(coordenadas, filtroSeleccionado) {
-            const keys = Object.keys(coordenadas);
-            const labels = keys.map(key => {
-                const temperaturas = coordenadas[key].temperaturas;
-
-                // Obtener las etiquetas según la opción de filtro seleccionada
-                switch (filtroSeleccionado) {
-                    case 'hores':
-                        return Object.keys(temperaturas.hores);
-                    case 'dies':
-                        return Object.keys(temperaturas.dies);
-                    case 'meses':
-                        return Object.keys(temperaturas.meses);
-                    case 'any':
-                        return Object.keys(temperaturas.any);
-                    default:
-                        // Si la opción no es reconocida, mostrar todas las horas
-                        return Object.keys(temperaturas.hores);
-                }
-            });
-
-            return labels.flat(); // Asegura que la matriz se aplane para obtener una lista plana de temperaturas
-        },
-
-        // Actualizar el gráfico TEMP con el filtro seleccionado
-        updateChart(newData, labels) {
-            const hourFilter = document.getElementById("hour-filter");
-            hourFilter.addEventListener("change", this.filterChartData.bind(this));
-            this.myChart.data.datasets[0].data = newData;
-            this.myChart.data.labels = labels;
-            this.myChart.update();
-            //console.log(labels);
-            //console.log("Datos filtrados:", newData);
-        },
-
-        // Función para filtrar los datos y actualizar el gráfico de temp
-        filterChartData(event) {
-            const filterType = event.target.value;
-
-            // Obtener los datos de la ruta seleccionada
-            const selectedRouteData = this.rutaData[this.selectedRoute]?.temperaturas;
-
-            // Verificar que exista un tipo de filtro seleccionado y datos de la ruta
-            if (filterType && selectedRouteData) {
-                // Verificar que selectedRouteData no sea undefined o null
-                if (Object.keys(selectedRouteData).length > 0) {
-                    const filteredData = Object.entries(selectedRouteData[filterType]).map(([time, temperature]) => {
-                        return { x: time, y: temperature }; // Asegúrate de tener el formato correcto para Chart.js
-                    });
-
-                    // Obtener las etiquetas correspondientes al filtro seleccionado
-                    const labels = this.getLabelsFromCoordinates({ [this.selectedRoute]: { temperaturas: selectedRouteData } }, filterType);
-                    // Actualizar el gráfico con los datos filtrados y las etiquetas
-                    this.updateChart(filteredData, labels);
-                } else {
-                    console.error("La ruta seleccionada no tiene datos válidos");
-                }
-            } else {
-                console.error("Datos de ruta no válidos");
-            }
-        },
-
-        // CARGAR TEMP EN EL GRAFICO
-        cargarTemperaturas() {
-            const selectedRouteData = this.rutaData[this.selectedRoute];
-            if (selectedRouteData) {
-                const temperaturas = selectedRouteData.temperaturas.hores;
-                const labels = Object.keys(temperaturas);
-                this.updateChart(Object.values(temperaturas), labels);
-            } else {
-                console.error("Datos de ruta no válidos");
-            }
-        },
+    
     },
 
     // 
@@ -469,15 +334,11 @@ export default {
 
         // INICIAR MAPA
         this.initMapPrincipal();
-
-        // KNICAR EL GRAFICO DE TEMP
-        this.initGrafico();
     },
 
     updated() {
         console.log("UPDATED");
     },
-
 };
 </script>
 

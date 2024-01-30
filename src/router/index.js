@@ -6,28 +6,28 @@ const routes = [
   {
     path: '/',
     component: () => import('@/components/home.vue'),
-    meta: { title: 'Sea Shepherd - Home'}
+    meta: { title: 'Sea Shepherd - Home' }
   },
 
   // INFO GENERAL (DATOS)
   {
     path: '/datos/',
     component: () => import('@/components/datos.vue'),
-    meta: { title: 'Sea Shepherd - Dades'}
+    meta: { title: 'Sea Shepherd - Dades' }
   },
 
   // CAMARA
   {
     path: '/camara/',
     component: () => import('@/components/camara.vue'),
-    meta: { title: 'Sea Shepherd - Càmera'}
+    meta: { title: 'Sea Shepherd - Càmera' }
   },
 
   // UBI DEL ROBOT
   {
     path: '/ubicacion/',
     component: () => import('@/components/ubicacion.vue'),
-    meta: { title: 'Sea Shepherd - Ubicació'}
+    meta: { title: 'Sea Shepherd - Ubicació' }
 
   },
 
@@ -35,17 +35,33 @@ const routes = [
   {
     path: '/informes/',
     component: () => import('@/components/informes.vue'),
-    meta: { title: 'Sea Shepherd - Informes'}
+    meta: { title: 'Sea Shepherd - Informes' }
 
-  },
+  }, 
 
     // CREAR AREAS (COMO LA RUMBA)
     {
-      path: '/creaArea/',
-      component: () => import('@/components/creaArea.vue'),
-      meta: { title: 'Sea Shepherd - Crear areas'}
-  
-    },
+    path: '/creaArea/',
+    component: () => import('@/components/creaArea.vue'),
+    meta: { title: 'Sea Shepherd - Crear areas' }
+
+  },
+
+  // EDITAR AREAS 
+  {
+    path: '/editarArea/',
+    component: () => import('@/components/editarArea.vue'),
+    meta: { title: 'Sea Shepherd - Editar areas' }
+
+  },
+
+  // EMPAREJAR AREA CON SUBMARINO
+  {
+    path: '/asignarSubmarino/',
+    component: () => import('@/components/asignarSubmarino.vue'),
+    meta: { title: 'Sea Shepherd - Emparejar areas' }
+
+  },
 
      // CREAR LOGIN
      {
