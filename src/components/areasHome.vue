@@ -62,11 +62,6 @@ import DefaultBar from "@/components/appbar.vue";
 </script>
 
 <style>
-.barra {
-    position: sticky;
-    top: 0px;
-    z-index: 1;
-}
 
 .background-image {
     position: absolute;

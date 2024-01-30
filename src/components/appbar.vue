@@ -1,5 +1,5 @@
 <template>
-  <v-toolbar class="barra"
+  <v-toolbar
     image="https://s1.eestatic.com/2022/12/09/enclave-ods/semanales/724687779_229350113_1706x960.jpg">
     <div style="
         display: flex;
@@ -26,8 +26,8 @@
 
 <style>
 .titulo {
-  font-size: 24px;
-  font-weight: bold;
+  font-size: 24px !important;
+  font-weight: bold !important;
   color: white;
   text-decoration: none;
 }

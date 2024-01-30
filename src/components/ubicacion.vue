@@ -100,18 +100,4 @@ export default {
 import DefaultBar from "@/components/appbar.vue";
 </script>
 <style>
-.titulo {
-  font-size: 24px;
-  font-weight: bold;
-  color: white;
-}
-
-.menu {
-  color: white;
-}
-
-.custom-app-bar {
-  padding: 10px;
-  box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.2);
-}
 </style>

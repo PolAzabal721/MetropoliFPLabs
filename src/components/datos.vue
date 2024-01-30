@@ -140,15 +140,6 @@ import DefaultBar from "@/components/appbar.vue";
 </script>
 
 <style>
-.container {
-  background-color: rgb(255, 255, 255);
-}
-
-.custom-app-bar {
-  padding: 10px;
-  box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.2);
-}
-
 /* Estilos para el v-card-text */
 .vCardText {
   font-family: Arial, sans-serif;

@@ -488,12 +488,6 @@ import DefaultBar from '@/components/appbar.vue'
 </script>
 
 <style>
-.barra {
-    position: sticky;
-    top: 0px;
-    z-index: 10;
-}
-
 /* Estilos para la leyenda */
 .legend {
     display: flex;
