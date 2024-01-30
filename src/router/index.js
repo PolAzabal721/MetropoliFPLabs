@@ -4,7 +4,7 @@ import { createRouter, createWebHashHistory } from 'vue-router'
 const routes = [
   // INICIO
   {
-    path: '/',
+    path: '/home/',
     component: () => import('@/components/home.vue'),
     meta: { title: 'Sea Shepherd - Home' }
   },
@@ -65,7 +65,7 @@ const routes = [
 
      // CREAR LOGIN
      {
-      path: '/login/',
+      path: '/',
       component: () => import('@/components/login.vue'),
       meta: { title: 'Sea Shepherd - Login'}
   

@@ -53,8 +53,20 @@ export async function register(nom, correu, contra, nom_empresa) {
         console.error('Error en la solicitud de registro:', error);
                 throw error;
     }
-    
+}
 
-    
-
+export async function fetchAreas() {
+    try {
+        const response = await fetch('http://localhost:3169/getareas');
+        if (!response.ok) {
+            throw new Error('Error getting areas');
+        }
+        const areas = await response.json();
+        // Aquí puedes manejar la respuesta como mejor te convenga
+        console.log('Áreas obtenidas:', areas);
+        return areas;
+    } catch (error) {
+        console.error('Error fetching areas:', error);
+        throw error; // Puedes relanzar el error si lo necesitas en el código que llame a esta función
+    }
 }

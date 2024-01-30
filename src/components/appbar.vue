@@ -11,7 +11,7 @@
       "
     >
       <div style="display: flex; align-items: center">
-        <router-link :to="'/'" class="titulo">
+        <router-link :to="'/home'" class="titulo">
           <v-toolbar-title class="mx-5 titulo">Sea Shepherd</v-toolbar-title>
         </router-link>
         <v-btn :class="estatMotorClass">{{ motor }}</v-btn>
@@ -21,7 +21,7 @@
         <router-link :to="'/camara'" class="colorBTN"> Càmera </router-link>
         <router-link :to="'/ubicacion'" class="colorBTN"> Ubicació </router-link>
         <router-link :to="'/editarArea'" class="colorBTN"> Editar area </router-link>
-        <router-link :to="'/asignarSubmarino'" class="colorBTN"> asignarSubmarino </router-link>
+        <router-link :to="'/asignarSubmarino'" class="colorBTN"> Asignar Submarino </router-link>
         <router-link :to="'/creaArea'" class="colorBTN"> Crear area </router-link>
         <router-link :to="'/informes'" class="colorBTN"> Informes </router-link>
       </div>
@@ -38,7 +38,8 @@
 }
 
 .colorBTN {
-  background-color: yellow;
+  background-color: rgb(0, 255, 115);
+  border: 1px solid black;
   font-weight: bold;
   color: black;
   padding: 5px;

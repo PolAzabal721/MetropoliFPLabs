@@ -1,6 +1,7 @@
 <template>
   <div class="login-container" >
     <div class="login">
+      <img src="../assets/logo2.svg" alt="Logo" class="logo"> <!-- Añade esta línea -->
       <h1>Iniciar sesión</h1>
       <form @submit.prevent="login" v-if="!showRegister">
         <v-text-field clearable  v-model="username" prepend-inner-icon="mdi-email" label="Correo" required></v-text-field>
@@ -62,7 +63,7 @@ export default {
         const result = await register(this.fullName, this.email, this.password, this.companyName);
         console.log('Registro exitoso:', result);
         window.alert("Te has registrado correctamente");
-        this.$router.push('/');
+        this.$router.push('/home');
       } catch (error) {
         console.error('Error en el registro:', error);
       }
@@ -74,7 +75,7 @@ export default {
   mounted() {
     this.socket.on('RespuestaLogin', (loginData) => {
       if (loginData.authorization) {
-        this.$router.push('/');
+        this.$router.push('/home');
       } else {
         alert("Nombre de usuario o contraseña incorrectos");
       }
@@ -85,12 +86,14 @@ export default {
 
 <style scoped>
 .login-container {
+  background-image: url('../assets/background-login.jpg'); /* Asegúrate de que la ruta a la imagen es correcta */
+  background-size: cover; /* Esto hará que la imagen cubra todo el contenedor */
+  background-position: center; /* Esto centrará la imagen en el contenedor */
   display: flex;
   justify-content: center;
   align-items: center;
   position: relative;
   height: 100vh;
-  background-color: #f0f0f0; /* Color de fondo */
 }
 
 .login {
@@ -133,6 +136,17 @@ button {
 
 button:hover {
   background-color: #45a049; /* Color de fondo al pasar el cursor */
+}
+.register-link {
+  margin-top: 10px; /* Ajusta este valor según tus necesidades */
+  cursor: pointer;
+  text-decoration: underline;
+}
+.logo {
+  display: block;
+  margin: 0 auto 20px; /* Centra la imagen y añade un margen inferior */
+  width: 150px; /* Ajusta este valor según tus necesidades */
+  height: auto; /* Mantiene la proporción de la imagen */
 }
 
 </style>
