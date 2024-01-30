@@ -56,7 +56,7 @@
                         </v-card-title>
                     </v-card-item>
                     <v-card-text>
-                        Aquest projecte és creat amb la finalitat de presentar-ho al concurs metrópolis. Tots els fons han sgut obtinguts per la nostra part (els 4 integrants) i amb la "donació" d'alguns items per part del nostre professor Pol. El projecte tracta de crear
+                        Aquest projecte és creat amb la finalitat de presentar-ho al concurs metrópolis. Tots els fons han sigut obtinguts per la nostra part (els 4 integrants) i amb la "donació" d'alguns items per part del nostre professor Pol. El projecte tracta de crear
                         un robot capaç de moure's per l'aigua, recollir i processar dades de la costa litoral mitjançant processos com el reconeixement de diferents espècies marines amb una càmara
                         amb Intel·ligència Artificial. Sempre amb la finalitat de millorar l'ecosistema del litoral per tal de reduir l'efecte entròpic. Hem anomentat al robot com <b><i>Sea Shepherd</i></b> (pastor marí en anglès)
                     </v-card-text>

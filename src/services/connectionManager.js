@@ -28,3 +28,33 @@ export async function insertarArea(coordenadas, nombreArea) {
         throw error;
     }
 }
+
+export async function register(nom, correu, contra, nom_empresa) {
+    try {
+        const response = await fetch('http://localhost:3169/register', {
+        method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    nom: nom,
+                    correo: correu,
+                    contra: contra,
+                    nom_empresa: nom_empresa
+                })
+    })
+    if (!response.ok) {
+        throw new Error('Error en la solicitud de registro');
+    }
+
+    const data = await response.json(); 
+    return data;
+    }catch (error) {
+        console.error('Error en la solicitud de registro:', error);
+                throw error;
+    }
+    
+
+    
+
+}
