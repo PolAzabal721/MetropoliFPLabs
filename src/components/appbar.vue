@@ -33,7 +33,7 @@
 }
 
 .colorBTN {
-  background-color: rgb(0, 255, 115);
+  background-color: rgb(175, 175, 175);
   border: 1px solid black;
   font-weight: bold;
   color: black;
