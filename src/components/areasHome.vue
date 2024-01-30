@@ -1,7 +1,7 @@
 <template>
     <default-bar class="barra" />
     <div class="background-image"></div>
-    <v-layout class="rounded rounded-md container" style="position: relative;">
+    <v-layout class="rounded rounded-md" style="position: relative;">
         <v-main>
             <br />
             <v-container fluid>

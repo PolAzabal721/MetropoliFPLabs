@@ -1,10 +1,7 @@
 <template>
   <default-bar class="barra" />
-  <v-layout class="rounded rounded-md container">
-    <v-main>
-      
+  <v-layout class="rounded rounded-md">
       <v-container fluid>
-        <v-layout class="container"> </v-layout>
         <!-- MAPA PRINCIPAL -->
         <v-card class="mx-auto" height="800" width="800">
           <v-text-field v-model="nombreLugar" label="Intoduce un nombre para el area"></v-text-field>
@@ -17,7 +14,7 @@
           </v-card>
         </v-card>
       </v-container>
-    </v-main>
+   
   </v-layout>
 </template>
 

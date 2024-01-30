@@ -1,7 +1,6 @@
 <template>
     <default-bar class="barra" />
-    <v-layout class="rounded rounded-md container">
-
+    <v-layout class="rounded rounded-md">
         <v-main>
             <br>
             <v-container fluid>

@@ -1,7 +1,7 @@
 <template>
   <div class="login-container" >
     <div class="login">
-      <img src="../assets/logo2.svg" alt="Logo" class="logo"> <!-- Añade esta línea -->
+      <img src="../assets/logo2.svg" alt="Logo" class="logo"> 
       <form @submit.prevent="login" v-if="!showRegister">
         <v-text-field clearable  v-model="username" prepend-inner-icon="mdi-email" label="Correo" required></v-text-field>
         <v-text-field clearable  v-model="password" :type="showPassword ? 'text' : 'password'"
@@ -90,9 +90,9 @@ export default {
 
 <style scoped>
 .login-container {
-  background-image: url('../assets/background-login.jpg'); /* Asegúrate de que la ruta a la imagen es correcta */
-  background-size: cover; /* Esto hará que la imagen cubra todo el contenedor */
-  background-position: center; /* Esto centrará la imagen en el contenedor */
+  background-image: url('../assets/background-login.jpg'); 
+  background-size: cover;
+  background-position: center; 
   display: flex;
   justify-content: center;
   align-items: center;
@@ -105,13 +105,13 @@ export default {
   max-width: 400px;
   padding: 40px;
   border-radius: 8px;
-  background-color: #ffffff; /* Color de fondo */
-  box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1); /* Sombra */
+  background-color: #ffffff; 
+  box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
 }
 
 h1 {
   text-align: center;
-  color: #333333; /* Color del texto */
+  color: #333333; 
   margin-bottom: 20px;
 }
 
@@ -152,5 +152,4 @@ button:hover {
   width: 150px; /* Ajusta este valor según tus necesidades */
   height: auto; /* Mantiene la proporción de la imagen */
 }
-
 </style>

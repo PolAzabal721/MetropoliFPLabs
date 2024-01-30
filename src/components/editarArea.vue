@@ -1,9 +1,8 @@
 <template>
   <default-bar class="barra" />
-  <v-layout class="rounded rounded-md container">
+  <v-layout class="rounded rounded-md">
     <v-main>
       <v-container fluid>
-        <v-layout class="container"> </v-layout>
         <!-- MAPA PRINCIPAL -->
         <v-card class="mx-auto slidecontainer" height="800" width="800">
           <v-select
