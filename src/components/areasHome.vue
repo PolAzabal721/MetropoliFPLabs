@@ -6,7 +6,6 @@
             <br />
             <v-container fluid>
                 <v-row>
-
                     <!-- CREAR AREAS -->
                     <v-col cols="3">
                         <router-link :to="'/creaArea'">
