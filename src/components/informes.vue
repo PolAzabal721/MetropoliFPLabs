@@ -8,7 +8,10 @@
                     <v-col cols="6">
                         <!-- MAPA PRINCIPAL -->
                         <v-card class="mx-auto " height="750" width="800">
-                            <v-text-field v-model="nombreLugar" label="Intoduce el nombre del area que quieras ver"></v-text-field>
+                            <v-text-field v-model="nombreLugar" label=""></v-text-field>
+
+     
+
                             <select id="select-ruta">
                                 <option>Buida</option>
                                 <option value="area_1">Àrea 1</option>
@@ -52,7 +55,7 @@ import "leaflet/dist/leaflet.js";
 import L from "leaflet";
 import "leaflet.heat";
 import 'leaflet.heat/dist/leaflet-heat';
-import { getDades } from './../services/connectionManager';
+import { fetchAreas } from "@/services/connectionManager.js";
 
 export default {
 
@@ -239,6 +242,52 @@ export default {
         };
     },
     methods: {
+    // FETCH PARA PILLAR COODS + NOMBRE DEL AREA + ID
+    async getAreas() {
+      try {
+        this.areas = await fetchAreas();
+        console.log("AREAS");
+        console.log(this.areas);
+      } catch (error) {
+        console.error("Error fetching areas:", error);
+      }
+    },
+    /*
+    buscarArea() {
+      // Lógica para buscar el área por el nombre
+      // ...
+
+      // Luego, puedes cargar la información del área encontrada y actualizar el mapa.
+      this.cargarMapa();
+    },
+
+ // CARGAMOS EL MAPA
+    cargarMapa() {
+      // Lógica para cargar el mapa con la información actual del área
+      // ...
+      // Puedes llamar a this.initMap() u otra función que actualice el mapa según tus necesidades.
+      this.initMap();
+    },
+
+
+                       <v-select
+            v-model="nombreLugarBusqueda"
+            :items="areas.map((area) => area.nombreArea)"
+            label="Intoduce el nombre del area que quieras ver"
+           
+          ></v-select>
+
+          <v-btn
+            class="ml-4 d-flex"
+            @click="buscarArea"
+            :disabled="nombreLugarBusqueda === ''"
+          >
+            Buscar
+          </v-btn>
+
+
+*/
+
         // RESET EL FILTRO DE TIEMP A HORAS SIEMPRE QUE SE CAMBIA DE AREA
         resetFilter() {
             // Reiniciar el filtro hour-filter a la primera opción
@@ -458,7 +507,7 @@ export default {
     //CONSOLA
     created() {
         console.log("CREADO");
-        //this.getDatosBD();
+        this.getAreas();
     },
 
     mounted() {

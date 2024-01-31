@@ -11,7 +11,7 @@
             v-model="nombreLugarBusqueda"
             :items="areas.map((area) => area.nombreArea)"
             label="Selecciona el área que quieras editar"
-            @change="cargarAreaSeleccionada"
+            
           ></v-select>
           <v-btn
             class="ml-4 d-flex"
@@ -51,7 +51,6 @@ import "leaflet-draw/dist/leaflet.draw.css";
 import "leaflet-draw/dist/leaflet.draw";
 import "leaflet-draw/dist/leaflet.draw-src";
 import "leaflet-draw/dist/leaflet.draw-src.js";
-
 import { fetchAreas } from "@/services/connectionManager.js";
 
 export default {
@@ -85,7 +84,7 @@ export default {
           featureGroup: drawnItems,
         },
         draw: {
-          polygon: true,
+          polygon: false,
           circle: false,
           rectangle: false,
           marker: false,
@@ -121,6 +120,8 @@ export default {
         });
       });
     },
+
+    // FETCH PARA PILLAR COODS + NOMBRE DEL AREA + ID
     async getAreas() {
       try {
         this.areas = await fetchAreas();
@@ -128,7 +129,6 @@ export default {
         console.log(this.areas);
       } catch (error) {
         console.error("Error fetching areas:", error);
-        // Manejar el error de acuerdo a tus necesidades
       }
     },
 
