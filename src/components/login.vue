@@ -12,14 +12,13 @@
               <p @click="showRegister = true" class="register-link">Registrate</p>
       </form>
       <form v-if="showRegister" @submit.prevent="register">
-        <v-text-field clearable v-model="fullName" prepend-inner-icon="mdi-account" label="Nombre completo" required></v-text-field>
+        <v-text-field clearable v-model="name" prepend-inner-icon="mdi-account" label="Nombre" required></v-text-field>
+        <v-text-field clearable v-model="surname" prepend-inner-icon="mdi-account" label="Apellidos" required></v-text-field>
         <v-text-field clearable v-model="email" prepend-inner-icon="mdi-email" label="Correo" required></v-text-field>
         <v-text-field clearable v-model="password" :type="showPassword ? 'text' : 'password'"
                       prepend-inner-icon="mdi-lock-outline" label="Contraseña" required
                       :append-icon="showPassword ? 'mdi-eye' : 'mdi-eye-off'" @click:append="togglePasswordVisibility()">
         </v-text-field>
-        <v-text-field clearable v-model="telefono" prepend-inner-icon="mdi-email" label="Número de Teléfono" required :rules="telefonoRules"></v-text-field>
-        <v-select :items="companies" v-model="companyName" label="Nombre de la empresa"></v-select>
         <button type="submit">Registrarse</button>
         <p @click="showRegister = false" class="register-link">Inicia Sesión</p>
       </form>
@@ -30,24 +29,21 @@
 <script>
 import io from 'socket.io-client';
 import {register} from "@/services/connectionManager.js";
+import { useAppStore } from "@/store/app";
+
 
 export default {
   data() {
     return {
       username: "",
       password: "",
-      telefono: "",
       showPassword: false,
       socket: null,
       showRegister: false, 
-      fullName: "", 
+      name: "", 
+      surname: "",
       email: "",
-      companyName: "", 
-      companies: ["Microsoft", "Google", "Apple"],
-      telefonoRules: [
-        v => !!v || 'El número de teléfono es requerido',
-        v => (/^\d+$/g.test(v) && v.length === 9) || 'Por favor ingresa un número de teléfono válido',
-      ],
+      rol: "cliente",
     };
   },
   created() {
@@ -64,7 +60,7 @@ export default {
     },
     async register(){
       try {
-        const result = await register(this.fullName, this.email, this.password, this.companyName);
+        const result = await register(this.name, this.surname, this.email, this.password, this.rol);
         console.log('Registro exitoso:', result);
         window.alert("Te has registrado correctamente");
         this.$router.push('/home');
@@ -77,11 +73,14 @@ export default {
     },
   },
   mounted() {
+    const store = useAppStore();
+
     this.socket.on('RespuestaLogin', (loginData) => {
       if (loginData.authorization) {
+        store.setUserRole(loginData.roles);
         this.$router.push('/home');
       } else {
-        alert("Nombre de usuario o contraseña incorrectos");
+        window.alert("Nombre de usuario o contraseña incorrectos");
       }
     });
   },

@@ -29,7 +29,7 @@ export async function insertarArea(coordenadas, nombreArea) {
     }
 }
 
-export async function register(nom, correu, contra, nom_empresa) {
+export async function register(nom, apellido, correo, contra, rol) {
     try {
         const response = await fetch('http://localhost:3169/register', {
         method: 'POST',
@@ -38,9 +38,10 @@ export async function register(nom, correu, contra, nom_empresa) {
                 },
                 body: JSON.stringify({
                     nom: nom,
-                    correo: correu,
+                    apellido: apellido,
+                    correo: correo,
                     contra: contra,
-                    nom_empresa: nom_empresa
+                    rol: rol
                 })
     })
     if (!response.ok) {

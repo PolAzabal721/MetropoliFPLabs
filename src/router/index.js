@@ -1,5 +1,7 @@
 // Composables
 import { createRouter, createWebHashHistory } from 'vue-router'
+import { useAppStore } from "@/store/app";
+
 
 const routes = [
   // INICIO
@@ -93,8 +95,16 @@ const router = createRouter({
 })
 
 router.beforeEach((to, from, next) => {
-  document.title = to.meta.title || 'Default Title';
-  next();
+  const appStore = useAppStore();
+  const isAdmin = appStore.userRole === 'admin'; // Comprueba si userRole es 'admin'
+
+  if (!isAdmin && to.path !== '/' && to.path !== '/home' && to.path !== '/camara') {
+    window.alert('Acceso denegado: no eres administrador');
+    next('/home'); // Redirige al usuario a la página de inicio
+  } else {
+    document.title = to.meta.title || 'Default Title';
+    next();
+  }
 });
 
 export default router
