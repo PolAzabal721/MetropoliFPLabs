@@ -1,23 +1,57 @@
 <template>
   <default-bar class="barra" />
   <v-layout class="rounded rounded-md">
-      <v-container fluid>
-        <!-- MAPA PRINCIPAL -->
-        <v-card class="mx-auto" height="800" width="800">
-          <v-text-field v-model="nombreLugar" label="Intoduce un nombre para el area"></v-text-field>
-          <v-btn class="ml-4 d-flex" @click="crearLugar" :disabled="nombreLugar === '' || drawnGeometries.length === 0">
+    <v-container fluid>
+      <!-- MAPA PRINCIPAL -->
+      <v-card class="mx-auto" height="800" width="800">
+        <v-text-field v-model="nombreLugar" label="Intoduce un nombre para el area"></v-text-field>
+        <div class="ml-4 d-flex">
+          <v-btn @click="crearLugar" :disabled="nombreLugar === '' || drawnGeometries.length === 0">
             Crear
           </v-btn>
-          <br/>
-          <v-card height="700" width="800">
-            <div id="map" style="height: 650px; width: 800px"></div>
-          </v-card>
-        </v-card>
-      </v-container>
-   
-  </v-layout>
-</template>
 
+          <v-btn @click="abrirEditarDialog" class="ml-4">
+            Editar
+          </v-btn>
+        </div>
+        <br />
+        <v-card height="700" width="800">
+          <div id="map" style="height: 650px; width: 800px"></div>
+        </v-card>
+      </v-card>
+
+      <!-- Diálogo de Edición -->
+      <v-dialog v-model="dialogEditar" max-width="600">
+        <v-card height="1000" width="900">
+          <v-card-title>
+            Editar Área
+          </v-card-title>
+
+          <!-- SELECT AREA -->
+          <v-select v-model="nombreLugarBusqueda" :items="areas.map((area) => area.nombreArea)"
+            label="Selecciona el área que quieras editar"></v-select>
+          <v-btn class="ml-4 d-flex" @click="buscarArea" :disabled="nombreLugarBusqueda === ''">
+            Buscar
+          </v-btn>
+          <br />
+
+          <!-- MAPA PARA EDITAR AREAS -->
+          <v-card class="mx-auto slidecontainer" height="860" width="800">
+            <div id="mapaSelect" style="height: 650px; width: 800px"></div>
+          </v-card>
+          <v-card-actions>
+            <v-btn @click="guardarCambios" color="primary">
+              Guardar
+            </v-btn>
+            <v-btn @click="cerrarEditarDialog" color="error">
+              Salir sin guardar
+            </v-btn>
+          </v-card-actions>
+        </v-card>
+      </v-dialog>
+    </v-container>
+  </v-layout>
+</template> 
 <script>
 import "leaflet/dist/leaflet.css";
 import "leaflet/dist/leaflet.js";
@@ -27,7 +61,7 @@ import "leaflet-draw/dist/leaflet.draw.css";
 import "leaflet-draw/dist/leaflet.draw";
 import "leaflet-draw/dist/leaflet.draw-src";
 import "leaflet-draw/dist/leaflet.draw-src.js";
-
+import { fetchAreas } from "@/services/connectionManager.js";
 import { insertarArea } from "@/services/connectionManager.js";
 
 export default {
@@ -36,11 +70,17 @@ export default {
       drawnGeometries: [],
       nombreLugar: "",
       map: null,
+      mapa: null,
+      dialogEditar: false,
       isCreatingArea: false,
       drawnItems: null,
       drawControl: null,
       areaCreated: false,
-
+      areas: [],
+      nombreLugarBusqueda: "",
+      nuevoNombreLugar: "",
+      areaEncontrada: null,
+      mapaInicializado: false,
     };
   },
   methods: {
@@ -98,6 +138,7 @@ export default {
           this.saveGeometry(geojson);
         });
       });
+
     },
 
     // LIMPIAMOS MAPA
@@ -141,7 +182,133 @@ export default {
         }
         this.limpiarMapa();
         this.isCreatingArea = false;
+        this.getAreas();
+      }
+    },
 
+    // ABRIR APARTADO EDITAR
+    abrirEditarDialog() {
+      this.dialogEditar = true;
+    },
+
+    cerrarEditarDialog() {
+      this.dialogEditar = false;
+      this.reiniciarEstado();
+
+    },
+
+    // HACER UPDATE A LA BD
+    async guardarCambios() {
+
+      this.cerrarEditarDialog();
+    },
+
+    // SELECT PARA PILLAR COODS + NOMBRE DEL AREA + ID
+    async getAreas() {
+      try {
+        this.areas = await fetchAreas();
+        console.log(this.areas);
+      } catch (error) {
+        console.error("Error fetching areas:", error);
+      }
+    },
+
+    // INICIO Y CONFIG DEL MAPA
+    initMapaSelect() {
+      this.mapa = L.map("mapaSelect").setView([41.38879, 2.15899], 11);
+      L.tileLayer(
+        "https://cartodb-basemaps-{s}.global.ssl.fastly.net/rastertiles/voyager/{z}/{x}/{y}.png",
+        {
+          maxZoom: 18,
+        }
+      ).addTo(this.mapa);
+
+      const drawnItems = new L.FeatureGroup();
+      this.mapa.addLayer(drawnItems);
+
+      // Crear el control de dibujo y asignarlo a this.drawControl
+      this.drawControl = new L.Control.Draw({
+        edit: {
+          featureGroup: drawnItems,
+        },
+        draw: {
+          polygon: false,
+          circle: false,
+          rectangle: false,
+          marker: false,
+          polyline: false,
+          circlemarker: false,
+        },
+      });
+
+      this.mapa.addControl(this.drawControl);
+
+
+      // Agregar control de edición a las capas existentes
+      this.mapa.on(L.Draw.Event.CREATED, (event) => {
+        const layer = event.layer;
+        drawnItems.addLayer(layer);
+      });
+    },
+
+    buscarArea() {
+      const areaEncontrada = this.areas.find(area => area.nombreArea === this.nombreLugarBusqueda);
+
+      if (areaEncontrada && areaEncontrada.coordenadas) {
+        // Cargar coordenadas en mapaSelect
+        this.cargarCoordenadasEnMapaSelect(areaEncontrada.coordenadas);
+        this.areaEncontrada = areaEncontrada;
+      }
+    },
+
+    cargarCoordenadasEnMapaSelect(coordenadas) {
+      // Limpiar el mapa
+      this.limpiarMapaSelect();
+
+      // Inicializar el mapa y el control de dibujo
+      this.initMapaSelect();
+      this.drawControl.addTo(this.mapa);
+
+      // Dibujar el área en el mapa
+      this.dibujarAreaEnMapa(coordenadas);
+    },
+
+    dibujarAreaEnMapa(coordenadas) {
+      console.log('Coordenadas:', coordenadas);
+
+      // Create a GeoJSON layer and add it to the map
+      const geoJsonLayer = L.geoJSON({
+        type: 'Feature',
+        geometry: {
+          type: 'Polygon',
+          coordinates: coordenadas,
+        },
+      }).addTo(this.mapa);
+
+      // Update the map view
+      this.mapa.fitBounds(geoJsonLayer.getBounds());
+    },
+
+    limpiarEdicion() {
+      this.nombreLugarBusqueda = "";
+      this.nuevoNombreLugar = "";
+      this.areaEncontrada = null;
+    },
+
+    limpiarMapaSelect() {
+      if (this.mapa) {
+        // Remover el control de dibujo antes de destruir el mapa
+        if (this.drawControl) {
+          this.mapa.removeControl(this.drawControl);
+        }
+
+        // Remover todas las capas del mapa
+        this.mapa.eachLayer(layer => {
+          this.mapa.removeLayer(layer);
+        });
+
+        // Destruir el mapa
+        this.mapa.remove();
       }
     },
 
@@ -158,12 +325,15 @@ export default {
   //CONSOLA
   created() {
     console.log("CREADO");
+
+
   },
 
   mounted() {
     console.log("MONTADO");
-
+    this.getAreas();
     this.initMap();
+
   },
 
   updated() {
@@ -177,6 +347,4 @@ export default {
 import DefaultBar from "@/components/appbar.vue";
 </script>
 
-<style>
-
-</style>
+<style></style>

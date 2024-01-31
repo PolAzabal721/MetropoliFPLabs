@@ -64,7 +64,7 @@ export async function fetchAreas() {
         }
         const areas = await response.json();
         // Aquí puedes manejar la respuesta como mejor te convenga
-        console.log('Áreas obtenidas:', areas);
+        //console.log('Áreas obtenidas:', areas);
         return areas;
     } catch (error) {
         console.error('Error fetching areas:', error);

@@ -132,20 +132,6 @@ export default {
       }
     },
 
-    async drawAreaCoordinates(coordinates) {
-      // Clear any existing drawn items
-      this.map.eachLayer((layer) => {
-        if (layer instanceof L.Polygon) {
-          this.map.removeLayer(layer);
-        }
-      });
-
-      // Create a new polygon layer with the given coordinates
-      const polygon = L.polygon(coordinates, { color: "red" }).addTo(this.map);
-
-      // Zoom to the bounds of the new polygon
-      this.map.fitBounds(polygon.getBounds());
-    },
     buscarArea() {
       // Lógica para buscar el área por el nombre
       // ...

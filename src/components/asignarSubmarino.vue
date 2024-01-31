@@ -254,7 +254,8 @@ export default {
   },
 
   //
-  computed: {},
+  computed: {
+  },
 
   //CONSOLA
   async created() {
