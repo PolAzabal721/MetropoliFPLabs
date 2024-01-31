@@ -11,9 +11,12 @@
         <router-link :to="'/home'" class="titulo">
           <v-toolbar-title class="mx-5 titulo">Sea Shepherd</v-toolbar-title>
         </router-link>
-        <v-btn :class="estatMotorClass">{{ motor }}</v-btn>
+        <v-btn v-if="userRole === 'admin'" :class="estatMotorClass">{{ motor }}</v-btn>
       </div>
-      <div style="width: 50%">
+      <div style="width: 50%" v-if="userRole === 'cliente'">
+        <router-link :to="'/camara'" class="colorBTN"> Càmera</router-link>
+      </div>
+      <div style="width: 50%" v-if="userRole === 'admin'">
         <router-link :to="'/datos'" class="colorBTN"> Dades</router-link>
         <router-link :to="'/camara'" class="colorBTN"> Càmera</router-link>
         <router-link :to="'/ubicacion'" class="colorBTN"> Ubicació</router-link>
@@ -71,6 +74,7 @@
 </style>
 
 <script>
+import { useAppStore } from "@/store/app";
 import { socket, state } from "../services/socket";
 export default {
   computed: {
@@ -80,6 +84,10 @@ export default {
     },
     estatMotorClass() {
       return this.motor === "OFF" ? "off-btn-red" : "off-btn-green";
+    },
+    userRole() {
+      const appStore = useAppStore();
+      return appStore.userRole; // Añade el rol del usuario a tus datos computados
     },
   },
 };
