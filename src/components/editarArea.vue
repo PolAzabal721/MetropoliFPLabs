@@ -5,12 +5,13 @@
       <v-container fluid>
         <!-- MAPA PRINCIPAL -->
         <v-card class="mx-auto slidecontainer" height="800" width="800">
+          <div id="map" style="height: 650px; width: 800px"></div>
+          <!-- Move the div here -->
           <v-select
             v-model="nombreLugarBusqueda"
-            :items="areas"
+            :items="areas.map((area) => area.nombreArea)"
             label="Selecciona el área que quieras editar"
-            item-text="nombre"
-            item-value="id"
+            @change="cargarAreaSeleccionada"
           ></v-select>
           <v-btn
             class="ml-4 d-flex"
@@ -31,9 +32,8 @@
               Editar
             </v-btn>
             <v-btn @click="eliminarArea"> Eliminar </v-btn>
-
-            <v-card class="slidecontainer" height="700" width="800">
-              <div id="map" style="height: 650px; width: 800px"></div>
+            <v-card height="700" width="800">
+              <!-- The div with the id of "map" should not be here -->
             </v-card>
           </v-card>
         </v-card>
@@ -85,7 +85,7 @@ export default {
           featureGroup: drawnItems,
         },
         draw: {
-          polygon: false,
+          polygon: true,
           circle: false,
           rectangle: false,
           marker: false,
@@ -93,9 +93,59 @@ export default {
           circlemarker: false,
         },
       });
+
       this.map.addControl(this.drawControl);
+
+      // Registra el evento L.Draw.Event.CREATED solo una vez aquí
+      this.map.on(L.Draw.Event.CREATED, (event) => {
+        if (!this.areaCreated) {
+          const layer = event.layer;
+          drawnItems.addLayer(layer);
+
+          const geojson = layer.toGeoJSON();
+          this.saveGeometry(geojson);
+
+          // Disable the drawing controls permanently after creating one figure
+          this.drawControl._toolbars.draw.disable();
+          this.areaCreated = true;
+        }
+      });
+
+      // Registra el evento L.Draw.Event.EDITED
+      this.map.on(L.Draw.Event.EDITED, (event) => {
+        // Actualizar las coordenadas en drawnGeometries después de la edición
+        event.layers.eachLayer((layer) => {
+          this.drawnGeometries = [];
+          const geojson = layer.toGeoJSON();
+          this.saveGeometry(geojson);
+        });
+      });
+    },
+    async getAreas() {
+      try {
+        this.areas = await fetchAreas();
+        console.log("AREAS");
+        console.log(this.areas);
+      } catch (error) {
+        console.error("Error fetching areas:", error);
+        // Manejar el error de acuerdo a tus necesidades
+      }
     },
 
+    async drawAreaCoordinates(coordinates) {
+      // Clear any existing drawn items
+      this.map.eachLayer((layer) => {
+        if (layer instanceof L.Polygon) {
+          this.map.removeLayer(layer);
+        }
+      });
+
+      // Create a new polygon layer with the given coordinates
+      const polygon = L.polygon(coordinates, { color: "red" }).addTo(this.map);
+
+      // Zoom to the bounds of the new polygon
+      this.map.fitBounds(polygon.getBounds());
+    },
     buscarArea() {
       // Lógica para buscar el área por el nombre
       // ...
@@ -137,15 +187,9 @@ export default {
   computed: {},
 
   //CONSOLA
- async created() {
+  created() {
     console.log("CREADO");
-    try {
-      this.areas = await fetchAreas();
-        console.log(this.areas);
-    } catch (error) {
-      console.error("Error fetching areas:", error);
-      // Manejar el error de acuerdo a tus necesidades
-    }
+    this.getAreas();
   },
 
   mounted() {
@@ -154,6 +198,12 @@ export default {
 
   updated() {
     console.log("UPDATED");
+    this.initMap();
+  },
+  watch: {
+    selectedArea() {
+      this.drawArea();
+    },
   },
 };
 </script>

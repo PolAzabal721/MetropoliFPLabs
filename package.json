@@ -29,6 +29,7 @@
     "leaflet.heat": "^0.2.0",
     "luxon": "^3.4.4",
     "pinia": "^2.0.0",
+    "pinia-plugin-persist": "^1.0.0",
     "roboto-fontface": "*",
     "socket.io-client": "^4.7.4",
     "vue": "^3.2.0",

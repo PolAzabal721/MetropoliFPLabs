@@ -65,6 +65,13 @@ const routes = [
 
   },
 
+  {
+    path: '/eliminarArea/',
+    component: () => import('@/components/eliminarArea.vue'),
+    meta: { title: 'Sea Shepherd - Eliminar areas' }
+
+  },
+
   // EMPAREJAR AREA CON SUBMARINOS
   {
     path: '/asignarSubmarino/',

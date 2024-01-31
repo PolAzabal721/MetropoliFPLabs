@@ -1,7 +1,9 @@
 // Utilities
 import { defineStore } from 'pinia'
 
+
 export const useAppStore = defineStore('app', {
+
   state: () => ({
     userRole: ''
   }),
@@ -9,5 +11,5 @@ export const useAppStore = defineStore('app', {
     setUserRole(role) {
       this.userRole = role;
     }
-  }
+  },
 })
