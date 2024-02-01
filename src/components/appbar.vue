@@ -13,16 +13,22 @@
         </router-link>
         <v-btn v-if="userRole === 'admin'" :class="estatMotorClass">{{ motor }}</v-btn>
       </div>
-      <div style="width: 50%" v-if="userRole === 'cliente'">
+      <div style="width: 50%" v-if="userRole === 'cliente' ">
         <router-link :to="'/camara'" class="colorBTN"> Càmera</router-link>
       </div>
-      <div style="width: 50%" v-if="userRole === 'admin'">
+      <div style="width: 50%" v-if="userRole ===''">
+        <router-link :to="'/login'" class="colorBTN">Iniciar Sesión</router-link>
+        <router-link :to="'/camara'" class="colorBTN"> Càmera</router-link>
+      </div>
+      <div style="width: 50%" v-if="userRole === 'admin' ||  userRole === 'tecnico_web'" >
         <router-link :to="'/datos'" class="colorBTN"> Dades</router-link>
         <router-link :to="'/camara'" class="colorBTN"> Càmera</router-link>
         <router-link :to="'/ubicacion'" class="colorBTN"> Ubicació</router-link>
         <router-link :to="'/areasHome'" class="colorBTN"> Configurar áreas</router-link>
         <router-link :to="'/informes'" class="colorBTN"> Informes</router-link>
+        <router-link :to="'login'" class="colorBTN"> </router-link>
       </div>
+      
     </div>
   </v-toolbar>
 </template>

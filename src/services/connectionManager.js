@@ -71,3 +71,29 @@ export async function fetchAreas() {
         throw error; // Puedes relanzar el error si lo necesitas en el código que llame a esta función
     }
 }
+
+export async function deletearea(id) {
+    try {
+      const response = await fetch('http://localhost:3169/deletearea', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ id })
+      });
+  
+      const responseData = await response.json();
+  
+      if (response.ok) {
+        return { success: true, message: responseData.message };
+      } else {
+        throw new Error(responseData.message || 'Error deleting area');
+      }
+    } catch (error) {
+      console.error('Error deleting area:', error);
+      return { success: false, message: error.message };
+    }
+  }
+  
+
+

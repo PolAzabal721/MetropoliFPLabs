@@ -4,15 +4,19 @@
     <v-container fluid>
       <!-- MAPA PRINCIPAL -->
       <v-card class="mx-auto" height="800" width="800">
-        <v-text-field v-model="nombreLugar" label="Intoduce un nombre para el area"></v-text-field>
+        <v-text-field
+          v-model="nombreLugar"
+          label="Intoduce un nombre para el area"
+        ></v-text-field>
         <div class="ml-4 d-flex">
-          <v-btn @click="crearLugar" :disabled="nombreLugar === '' || drawnGeometries.length === 0">
+          <v-btn
+            @click="crearLugar"
+            :disabled="nombreLugar === '' || drawnGeometries.length === 0"
+          >
             Crear
           </v-btn>
 
-          <v-btn @click="abrirEditarDialog" class="ml-4">
-            Editar
-          </v-btn>
+          <v-btn @click="abrirEditarDialog" class="ml-4"> Editar </v-btn>
         </div>
         <br />
         <v-card height="700" width="800">
@@ -23,14 +27,20 @@
       <!-- Diálogo de Edición -->
       <v-dialog v-model="dialogEditar" max-width="600">
         <v-card height="1000" width="900">
-          <v-card-title>
-            Editar Área
-          </v-card-title>
+          <v-card-title> Editar Área </v-card-title>
 
           <!-- SELECT AREA -->
-          <v-select v-model="nombreLugarBusqueda" :items="areas.map((area) => area.nombreArea)"
-            label="Selecciona el área que quieras editar"></v-select>
-          <v-btn class="ml-4 d-flex" @click="buscarArea" :disabled="nombreLugarBusqueda === ''">
+          <v-select
+            class="small-select"
+            v-model="nombreLugarBusqueda"
+            :items="areas.map((area) => area.nombreArea)"
+            label="Selecciona el área que quieras editar"
+          ></v-select>
+          <v-btn
+            class="small-select"
+            @click="buscarArea"
+            :disabled="nombreLugarBusqueda === ''"
+          >
             Buscar
           </v-btn>
           <br />
@@ -40,12 +50,16 @@
             <div id="mapaSelect" style="height: 650px; width: 800px"></div>
           </v-card>
           <v-card-actions>
-            <v-btn @click="guardarCambios" color="primary">
-              Guardar
-            </v-btn>
+            <v-btn @click="guardarCambios" color="primary"> Guardar </v-btn>
+            <v-btn @click="deleteArea" color="error"> Eliminar Area </v-btn>
             <v-btn @click="cerrarEditarDialog" color="error">
               Salir sin guardar
             </v-btn>
+            <v-text-field
+              class="small-text-field"
+              v-model="nuevoNombre"
+              label="Nuevo nombre Area"
+            ></v-text-field>
           </v-card-actions>
         </v-card>
       </v-dialog>
@@ -63,6 +77,7 @@ import "leaflet-draw/dist/leaflet.draw-src";
 import "leaflet-draw/dist/leaflet.draw-src.js";
 import { fetchAreas } from "@/services/connectionManager.js";
 import { insertarArea } from "@/services/connectionManager.js";
+import { deletearea } from "@/services/connectionManager.js";
 
 export default {
   data() {
@@ -80,7 +95,10 @@ export default {
       nombreLugarBusqueda: "",
       nuevoNombreLugar: "",
       areaEncontrada: null,
+      areaEncontradaID: null,
       mapaInicializado: false,
+      nuevoNombre: null,
+      nombreExistente: null,
     };
   },
   methods: {
@@ -138,7 +156,6 @@ export default {
           this.saveGeometry(geojson);
         });
       });
-
     },
 
     // LIMPIAMOS MAPA
@@ -194,12 +211,14 @@ export default {
     cerrarEditarDialog() {
       this.dialogEditar = false;
       this.reiniciarEstado();
-
     },
 
+    reiniciarEstado() {
+      this.areaEncontrada = null;
+      this.areaEncontradaID = null;
+    },
     // HACER UPDATE A LA BD
     async guardarCambios() {
-
       this.cerrarEditarDialog();
     },
 
@@ -243,7 +262,6 @@ export default {
 
       this.mapa.addControl(this.drawControl);
 
-
       // Agregar control de edición a las capas existentes
       this.mapa.on(L.Draw.Event.CREATED, (event) => {
         const layer = event.layer;
@@ -251,13 +269,32 @@ export default {
       });
     },
 
-    buscarArea() {
-      const areaEncontrada = this.areas.find(area => area.nombreArea === this.nombreLugarBusqueda);
+    async buscarArea() {
+      const areaEncontrada = this.areas.find(
+        (area) => area.nombreArea === this.nombreLugarBusqueda
+      );
 
       if (areaEncontrada && areaEncontrada.coordenadas) {
         // Cargar coordenadas en mapaSelect
         this.cargarCoordenadasEnMapaSelect(areaEncontrada.coordenadas);
         this.areaEncontrada = areaEncontrada;
+        this.areaEncontradaID = areaEncontrada._id;
+        this.nombreExistente = areaEncontrada.nombreArea;
+        console.log("Nombre");
+        console.log(this.nombreExistente);
+      }
+    },
+
+    deleteArea() {
+      if (this.areaEncontrada) {
+        console.log(this.areaEncontrada._id);
+        deletearea(this.areaEncontrada._id);
+        this.limpiarEdicion();
+        this.limpiarMapaSelect();
+        this.cerrarEditarDialog();
+        this.getAreas();
+      } else {
+        console.error("No area to delete");
       }
     },
 
@@ -274,13 +311,13 @@ export default {
     },
 
     dibujarAreaEnMapa(coordenadas) {
-      console.log('Coordenadas:', coordenadas);
+      console.log("Coordenadas:", coordenadas);
 
       // Create a GeoJSON layer and add it to the map
       const geoJsonLayer = L.geoJSON({
-        type: 'Feature',
+        type: "Feature",
         geometry: {
-          type: 'Polygon',
+          type: "Polygon",
           coordinates: coordenadas,
         },
       }).addTo(this.mapa);
@@ -303,7 +340,7 @@ export default {
         }
 
         // Remover todas las capas del mapa
-        this.mapa.eachLayer(layer => {
+        this.mapa.eachLayer((layer) => {
           this.mapa.removeLayer(layer);
         });
 
@@ -325,15 +362,12 @@ export default {
   //CONSOLA
   created() {
     console.log("CREADO");
-
-
   },
 
   mounted() {
     console.log("MONTADO");
     this.getAreas();
     this.initMap();
-
   },
 
   updated() {
@@ -347,4 +381,13 @@ export default {
 import DefaultBar from "@/components/appbar.vue";
 </script>
 
-<style></style>
+<style scoped>
+.small-select {
+  width: 750px;
+  margin: 0 auto;
+}
+.small-text-field {
+  width: 20px;
+  margin-right: 40px;
+}
+</style>
