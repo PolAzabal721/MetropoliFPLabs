@@ -57,14 +57,6 @@ const routes = [
 
   },
 
-  // EDITAR AREAS 
-  {
-    path: '/editarArea/',
-    component: () => import('@/components/editarArea.vue'),
-    meta: { title: 'Sea Shepherd - Editar areas' }
-
-  },
-
   {
     path: '/eliminarArea/',
     component: () => import('@/components/eliminarArea.vue'),

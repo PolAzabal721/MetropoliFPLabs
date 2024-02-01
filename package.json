@@ -34,8 +34,10 @@
     "socket.io-client": "^4.7.4",
     "source-map-support": "^0.5.21",
     "vue": "^3.2.0",
+    "vue-calendar-3": "^2.6.0",
     "vue-chartjs": "^5.2.0",
     "vue-router": "^4.0.0",
+    "vue3-datepicker": "^0.4.0",
     "vuetify": "^3.0.0"
   },
   "devDependencies": {

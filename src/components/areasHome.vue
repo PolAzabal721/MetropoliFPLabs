@@ -18,22 +18,20 @@
 
                     <!-- EDITAR AREAS -->
                     <v-col cols="3">
-                        <router-link :to="'/editarArea'">
+                        
                             <v-card class="card mx-auto" height="500" width="400">
                                 <v-img src="../assets/editar.png" height="400"></v-img>
                                 <v-card-title class="card-title">Editar áreas</v-card-title>
                             </v-card>
-                        </router-link>
+                    
                     </v-col>
 
                     <!-- ELIMINAR AREAS -->
                     <v-col cols="3">
-                        <router-link :to="'/eliminarArea'">
                             <v-card class="card mx-auto" height="500" width="400">
                                 <v-img src="../assets/eliminar.png" height="400"></v-img>
                                 <v-card-title class="card-title">Eliminar áreas</v-card-title>
                             </v-card>
-                        </router-link>
                     </v-col>
 
                     <!-- ASIGNAMOS LOS SUBMARINOS -->

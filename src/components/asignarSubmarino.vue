@@ -1,264 +1,196 @@
 <template>
-  <default-bar class="barra" />
-  <v-layout class="rounded rounded-md">
-    <v-main>
-      <br />
-      <v-container fluid>
-        <v-row>
-          <v-col cols="6">
-            <!-- MAPA PRINCIPAL -->
-            <v-card class="mx-auto" height="auto" width="800">
-              <v-select id="select-ruta" v-model="nombreLugarBusqueda" :items="areas"
-                label="Selecciona el área que quieras editar" item-text="nombre" item-value="id"></v-select>
-              <div id="map" style="height: 650px; width: 800px"></div>
-            </v-card>
-          </v-col>
+  <v-container>
+    <v-row>
+      <v-col>
+        <v-select v-model="selectedArea" :items="areas" label="Seleccionar Área"
+          @change="actualizarSubmarinos"></v-select>
+      </v-col>
+    </v-row>
+    <v-row v-if="selectedArea">
+      <v-col>
+        <h3>Submarinos Asignados a {{ selectedArea }}</h3>
+        <v-col v-for="submarino in submarinosAsignadosFiltrados" :key="submarino.id">
+          {{ submarino.nombre }} - {{ submarino.hora }}
+          <v-btn @click="desvincularSubmarino(submarino)">Desvincular</v-btn>
+        </v-col>
+        <v-col>
+          <v-btn @click="crearRutina">Crear Rutina Submarinos</v-btn>
+        </v-col>
+      </v-col>
+    </v-row>
+    <v-row>
+      <v-col>
+        <h3>Submarinos Disponibles</h3>
+        <v-col v-for="submarino in submarinosDisponibles" :key="submarino.id">
+          <v-checkbox v-model="submarino.selected" :label="submarino.nombre"></v-checkbox>
+          <v-time-picker v-model="submarino.hora" label="Hora de asignación"></v-time-picker>
+        </v-col>
+      </v-col>
+    </v-row>
+    <v-row>
+      <v-col>
+        <v-btn @click="asignarSubmarinos">Añadir Submarinos</v-btn>
+      </v-col>
+      
+    </v-row>
 
+    <!-- Diálogo para seleccionar rutina -->
+    <v-dialog v-model="dialogRutina" max-height="1200" max-width="1200">
+      <v-card height="400" width="600">
+        <v-card-title>Seleccionar Rutina con Calendario</v-card-title>
+        <v-card-text>
+          <!-- Formulario para añadir tareas -->
+          <v-form ref="taskForm" @submit.prevent="agregarTarea">
+            <v-text-field v-model="nuevaTarea" label="Nombre la rutina"></v-text-field>
 
-          <!-- SUBMARINOS -->
-          <v-col cols="6">
-            <v-card class="mx-auto" height="auto" width="100'">
-              <v-row>
-                <!-- Submarinos Asignados -->
-                <v-col class="submarinos-col">
-                  <v-card height="auto" width="400px">
-                    <h2 class="text-center mb-4">Submarinos asignados</h2>
-                    <v-row class="d-flex">
-                      <v-card v-for="(submarinoAsignado, index) in submarinosAsignados" :key="index" class="mx-2"
-                        height="auto" width="100%">
-                        <v-row align="center">
-                          <v-col cols="2">
-                            <v-img class="fotoSubmarino" src="../assets/submarinoDibujo.png"></v-img>
-                          </v-col>
-                          <v-col cols="6">
-                            <p class="font-weight-bold">{{ submarinoAsignado.name }}</p>
-                          </v-col>
-                          <v-col cols="4">
-                            <v-checkbox v-model="submarinoAsignado.selected"></v-checkbox>
-                          </v-col>
-                        </v-row>
-                      </v-card>
-                    </v-row>
-                  </v-card>
-                </v-col>
+            <!-- SELECIONAR FECHA -->
+            <datepicker class="dialog-content" v-model="selectedDate" @dayclick="dayClickHandler" />
+            <br>
+            <v-btn type="submit">Agregar Tarea</v-btn>
 
-                <!-- Botones de transferencia -->
-                <v-col class="submarinos-col">
-                  <v-card height="auto" width="150">
-                    <v-row class="d-flex align-center">
-                      <v-col>
-                        <v-btn @click="transferirSubmarinos('izquierda')">//---</v-btn>
-                        <v-btn @click="transferirSubmarinos('derecha')">---\\</v-btn>
-                      </v-col>
-                    </v-row>
-                  </v-card>
-                </v-col>
+          </v-form>
 
-                <!-- Submarinos No Asignados -->
-                <v-col class="submarinos-col">
-                  <v-card height="auto" width="400px">
-                    <h2 class="text-center mb-4">Submarinos sin asignar</h2>
-                    <v-row class="d-flex">
-                      <v-card v-for="(submarino, index) in submarinos" :key="index" class="mx-2" height="auto"
-                        width="100%">
-                        <v-row align="center">
-                          <v-col cols="2">
-                            <v-img class="fotoSubmarino" src="../assets/submarinoDibujo.png"></v-img>
-                          </v-col>
-                          <v-col cols="6">
-                            <p class="font-weight-bold">{{ submarino.name }}</p>
-                          </v-col>
-                          <v-col cols="4">
-                            <v-checkbox v-model="submarino.selected"></v-checkbox>
-                          </v-col>
-                        </v-row>
-                      </v-card>
-                    </v-row>
-                  </v-card>
-                </v-col>
-              </v-row>
-            </v-card>
-          </v-col>
-        </v-row>
-      </v-container>
-    </v-main>
-  </v-layout>
+          <br>
+          <!-- Lista de tareas -->
+          <v-list>
+            <v-list-item-group v-if="tareas.length > 0">
+              <v-list-item v-for="(tarea, index) in tareas" :key="index">
+                <v-list-item-content>
+                  <v-list-item-title>{{ tarea }}</v-list-item-title>
+                </v-list-item-content>
+              </v-list-item>
+            </v-list-item-group>
+            <v-list-item v-else>
+              <v-list-item-content>No hay tareas.</v-list-item-content>
+            </v-list-item>
+          </v-list>
+        </v-card-text>
+        <v-card-actions>
+          <v-btn @click="guardarRutina">Guardar</v-btn>
+          <v-btn @click="cerrarDialogRutina">Cancelar</v-btn>
+        </v-card-actions>
+      </v-card>
+    </v-dialog>
+  </v-container>
 </template>
 
-
 <script>
-import "leaflet/dist/leaflet.css";
-import "leaflet/dist/leaflet.js";
-import L from "leaflet";
-import "leaflet.heat";
-import "leaflet.heat/dist/leaflet-heat";
-import { fetchAreas } from "@/services/connectionManager.js";
+import Datepicker from "vue3-datepicker";
 
 export default {
+  components: {
+    Datepicker,
+  },
   data() {
     return {
-      nombreLugarBusqueda: '',
-      selectedSide: null,
-      areas: [],
-      actualizarRuta: [],
-      submarinos: [
-        { name: 'Submarino 1', selected: false },
-        { name: 'Submarino 2', selected: false },
-        { name: 'Submarino 3', selected: false },
-        { name: 'Submarino 4', selected: false },
-      ],
-
+      selectedArea: null,
+      areas: ['Área 1', 'Área 2', 'Área 3'],
       submarinosAsignados: [
-        { name: 'Submarino asignado 1', selected: false },
-        { name: 'Submarino asignado 2', selected: false },
-        { name: 'Submarino asignado 3', selected: false },
-        { name: 'Submarino asignado 4', selected: false },
+        { id: 1, nombre: 'Submarino 1', selected: false, hora: '12:00', duracionBateria: 2, area: 'Área 1' },
+        { id: 2, nombre: 'Submarino 2', selected: false, hora: '14:00', duracionBateria: 2, area: 'Área 2' },
+        // ... Submarinos asignados inicialmente
+      ],
+      submarinosDisponibles: [
+        { id: 3, nombre: 'Submarino 3', selected: false, hora: '10:00', duracionBateria: 2 },
+        { id: 4, nombre: 'Submarino 4', selected: false, hora: '16:00', duracionBateria: 2 },
+        // ... Submarinos disponibles inicialmente
       ],
 
-      draggingIndex: -1,
+      dialogRutina: false,
+      selectedRutina: null,
+      selectedDate: null,
+      nuevaTarea: '',
+      tareas: [],
+
     };
   },
   methods: {
-    // RESETEAR EL MAPA
-    resetCoordinatesAndMap() {
-      // Limpiar el mapa
-      this.map.eachLayer((layer) => {
-        this.map.removeLayer(layer);
-      });
-
-      // Establecer la vista del mapa en las coordenadas deseadas
-      this.map.setView([41.38879, 2.15899], 18);
-      L.tileLayer(
-        "https://cartodb-basemaps-{s}.global.ssl.fastly.net/rastertiles/voyager/{z}/{x}/{y}.png",
-        {
-          maxZoom: 20,
-        }
-      ).addTo(this.map);
-
-      // Limpiar el gráfico
-      this.updateChart([], []);
-    },
-
-    // INICIO Y CONFIG DEL MAPA PRINCIPAL
-    initMapPrincipal() {
-      this.map = L.map("map").setView([41.38879, 2.15899], 18);
-      L.tileLayer(
-        "https://cartodb-basemaps-{s}.global.ssl.fastly.net/rastertiles/voyager/{z}/{x}/{y}.png",
-        {
-          maxZoom: 20,
-        }
-      ).addTo(this.map);
-
-      // Escuchar cambios en el filtro de selección de ruta solo si aún no se ha agregado
-      const selectElement = document.getElementById("select-ruta");
-      if (!this.isChangeEventListenerAdded) {
-        selectElement.addEventListener("change", this.cargarRuta.bind(this));
-        this.isChangeEventListenerAdded = true; // Marcar que se ha agregado el evento
-      }
-    },
-
-    // CARGAR RUTA MAPA PRINCIPAL
-    cargarRuta(event) {
-      const rutaSeleccionada = event.target.value;
-      // Verificar si la opción seleccionada es "Buida"
-      if (rutaSeleccionada === "Buida") {
-        // Limpiar el mapa
-        this.map.eachLayer((layer) => {
-          this.map.removeLayer(layer);
-        });
-
-        // Establecer la vista del mapa en las coordenadas deseadas
-        this.map.setView([41.38879, 2.15899], 18);
-        L.tileLayer(
-          "https://cartodb-basemaps-{s}.global.ssl.fastly.net/rastertiles/voyager/{z}/{x}/{y}.png",
-          {
-            maxZoom: 20,
-          }
-        ).addTo(this.map);
-
-        // Limpiar el gráfico
-        this.updateChart([], []);
-        return; // Salir de la función si la opción es "Buida"
-      }
-
-      const coordenadas = this.rutaData[rutaSeleccionada].coordenadas;
-
-      // Crear una capa GeoJSON y agregarla al mapa
-      const geoJsonLayer = L.geoJSON({
-        type: "Feature",
-        geometry: {
-          type: "LineString",
-          coordinates: coordenadas,
-        },
-      }).addTo(this.map);
-
-      // Actualizar el mapa y el gráfico
-      this.actualizarMapa(geoJsonLayer.getBounds());
-    },
-
-    // ACTUALIZAR MAP PRINCIPAL
-    actualizarMapa(bounds) {
-      // Verifica que bounds sea un array válido y no esté vacío
-      if (bounds && bounds.isValid()) {
-        // Ajusta los límites del mapa según la capa GeoJSON
-        this.map.fitBounds(bounds);
+    actualizarSubmarinos() {
+      if (this.selectedArea) {
+        this.submarinosAsignados = this.submarinosAsignados.filter(sub => sub.area === this.selectedArea);
+        this.submarinosDisponibles = this.submarinosDisponibles.filter(sub => sub.area !== this.selectedArea);
       } else {
-        console.error(
-          "Los límites no son válidos o no tienen dimensiones positivas:",
-          bounds
-        );
+        this.submarinosAsignados = [];
+        this.submarinosDisponibles = this.submarinosDisponibles.filter(sub => !sub.selected);
       }
     },
 
-    transferirSubmarinos(destino) {
-    // Check if a side is already selected and if it's different from the current destination
-    if (this.selectedSide && this.selectedSide !== destino) {
-      // Display a message indicating that submarines from the other side are already selected
-      this.$toast.error(`Desselecciona los submarinos del lado ${this.selectedSide} antes de seleccionar en el lado ${destino}`);
-      return;
-    }
+    asignarSubmarinos() {
+      const submarinosSeleccionados = this.submarinosDisponibles.filter(sub => sub.selected);
 
-    // Implement the logic to transfer submarines based on the destination
-    if (destino === 'izquierda') {
-      // Logic to transfer submarines to the left side
-      const selectedSubmarinos = this.submarinos.filter(sub => sub.selected);
+      // Verificar duración de batería antes de asignar
+      const duracionTotal = submarinosSeleccionados.reduce((total, sub) => total + sub.duracionBateria, 0);
 
-      // Deselect submarines from the right side
-      this.submarinosAsignados.forEach(sub => (sub.selected = false));
+      if (duracionTotal > this.duracionMaximaPorTurno) {
+        console.error('Error: La duración total de la batería supera el límite por turno.');
+        return;
+      }
 
-      this.submarinosAsignados = this.submarinosAsignados.concat(selectedSubmarinos);
-      this.submarinos = this.submarinos.filter(sub => !sub.selected);
+      // Actualizar submarinosAsignados y submarinosDisponibles
+      this.submarinosAsignados = [...this.submarinosAsignados, ...submarinosSeleccionados];
+      this.submarinosDisponibles = this.submarinosDisponibles.filter(sub => !sub.selected);
 
-      // Deselect submarines after transfer
-      selectedSubmarinos.forEach(sub => (sub.selected = false));
+      // Limpiar la selección
+      submarinosSeleccionados.forEach(sub => {
+        sub.selected = false;
+        sub.hora = ''; // Reiniciar la hora para el próximo turno
+        sub.area = this.selectedArea; // Asignar el área
+      });
+    },
 
-      // Set the selected side
-      this.selectedSide = 'izquierda';
-    } else if (destino === 'derecha') {
-      // Logic to transfer submarines to the right side
-      const selectedSubmarinosAsignados = this.submarinosAsignados.filter(sub => sub.selected);
+    dayClickHandler(date) {
+      // Manejar el clic en un día del calendario
+      this.selectedDate = date;
+    },
 
-      // Deselect submarines from the left side
-      this.submarinos.forEach(sub => (sub.selected = false));
+    cerrarDialogRutina() {
+      // Cerrar la ventana emergente de rutinas
+      this.dialogRutina = false;
 
-      this.submarinos = this.submarinos.concat(selectedSubmarinosAsignados);
-      this.submarinosAsignados = this.submarinosAsignados.filter(sub => !sub.selected);
+      // Restablecer la selección de la rutina
+      this.selectedDate = null;
+    },
 
-      // Deselect submarines after transfer
-      selectedSubmarinosAsignados.forEach(sub => (sub.selected = false));
+    guardarRutina() {
+      // Aquí puedes implementar la lógica para guardar la rutina seleccionada
+      console.log('Fecha seleccionada:', this.selectedDate);
 
-      // Set the selected side
-      this.selectedSide = 'derecha';
-    }
+      // Cerrar la ventana emergente de rutinas
+      this.cerrarDialogRutina();
+    },
+
+
+
+    desvincularSubmarino(submarino) {
+      // Desvincular un submarino específico del área seleccionada
+      submarino.area = null;
+      this.submarinosAsignados = this.submarinosAsignados.filter(sub => sub !== submarino);
+      this.submarinosDisponibles.push(submarino);
+      console.log('Submarino desvinculado de', this.selectedArea, submarino);
+    },
+
+    crearRutina() {
+      // Abrir la ventana emergente para seleccionar la rutina
+      this.dialogRutina = true;
+    },
+
+    // AGREGAMOS TAREAS AL SUB
+    agregarTarea() {
+      if (this.nuevaTarea.trim() !== '') {
+        this.tareas.push(this.nuevaTarea);
+        this.nuevaTarea = ''; // Limpiar el campo después de agregar la tarea
+      }
     },
   },
-
   //
   computed: {
+    submarinosAsignadosFiltrados() {
+      return this.submarinosAsignados.filter(sub => sub.area === this.selectedArea);
+    },
   },
 
   //CONSOLA
-  async created() {
+  created() {
     console.log("CREADO");
     /*
     try {
@@ -274,12 +206,6 @@ export default {
   mounted() {
     console.log("MONTADO");
 
-    // Agregar un evento de cambio al elemento select
-    const selectRuta = document.getElementById("select-ruta");
-    selectRuta.addEventListener("change", this.actualizarRuta);
-
-    // INICIAR MAPA
-    this.initMapPrincipal();
   },
 
   updated() {
@@ -294,19 +220,8 @@ import DefaultBar from "@/components/appbar.vue";
 </script>
 
 <style>
-.fotoSubmarino {
-  width: 75px !important;
-}
-
-.slidecontainer {
-  background-color: rgb(175, 175, 175) !important;
-}
-
-.text-center {
-  text-align: center;
-}
-
-.mb-4 {
-  margin-bottom: 1rem;
+.dialog-content {
+  border: 2px solid black;
+  padding: 5px;
 }
 </style>
