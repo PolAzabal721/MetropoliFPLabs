@@ -24,6 +24,7 @@
     "debug": "^4.3.4",
     "electron-forge": "^5.2.4",
     "electron-squirrel-startup": "^1.0.0",
+    "esbuild": "^0.20.0",
     "leaflet-draw": "^1.0.4",
     "leaflet-heatmap": "^1.0.0",
     "leaflet.heat": "^0.2.0",

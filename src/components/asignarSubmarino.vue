@@ -45,12 +45,12 @@
           <v-col cols="6">
             <!-- Formulario para añadir tareas -->
             <v-form ref="taskForm" @submit.prevent="agregarTarea">
-  <v-text-field v-model="nuevaTarea" label="Nombre la rutina"></v-text-field>
-  <v-text-field style="height: 500px;" v-model="nuevaDescripcion" label="Descripción"></v-text-field>
-  <datepicker class="dialog-content" v-model="selectedDate" @dayclick="dayClickHandler" />
+  <v-text-field v-model="nuevaTarea" label="* Nombre la rutina"></v-text-field>
+  <v-text-field style="height: 500px; margin-bottom: -210px;" v-model="nuevaDescripcion" label="Descripción"></v-text-field>
+  *<datepicker class="dialog-content" v-model="selectedDate" @dayclick="dayClickHandler" />
   <v-time-picker v-model="selectedHour" label="Hora de asignación"></v-time-picker>
   <br>
-  <v-btn type="submit">Agregar Rutina</v-btn>
+  <v-btn type="submit" :disabled="!nuevaTarea.trim() || !selectedDate">Agregar Rutina</v-btn>
 </v-form>
 
           </v-col>
@@ -87,9 +87,28 @@
         <v-btn @click="guardarRutina">Guardar</v-btn>
         <v-btn @click="cerrarDialogRutina">Cancelar</v-btn>
       </v-card-actions>
-    </v-card>
+    </v-card>    
   </v-dialog>
-  </v-container>
+
+<!-- Diálogo para editar rutina -->
+<v-dialog v-model="showDialogEdicion">
+  <v-card>
+    <v-card-title>Editar Rutina</v-card-title>
+    <v-card-text>
+      <v-form @submit.prevent="actualizarTareaEditada">
+        <v-text-field v-model="tareaEnEdicion.nombre" label="Nombre de la rutina" required></v-text-field>
+        <v-text-field style="height: 500px;" v-model="tareaEnEdicion.descripcion" label="Descripción"></v-text-field>
+        <datepicker class="dialog-content" v-model="selectedDate" @dayclick="dayClickHandler" required></datepicker>
+        <v-time-picker v-model="tareaEnEdicion.hora" label="Hora de asignación"></v-time-picker>
+        <br>
+        <v-btn type="submit" :disabled="!tareaEnEdicion.nombre.trim() || !selectedDate">Actualizar Tarea</v-btn>
+      </v-form>
+    </v-card-text>
+  </v-card>
+</v-dialog>
+
+
+</v-container>
 </template>
 
 <script>
@@ -99,6 +118,7 @@ export default {
   components: {
     Datepicker,
   },
+  
   data() {
     return {
       selectedArea: null,
@@ -122,6 +142,14 @@ export default {
       nuevaDescripcion: '',
     selectedHour: null,
     editingTaskIndex: null,
+
+    tareaEnEdicion: {
+      nombre: '',
+      descripcion: '',
+      hora: null,
+    },
+    showDialogEdicion: false,
+
 
     };
   },
@@ -212,30 +240,39 @@ export default {
     
 // EDITAR RUTINA
 editarTarea(index) {
-    // Establecer los datos de la tarea actualmente en edición
-    this.editingTaskIndex = index;
-    this.nuevaTarea = this.tareas[index];
-    // Puedes inicializar la descripción y hora si ya existen en la tarea original
-    this.nuevaDescripcion = this.descripciones[index] || '';
-    this.selectedHour = this.horas[index] || null;
-    // Abrir la ventana emergente de edición
-    this.dialogRutina = true;
+    // Verificar si el índice es válido
+    if (index >= 0 && index < this.tareas.length) {
+      // Inicializar la tarea en edición con los datos actuales de la tarea
+      this.tareaEnEdicion.nombre = this.tareas[index];
+      this.tareaEnEdicion.descripcion = this.descripciones[index] || '';
+      this.tareaEnEdicion.hora = this.horas[index] || null;
+
+      // Abrir la ventana emergente de edición
+      this.showDialogEdicion = true;
+    } else {
+      console.error('Índice de tarea no válido:', index);
+    }
   },
 
-  // Nueva función para actualizar la tarea editada
   actualizarTareaEditada() {
-    if (this.editingTaskIndex !== null && this.nuevaTarea.trim() !== '') {
-      this.$set(this.tareas, this.editingTaskIndex, this.nuevaTarea);
-      // También actualiza la descripción y la hora
-      this.$set(this.descripciones, this.editingTaskIndex, this.nuevaDescripcion);
-      this.$set(this.horas, this.editingTaskIndex, this.selectedHour);
-      // Restablecer valores después de la edición
-      this.editingTaskIndex = null;
-      this.nuevaTarea = '';
-      this.nuevaDescripcion = '';
-      this.selectedHour = null;
-      // Cerrar la ventana emergente de edición
-      this.dialogRutina = false;
+    // Verificar si el índice de edición es válido
+    if (this.editingTaskIndex !== null && this.editingTaskIndex >= 0 && this.editingTaskIndex < this.tareas.length) {
+      if (this.tareaEnEdicion.nombre.trim() !== '') {
+        this.$set(this.tareas, this.editingTaskIndex, this.tareaEnEdicion.nombre);
+        this.$set(this.descripciones, this.editingTaskIndex, this.tareaEnEdicion.descripcion);
+        this.$set(this.horas, this.editingTaskIndex, this.tareaEnEdicion.hora);
+
+        // Restablecer valores después de la edición
+        this.editingTaskIndex = null;
+        this.tareaEnEdicion = { nombre: '', descripcion: '', hora: null };
+
+        // Cerrar la ventana emergente de edición
+        this.showDialogEdicion = false;
+      } else {
+        console.error('Nombre de tarea no válido:', this.tareaEnEdicion.nombre);
+      }
+    } else {
+      console.error('Índice de tarea en edición no válido:', this.editingTaskIndex);
     }
   },
 
