@@ -6,7 +6,7 @@ import { useAppStore } from "@/store/app";
 const routes = [
   // INICIO
   {
-    path: '/home/',
+    path: '/',
     component: () => import('@/components/home.vue'),
     meta: { title: 'Sea Shepherd - Home' }
   },
@@ -82,7 +82,7 @@ const routes = [
 
   // CREAR LOGIN
   {
-    path: '/',
+    path: '/login',
     component: () => import('@/components/login.vue'),
     meta: { title: 'Sea Shepherd - Login' }
 
@@ -105,7 +105,7 @@ router.beforeEach((to, from, next) => {
   const appStore = useAppStore();
   const isAdmin = appStore.userRole === 'admin'; // Comprueba si userRole es 'admin'
 
-  if (!isAdmin && to.path !== '/' && to.path !== '/home' && to.path !== '/camara') {
+  if (!isAdmin && to.path !== '/' && to.path !== '/home' && to.path !== '/camara'&& to.path !== '/login') {
     window.alert('Acceso denegado: no eres administrador');
     next('/home'); // Redirige al usuario a la página de inicio
   } else {

@@ -31,12 +31,13 @@
 
           <!-- SELECT AREA -->
           <v-select
+            class="small-select"
             v-model="nombreLugarBusqueda"
             :items="areas.map((area) => area.nombreArea)"
             label="Selecciona el área que quieras editar"
           ></v-select>
           <v-btn
-            class="ml-4 d-flex"
+            class="small-select"
             @click="buscarArea"
             :disabled="nombreLugarBusqueda === ''"
           >
@@ -54,6 +55,11 @@
             <v-btn @click="cerrarEditarDialog" color="error">
               Salir sin guardar
             </v-btn>
+            <v-text-field
+              class="small-text-field"
+              v-model="nuevoNombre"
+              label="Nuevo nombre Area"
+            ></v-text-field>
           </v-card-actions>
         </v-card>
       </v-dialog>
@@ -91,6 +97,8 @@ export default {
       areaEncontrada: null,
       areaEncontradaID: null,
       mapaInicializado: false,
+      nuevoNombre: null,
+      nombreExistente: null,
     };
   },
   methods: {
@@ -205,10 +213,10 @@ export default {
       this.reiniciarEstado();
     },
 
-    reiniciarEstado(){
+    reiniciarEstado() {
       this.areaEncontrada = null;
       this.areaEncontradaID = null;
-    },  
+    },
     // HACER UPDATE A LA BD
     async guardarCambios() {
       this.cerrarEditarDialog();
@@ -271,8 +279,9 @@ export default {
         this.cargarCoordenadasEnMapaSelect(areaEncontrada.coordenadas);
         this.areaEncontrada = areaEncontrada;
         this.areaEncontradaID = areaEncontrada._id;
-        console.log("Area");
-        console.log(this.areaEncontradaID);
+        this.nombreExistente = areaEncontrada.nombreArea;
+        console.log("Nombre");
+        console.log(this.nombreExistente);
       }
     },
 
@@ -283,6 +292,7 @@ export default {
         this.limpiarEdicion();
         this.limpiarMapaSelect();
         this.cerrarEditarDialog();
+        this.getAreas();
       } else {
         console.error("No area to delete");
       }
@@ -371,4 +381,13 @@ export default {
 import DefaultBar from "@/components/appbar.vue";
 </script>
 
-<style></style>
+<style scoped>
+.small-select {
+  width: 750px;
+  margin: 0 auto;
+}
+.small-text-field {
+  width: 20px;
+  margin-right: 40px;
+}
+</style>
