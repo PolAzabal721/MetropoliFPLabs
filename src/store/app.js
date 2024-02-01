@@ -19,4 +19,5 @@ export const useAppStore = defineStore('app', {
       localStorage.removeItem('userRole');
     }
   },
+  persist: true
 })
