@@ -78,7 +78,7 @@ export default {
     this.socket.on('RespuestaLogin', (loginData) => {
       if (loginData.authorization) {
         store.setUserRole(loginData.roles);
-        this.$router.push('/home');
+        this.$router.push('/');
       } else {
         window.alert("Nombre de usuario o contraseña incorrectos");
       }

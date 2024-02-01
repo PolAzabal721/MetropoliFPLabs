@@ -8,7 +8,7 @@
         width: 100%;
       ">
       <div style="display: flex; align-items: center">
-        <router-link :to="'/home'" class="titulo">
+        <router-link :to="'/'" class="titulo">
           <v-toolbar-title class="mx-5 titulo">Sea Shepherd</v-toolbar-title>
         </router-link>
         <v-btn v-if="userRole === 'admin'" :class="estatMotorClass">{{ motor }}</v-btn>
@@ -26,7 +26,7 @@
         <router-link :to="'/ubicacion'" class="colorBTN"> Ubicació</router-link>
         <router-link :to="'/areasHome'" class="colorBTN"> Configurar áreas</router-link>
         <router-link :to="'/informes'" class="colorBTN"> Informes</router-link>
-        <router-link :to="'login'" class="colorBTN"> </router-link>
+  
       </div>
       
     </div>
