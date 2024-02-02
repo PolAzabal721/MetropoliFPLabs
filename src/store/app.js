@@ -29,7 +29,9 @@ export const useAppStore = defineStore('app', {
     // Agregar un método para limpiar la sesión al cerrar sesión
     clearSession() {
       this.userRole = '';
+      this.userEmpresa = '';
       localStorage.removeItem('userRole');
+      localStorage.removeItem('userEmpresa');
     }
   },
   persist: true
