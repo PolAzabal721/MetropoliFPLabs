@@ -1,127 +1,156 @@
 <template>
-    <default-bar class="barra" />
-    <v-app>
-  <v-navigation-drawer>
-    <!-- Contenido del Drawer -->
-    <h3>Submarinos Disponibles</h3>
-    <v-col v-for="submarino in submarinosDisponibles" :key="submarino.id">
-      <v-checkbox v-model="submarino.selected" :label="submarino.nombre"></v-checkbox>
-      <v-time-picker v-model="submarino.hora" label="Hora de asignación"></v-time-picker>
-    </v-col>
-  </v-navigation-drawer>
+  <v-layout class="rounded rounded-md">
 
-  <v-main>
-    <v-container>
-      <!-- Resto del Contenido -->
-      <v-row>
-        <v-col>
-          <v-select v-model="selectedArea" :items="areas" label="Seleccionar Área"
-            @change="actualizarSubmarinos"></v-select>
-        </v-col>
-      </v-row>
-      <v-row v-if="selectedArea">
-        <v-col>
-          <h3>Submarinos Asignados a {{ selectedArea }}</h3>
-          <v-col v-for="submarino in submarinosAsignadosFiltrados" :key="submarino.id">
-            {{ submarino.nombre }} - {{ submarino.hora }}
-            <v-btn @click="desvincularSubmarino(submarino)">Desvincular</v-btn>
+    <v-app-bar>
+      <default-bar />
+    </v-app-bar>
+
+    <v-navigation-drawer width="250">
+      <!-- Contenido del Drawer -->
+      <v-toolbar height="60">
+        <v-toolbar-title>Submarinos Disponibles</v-toolbar-title>
+
+        <v-spacer></v-spacer>
+      </v-toolbar>
+      <v-col v-for="submarino in submarinosDisponibles" :key="submarino.id">
+        <v-checkbox v-model="submarino.selected" :label="submarino.nom_sub"></v-checkbox>
+      </v-col>
+      <v-btn @click="asignarSubmarinos">Añadir Submarinos</v-btn>
+    </v-navigation-drawer>
+
+    <v-main>
+      <v-container>
+        <v-row>
+          <!-- Columna izquierda (Mapa y buscador) -->
+          <v-col cols="12" sm="5">
+            <!-- CONFIG MAPA + SELECT AREA -->
+            <v-select style="height: 75px; font-size: auto;" v-model="nombreLugarBusqueda"
+              :items="areas.map((area) => area.nombreArea)" label="Seleccionar Área"
+              @change="actualizarSubmarinos"></v-select>
+            <v-btn class="small-select" @click="buscarArea" :disabled="nombreLugarBusqueda === ''"
+              style="margin-bottom: 30px;">
+              Buscar
+            </v-btn>
+            <!-- MAPA -->
+            <v-card class="mx-auto slidecontainer" height="400" width="450">
+              <div id="mapaSelect" style="height: 400px; width: 450px"></div>
+            </v-card>
           </v-col>
-          <v-col>
-            <v-btn @click="crearRutina">Rutinas de los submarinos</v-btn>
-          </v-col>
-        </v-col>
-      </v-row>
-      <v-row>
-        <v-col>
-          <v-btn @click="asignarSubmarinos">Añadir Submarinos</v-btn>
-        </v-col>
-      </v-row>
 
-      <!-- Diálogo para rutinas -->
-      <v-dialog v-model="dialogRutina" max-height="800" max-width="800">
-        <v-card height="800" width="800">
-          <v-card-title>Rutinas del submarino</v-card-title>
-          <v-card-text>
-            <v-row>
-              <!-- Columna izquierda -->
-              <v-col cols="6">
-                <!-- Formulario para añadir tareas -->
-                <v-form ref="taskForm" @submit.prevent="agregarTarea">
-                  <v-text-field v-model="nuevaTarea" label="* Nombre la rutina"></v-text-field>
-                  <v-text-field style="height: 500px; margin-bottom: -210px;" v-model="nuevaDescripcion"
-                    label="Descripción"></v-text-field>
-                  *
-                  <datepicker class="dialog-content" v-model="selectedDate" @dayclick="dayClickHandler" />
-                  <v-time-picker v-model="selectedHour" label="Hora de asignación"></v-time-picker>
-                  <br>
-                  <v-btn type="submit" :disabled="!nuevaTarea.trim() || !selectedDate">Agregar Rutina</v-btn>
-                </v-form>
-              </v-col>
-
-              <!-- Columna derecha -->
-              <v-col cols="6">
-                <!-- Lista de tareas -->
-                <v-list>
-                  <v-list-item-group v-if="tareas.length > 0">
-                    <v-list-item v-for="(tarea, index) in tareas" :key="index">
-                      <v-list-item-content>
-                        <v-list-item-title>{{ tarea }}</v-list-item-title>
-                      </v-list-item-content>
-                      <v-list-item-action>
-                        <v-btn icon @click="editarTarea(index)">
-                          <v-icon>mdi-pencil</v-icon>
-                        </v-btn>
-                        <v-btn icon @click="eliminarTarea(index)">
-                          <v-icon>mdi-delete</v-icon>
-                        </v-btn>
-                      </v-list-item-action>
-                    </v-list-item>
-
-                  </v-list-item-group>
-                  <v-list-item v-else>
-                    <v-list-item-content>No hay rutinas.</v-list-item-content>
-                  </v-list-item>
-                </v-list>
+          <!-- Columna derecha -->
+          <v-col cols="12" sm="7">
+            <v-row v-if="nombreLugarBusqueda">
+              <v-col>
+                <h3>Submarinos Asignados a {{ nombreLugarBusqueda }}</h3>
+                <v-col v-for="submarino in submarinosAsignadosFiltrados" :key="submarino.id">
+                  {{ submarino.nom_sub }} - {{ submarino.hora }}
+                  <v-btn @click="desvincularSubmarino(submarino)">Desvincular</v-btn>
+                </v-col>
+                <v-col>
+                  <v-btn @click="crearRutina">Rutinas de los submarinos</v-btn>
+                </v-col>
               </v-col>
             </v-row>
-          </v-card-text>
+          </v-col>
+        </v-row>
 
-          <v-card-actions>
-            <v-btn @click="guardarRutina">Guardar</v-btn>
-            <v-btn @click="cerrarDialogRutina">Cancelar</v-btn>
-          </v-card-actions>
-        </v-card>
-      </v-dialog>
+        <!-- Diálogo para rutinas -->
+        <v-dialog v-model="dialogRutina" max-height="800" max-width="800">
+          <v-card height="800" width="800">
+            <v-card-title>Rutinas del submarino</v-card-title>
+            <v-card-text>
+              <v-row>
+                <!-- Columna izquierda -->
+                <v-col cols="6">
+                  <!-- Formulario para añadir tareas -->
+                  <v-form ref="taskForm" @submit.prevent="agregarTarea">
+                    <v-text-field v-model="nuevaTarea" label="* Nombre la rutina"></v-text-field>
+                    <v-text-field style="height: 500px; margin-bottom: -210px;" v-model="nuevaDescripcion"
+                      label="Descripción"></v-text-field>
+                    *
+                    <datepicker class="dialog-content" v-model="selectedDate" @dayclick="dayClickHandler" />
+                    <v-time-picker v-model="selectedHour" label="Hora de asignación"></v-time-picker>
+                    <br>
+                    <v-btn type="submit" :disabled="!nuevaTarea.trim() || !selectedDate">Agregar Rutina</v-btn>
+                  </v-form>
+                </v-col>
 
-      <!-- Diálogo para editar rutina -->
-      <v-dialog v-model="showDialogEdicion" position="center" max-width="800">
-        <v-card height="800" width="800">
-          <v-card-title>Editar Rutina</v-card-title>
-          <v-card-text>
-            <v-form @submit.prevent="actualizarTareaEditada">
-              <v-text-field v-model="tareaEnEdicion.nombre" label="* Nombre de la rutina" required></v-text-field>
-              <v-text-field style="height: 500px; margin-bottom: -210px;" v-model="tareaEnEdicion.descripcion"
-                label="Descripción"></v-text-field>
-              *
-              <datepicker class="dialog-content" v-model="selectedDate" @dayclick="dayClickHandler" required></datepicker>
-              <v-time-picker v-model="tareaEnEdicion.hora" label="Hora de asignación"></v-time-picker>
-            </v-form>
-          </v-card-text>
-          <v-card-actions>
-            <v-btn @click="actualizarTareaEditada" :disabled="!tareaEnEdicion.nombre.trim() || !selectedDate">Actualizar
-              Rutina</v-btn>
-            <v-btn @click="this.showDialogEdicion = false">Cancelar</v-btn>
-          </v-card-actions>
-        </v-card>
-      </v-dialog>
+                <!-- Columna derecha -->
+                <v-col cols="6">
+                  <!-- Lista de tareas -->
+                  <v-list>
+                    <v-list-item-group v-if="tareas.length > 0">
+                      <v-list-item v-for="(tarea, index) in tareas" :key="index">
+                        <v-list-item-content>
+                          <v-list-item-title>{{ tarea }}</v-list-item-title>
+                        </v-list-item-content>
+                        <v-list-item-action>
+                          <v-btn icon @click="editarTarea(index)">
+                            <v-icon>mdi-pencil</v-icon>
+                          </v-btn>
+                          <v-btn icon @click="eliminarTarea(index)">
+                            <v-icon>mdi-delete</v-icon>
+                          </v-btn>
+                        </v-list-item-action>
+                      </v-list-item>
 
-    </v-container>
-  </v-main>
-</v-app>
+                    </v-list-item-group>
+                    <v-list-item v-else>
+                      <v-list-item-content>No hay rutinas.</v-list-item-content>
+                    </v-list-item>
+                  </v-list>
+                </v-col>
+              </v-row>
+            </v-card-text>
+
+            <v-card-actions>
+              <v-btn @click="guardarRutina">Guardar</v-btn>
+              <v-btn @click="cerrarDialogRutina">Cancelar</v-btn>
+            </v-card-actions>
+          </v-card>
+        </v-dialog>
+
+        <!-- Diálogo para editar rutina -->
+        <v-dialog v-model="showDialogEdicion" position="center" max-width="800">
+          <v-card height="800" width="800">
+            <v-card-title>Editar Rutina</v-card-title>
+            <v-card-text>
+              <v-form @submit.prevent="actualizarTareaEditada">
+                <v-text-field v-model="tareaEnEdicion.nombre" label="* Nombre de la rutina" required></v-text-field>
+                <v-text-field style="height: 500px; margin-bottom: -210px;" v-model="tareaEnEdicion.descripcion"
+                  label="Descripción"></v-text-field>
+                *
+                <datepicker class="dialog-content" v-model="selectedDate" @dayclick="dayClickHandler" required>
+                </datepicker>
+                <v-time-picker v-model="tareaEnEdicion.hora" label="Hora de asignación"></v-time-picker>
+              </v-form>
+            </v-card-text>
+            <v-card-actions>
+              <v-btn @click="actualizarTareaEditada" :disabled="!tareaEnEdicion.nombre.trim() || !selectedDate">Actualizar
+                Rutina</v-btn>
+              <v-btn @click="this.showDialogEdicion = false">Cancelar</v-btn>
+            </v-card-actions>
+          </v-card>
+        </v-dialog>
+
+      </v-container>
+    </v-main>
+  </v-layout>
 </template>
 
 <script>
+import "leaflet/dist/leaflet.css";
+import "leaflet/dist/leaflet.js";
+import "leaflet/dist/leaflet-src.js";
+import L from "leaflet";
+import "leaflet-draw/dist/leaflet.draw.css";
+import "leaflet-draw/dist/leaflet.draw";
+import "leaflet-draw/dist/leaflet.draw-src";
+import "leaflet-draw/dist/leaflet.draw-src.js";
+
 import Datepicker from "vue3-datepicker";
+import { fetchAreas, getSubmarinos } from "@/services/connectionManager.js";
+import { useAppStore } from "@/store/app";
 import { ref } from 'vue';
 
 export default {
@@ -133,18 +162,13 @@ export default {
     return {
       drawer: false,
       selectedArea: null,
-      areas: ['Área 1', 'Área 2', 'Área 3'],
+      areas: [],
       submarinosAsignados: [
-        { id: 1, nombre: 'Submarino 1', selected: false, hora: '12:00', duracionBateria: 2, area: 'Área 1' },
+        { id: 1, nombre: 'Submarino 1', selected: false, hora: '12:00', duracionBateria: 2, area: 'SubmarinoArea' },
         { id: 2, nombre: 'Submarino 2', selected: false, hora: '14:00', duracionBateria: 2, area: 'Área 2' },
         // ... Submarinos asignados inicialmente
       ],
-      submarinosDisponibles: [
-        { id: 3, nombre: 'Submarino 3', selected: false, hora: '10:00', duracionBateria: 2 },
-        { id: 4, nombre: 'Submarino 4', selected: false, hora: '16:00', duracionBateria: 2 },
-        // ... Submarinos disponibles inicialmente
-      ],
-
+      submarinosDisponibles: [],
       dialogRutina: false,
       selectedRutina: null,
       selectedDate: null,
@@ -155,20 +179,23 @@ export default {
       nuevaDescripcion: '',
       selectedHour: null,
       editingTaskIndex: null,
-
       tareaEnEdicion: {
         nombre: '',
         descripcion: '',
         hora: null,
       },
       editingTaskIndex: null,
-
       showDialogEdicion: false,
-
-
+      mapa: null,
+      nombreLugarBusqueda: "",
+      nuevoNombreLugar: "",
+      areaEncontrada: null,
+      areaEncontradaID: null,
+      mapaInicializado: false,
     };
   },
   methods: {
+    // VER SI HAY SUBMARINOS EN ESE AREA
     actualizarSubmarinos() {
       if (this.selectedArea) {
         this.submarinosAsignados = this.submarinosAsignados.filter(sub => sub.area === this.selectedArea);
@@ -294,7 +321,6 @@ export default {
       }
     },
 
-
     // ELIMINAR RUTINA
     eliminarTarea(index) {
       // Elimina la tarea en el índice especificado
@@ -302,6 +328,135 @@ export default {
         this.tareas.splice(index, 1);
       }
     },
+
+    // SELECT PARA PILLAR COODS + NOMBRE DEL AREA + ID
+    async getAreas() {
+      try {
+        this.areas = await fetchAreas();
+        console.log(this.areas);
+      } catch (error) {
+        console.error("Error fetching areas:", error);
+      }
+    },
+
+    // BUSCAMOS EL AREA SELECCIONADA
+    async buscarArea() {
+      const areaEncontrada = this.areas.find(
+        (area) => area.nombreArea === this.nombreLugarBusqueda
+      );
+
+      if (areaEncontrada && areaEncontrada.coordenadas) {
+        // Cargar coordenadas en mapaSelect
+        this.cargarCoordenadasEnMapaSelect(areaEncontrada.coordenadas);
+        this.areaEncontrada = areaEncontrada;
+        this.areaEncontradaID = areaEncontrada._id;
+        this.nombreExistente = areaEncontrada.nombreArea;
+        //console.log("Nombre");
+       // console.log(this.nombreExistente);
+      }
+      this.actualizarSubmarinos();
+    },
+
+    // SELECT A TODOS LOS SUBMARINOS
+    async getSubmarino() {
+      const store = useAppStore();
+      const userEmpresa = store.getUserEmpresa;
+      //console.log(userEmpresa);
+      try {
+        this.submarinosDisponibles = await getSubmarinos(userEmpresa);
+        console.log(this.submarinosDisponibles[0].nom_sub);
+      } catch (error) {
+        console.error("Error fetching submarinos:", error);
+      }
+    },
+
+    // INICIO Y CONFIG DEL MAPA
+    initMapaSelect() {
+      this.mapa = L.map("mapaSelect").setView([41.38879, 2.15899], 11);
+      L.tileLayer(
+        "https://cartodb-basemaps-{s}.global.ssl.fastly.net/rastertiles/voyager/{z}/{x}/{y}.png",
+        {
+          maxZoom: 18,
+        }
+      ).addTo(this.mapa);
+
+      const drawnItems = new L.FeatureGroup();
+      this.mapa.addLayer(drawnItems);
+
+      // Crear el control de dibujo y asignarlo a this.drawControl
+      this.drawControl = new L.Control.Draw({
+        edit: {
+          featureGroup: drawnItems,
+          edit: false,
+          remove: false,
+        },
+        draw: {
+          polygon: false,
+          circle: false,
+          rectangle: false,
+          marker: false,
+          polyline: false,
+          circlemarker: false,
+        },
+      });
+
+      this.mapa.addControl(this.drawControl);
+
+      // Agregar control de edición a las capas existentes
+      this.mapa.on(L.Draw.Event.CREATED, (event) => {
+        const layer = event.layer;
+        drawnItems.addLayer(layer);
+      });
+    },
+
+    // CARGAR COODS EN EL MAPA
+    cargarCoordenadasEnMapaSelect(coordenadas) {
+      // Limpiar el mapa
+      this.limpiarMapaSelect();
+
+      // Inicializar el mapa y el control de dibujo
+      this.initMapaSelect();
+      this.drawControl.addTo(this.mapa);
+
+      // Dibujar el área en el mapa
+      this.dibujarAreaEnMapa(coordenadas);
+    },
+
+    // DIBUJAR COODS EN EL MAPA
+    dibujarAreaEnMapa(coordenadas) {
+      console.log("Coordenadas:", coordenadas);
+
+      // Create a GeoJSON layer and add it to the map
+      const geoJsonLayer = L.geoJSON({
+        type: "Feature",
+        geometry: {
+          type: "Polygon",
+          coordinates: coordenadas,
+        },
+      }).addTo(this.mapa);
+
+      // Update the map view
+      this.mapa.fitBounds(geoJsonLayer.getBounds());
+    },
+
+    // LIMPIAR EL MAPA
+    limpiarMapaSelect() {
+      if (this.mapa) {
+        // Remover el control de dibujo antes de destruir el mapa
+        if (this.drawControl) {
+          this.mapa.removeControl(this.drawControl);
+        }
+
+        // Remover todas las capas del mapa
+        this.mapa.eachLayer((layer) => {
+          this.mapa.removeLayer(layer);
+        });
+
+        // Destruir el mapa
+        this.mapa.remove();
+      }
+    },
+
   },
   //
   computed: {
@@ -326,7 +481,8 @@ export default {
 
   mounted() {
     console.log("MONTADO");
-
+    this.getAreas();
+    this.getSubmarino();
   },
 
   updated() {
@@ -340,9 +496,14 @@ export default {
 import DefaultBar from "@/components/appbar.vue";
 </script>
 
-<style>
+<style scoped>
 .dialog-content {
   border: 2px solid black;
   padding: 5px;
+}
+
+.small-select {
+  width: 750px;
+  margin: 0 auto;
 }
 </style>
