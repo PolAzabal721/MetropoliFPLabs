@@ -4,7 +4,7 @@ export async function getDades() {
     const result = await response.json();
     return result;
 }
-export async function insertarArea(coordenadas, nombreArea) {
+export async function insertarArea(coordenadas, nombreArea, idSubmarino) {
     try {
         const response = await fetch('http://localhost:3169/areas', {
             method: 'PUT',
@@ -13,7 +13,8 @@ export async function insertarArea(coordenadas, nombreArea) {
             },
             body: JSON.stringify({
                 coordenadas: coordenadas,
-                nombreArea: nombreArea
+                nombreArea: nombreArea,
+                idSubmarino: idSubmarino
             })
         });
 

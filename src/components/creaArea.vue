@@ -18,13 +18,22 @@
 
           <v-btn @click="abrirEditarDialog" class="ml-4"> Editar </v-btn>
 
-          <v-select
-            v-model="selectedSubmarine"
-            :items="submarinos"
-            item-text="nom_sub"
-            item-value="id_sub"
-            label="Submarinos"
-          ></v-select> 
+          <div class="select-container">
+            <label for="submarino">Selecciona un submarino:</label>
+            <select
+              v-model="selectedSubmarine"
+              class="submarino-select"
+              id="submarino"
+            >
+              <option
+                v-for="submarino in submarinos"
+                :key="submarino.id_sub"
+                :value="submarino.id_sub"
+              >
+                {{ submarino.nom_sub }}
+              </option>
+            </select>
+          </div>
         </div>
         <br />
         <v-card height="700" width="800">
@@ -193,10 +202,12 @@ export default {
         this.isCreatingArea = true;
 
         // Guardar el área en la base de datos (reemplazar con tu método de guardado real)
+        console.log(this.selectedSubmarine);
         try {
           const areaId = await insertarArea(
             this.drawnGeometries,
-            this.nombreLugar
+            this.nombreLugar,
+            this.selectedSubmarine
           );
 
           // Mostrar un mensaje de éxito con el nombre
@@ -205,6 +216,7 @@ export default {
           // Restablecer el formulario y el mapa
           this.nombreLugar = "";
           this.drawnGeometries = [];
+          this.selectedSubmarine = "";
         } catch (error) {
           console.error("Error saving area:", error);
           alert("Error al guardar el área");
@@ -419,4 +431,14 @@ import DefaultBar from "@/components/appbar.vue";
   width: 20px;
   margin-right: 40px;
 }
+.select-container {
+  display: inline-block;
+  border: 2px solid black;
+  padding: 5px;
+}
+
+.submarino-select {
+  width: 200px; /* Ancho del select */
+}
+
 </style>
