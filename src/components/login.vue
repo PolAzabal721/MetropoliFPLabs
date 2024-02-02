@@ -54,7 +54,7 @@ export default {
     login() {
       const jsonData = {
         correo: this.username,
-        contra: this.password
+        contra: this.password,
       };
       this.socket.emit('loginPage', jsonData);
     },
@@ -78,6 +78,7 @@ export default {
     this.socket.on('RespuestaLogin', (loginData) => {
       if (loginData.authorization) {
         store.setUserRole(loginData.roles);
+        store.setUserEmpresa(loginData.idEmpresa);
         this.$router.push('/');
       } else {
         window.alert("Nombre de usuario o contraseña incorrectos");

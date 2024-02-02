@@ -95,5 +95,26 @@ export async function deletearea(id) {
     }
   }
   
-
+  export async function getSubmarinos(id_empresa) {
+    try {
+      const response = await fetch("http://localhost:3169/getSubmarino", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({ idEmpresa: id_empresa })
+      });
+  
+      if (!response.ok) {
+        throw new Error("Error al obtener los submarinos");
+      }
+  
+      const data = await response.json();
+      return data;
+    } catch (error) {
+      console.error(error);
+      throw new Error("Error al obtener los submarinos");
+    }
+  }
+  
 
