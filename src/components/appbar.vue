@@ -1,34 +1,51 @@
 <template>
   <v-toolbar
-    image="https://s1.eestatic.com/2022/12/09/enclave-ods/semanales/724687779_229350113_1706x960.jpg">
-    <div style="
+    image="https://s1.eestatic.com/2022/12/09/enclave-ods/semanales/724687779_229350113_1706x960.jpg"
+  >
+    <div
+      style="
         display: flex;
         justify-content: space-between;
         align-items: center;
         width: 100%;
-      ">
+      "
+    >
       <div style="display: flex; align-items: center">
         <router-link :to="'/'" class="titulo">
           <v-toolbar-title class="mx-5 titulo">Sea Shepherd</v-toolbar-title>
         </router-link>
-        <v-btn v-if="userRole === 'admin'" :class="estatMotorClass">{{ motor }}</v-btn>
+        <v-btn v-if="userRole === 'admin'" :class="estatMotorClass">{{
+          motor
+        }}</v-btn>
       </div>
-      <div style="width: 50%" v-if="userRole === 'cliente' ">
+      <div style="width: 50%" v-if="userRole === 'cliente'">
+        <router-link :to="'/'" class="colorBTN" @click.prevent="logout"
+          >Cerrar Sesión</router-link
+        >
         <router-link :to="'/camara'" class="colorBTN"> Càmera</router-link>
       </div>
-      <div style="width: 50%" v-if="userRole ===''">
-        <router-link :to="'/login'" class="colorBTN">Iniciar Sesión</router-link>
+      <div style="width: 50%" v-if="userRole === ''">
+        <router-link :to="'/login'" class="colorBTN"
+          >Iniciar Sesión</router-link
+        >
         <router-link :to="'/camara'" class="colorBTN"> Càmera</router-link>
       </div>
-      <div style="width: 50%" v-if="userRole === 'admin' ||  userRole === 'tecnico_web'" >
+      <div
+        style="width: 50%"
+        v-if="userRole === 'admin' || userRole === 'tecnico_web'"
+      >
+        <router-link :to="'/'" class="colorBTN" @click.prevent="logout"
+          >Cerrar Sesión</router-link
+        >
+
         <router-link :to="'/datos'" class="colorBTN"> Dades</router-link>
         <router-link :to="'/camara'" class="colorBTN"> Càmera</router-link>
         <router-link :to="'/ubicacion'" class="colorBTN"> Ubicació</router-link>
-        <router-link :to="'/areasHome'" class="colorBTN"> Configurar áreas</router-link>
+        <router-link :to="'/areasHome'" class="colorBTN">
+          Configurar áreas</router-link
+        >
         <router-link :to="'/informes'" class="colorBTN"> Informes</router-link>
-  
       </div>
-      
     </div>
   </v-toolbar>
 </template>
@@ -94,6 +111,12 @@ export default {
     userRole() {
       const appStore = useAppStore();
       return appStore.userRole; // Añade el rol del usuario a tus datos computados
+    },
+  },
+  methods: {
+    logout() {
+      const appStore = useAppStore();
+      appStore.clearSession();
     },
   },
 };
