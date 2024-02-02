@@ -1,5 +1,5 @@
 <template>
-  <default-bar class="barra" />
+  <!-- <default-bar class="barra" /> -->
   <v-layout class="rounded rounded-md">
     <v-container fluid>
       <!-- MAPA PRINCIPAL -->
@@ -17,6 +17,14 @@
           </v-btn>
 
           <v-btn @click="abrirEditarDialog" class="ml-4"> Editar </v-btn>
+
+          <v-select
+            v-model="selectedSubmarine"
+            :items="submarinos"
+            item-text="nom_sub"
+            item-value="id_sub"
+            label="Submarinos"
+          ></v-select> 
         </div>
         <br />
         <v-card height="700" width="800">
@@ -78,6 +86,8 @@ import "leaflet-draw/dist/leaflet.draw-src.js";
 import { fetchAreas } from "@/services/connectionManager.js";
 import { insertarArea } from "@/services/connectionManager.js";
 import { deletearea } from "@/services/connectionManager.js";
+import { getSubmarinos } from "@/services/connectionManager.js";
+import { useAppStore } from "@/store/app";
 
 export default {
   data() {
@@ -92,8 +102,10 @@ export default {
       drawControl: null,
       areaCreated: false,
       areas: [],
+      submarinos: [],
       nombreLugarBusqueda: "",
       nuevoNombreLugar: "",
+      selectedSubmarine: "",
       areaEncontrada: null,
       areaEncontradaID: null,
       mapaInicializado: false,
@@ -232,6 +244,18 @@ export default {
       }
     },
 
+    async getSubmarino() {
+      const store = useAppStore();
+      const userEmpresa = store.getUserEmpresa;
+      console.log(userEmpresa);
+      try {
+        this.submarinos = await getSubmarinos(userEmpresa);
+        console.log(this.submarinos[0].nom_sub);
+      } catch (error) {
+        console.error("Error fetching submarinos:", error);
+      }
+    },
+
     // INICIO Y CONFIG DEL MAPA
     initMapaSelect() {
       this.mapa = L.map("mapaSelect").setView([41.38879, 2.15899], 11);
@@ -367,6 +391,7 @@ export default {
   mounted() {
     console.log("MONTADO");
     this.getAreas();
+    this.getSubmarino();
     this.initMap();
   },
 
@@ -384,6 +409,10 @@ import DefaultBar from "@/components/appbar.vue";
 <style scoped>
 .small-select {
   width: 750px;
+  margin: 0 auto;
+}
+.submarino-select {
+  width: 200px;
   margin: 0 auto;
 }
 .small-text-field {
