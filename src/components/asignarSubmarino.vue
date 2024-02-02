@@ -1,6 +1,7 @@
 <template>
+    <default-bar class="barra" />
     <v-app>
-  <v-navigation-drawer app>
+  <v-navigation-drawer>
     <!-- Contenido del Drawer -->
     <h3>Submarinos Disponibles</h3>
     <v-col v-for="submarino in submarinosDisponibles" :key="submarino.id">
