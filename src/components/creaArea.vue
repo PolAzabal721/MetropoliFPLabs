@@ -1,5 +1,5 @@
 <template>
-  <!-- <default-bar class="barra" /> -->
+  <default-bar class="barra" /> 
   <v-layout class="rounded rounded-md">
     <v-container fluid>
       <!-- MAPA PRINCIPAL -->
@@ -439,6 +439,8 @@ import DefaultBar from "@/components/appbar.vue";
 
 .submarino-select {
   width: 200px; /* Ancho del select */
+  border: 2px solid black;
+  padding: 5px;
 }
 
 </style>
