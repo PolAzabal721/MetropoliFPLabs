@@ -41,19 +41,11 @@ const routes = [
 
   },
 
-  // HOME AREAS ( ADMINISTRA LA CREACION + EDICION + ELIMINACION DE AREAS )
+  // CREAR AREAS (COMO LA RUMBA) + EDITAR + ELIMINAR 
   {
-    path: '/areasHome/',
-    component: () => import('@/components/areasHome.vue'),
-    meta: { title: 'Sea Shepherd - Areas' }
-
-  },
-
-  // CREAR AREAS (COMO LA RUMBA)
-  {
-    path: '/creaArea/',
-    component: () => import('@/components/creaArea.vue'),
-    meta: { title: 'Sea Shepherd - Crear areas' }
+    path: '/areas/',
+    component: () => import('@/components/areas.vue'),
+    meta: { title: 'Sea Shepherd - Gestionar áreas' }
 
   },
 
@@ -64,11 +56,11 @@ const routes = [
 
   },
 
-  // EMPAREJAR AREA CON SUBMARINOS
+  // SUBMARINOS + EMPAREJARLOS CON AREAS (CREAR RUTINAS + EDITAR + ELIMINAR)
   {
-    path: '/asignarSubmarino/',
-    component: () => import('@/components/asignarSubmarino.vue'),
-    meta: { title: 'Sea Shepherd - Emparejar areas' }
+    path: '/submarinos/',
+    component: () => import('@/components/submarinos.vue'),
+    meta: { title: 'Sea Shepherd - submarinos' }
 
   },
 
