@@ -86,8 +86,7 @@ export default {
       mapaInicializado: false,
       nuevoNombre: null,
       nombreExistente: null,
-
-      drawControlEditar: null,
+      drawnItems: null,
     };
   },
   methods: {
@@ -226,42 +225,45 @@ export default {
 
     // INICIO Y CONFIG DEL MAPA
     initMapaSelect() {
-  this.mapa = L.map("mapaSelect").setView([41.38879, 2.15899], 11);
-  L.tileLayer(
-    "https://cartodb-basemaps-{s}.global.ssl.fastly.net/rastertiles/voyager/{z}/{x}/{y}.png",
-    {
-      maxZoom: 18,
-    }
-  ).addTo(this.mapa);
+      this.mapa = L.map("mapaSelect").setView([41.38879, 2.15899], 11);
+      L.tileLayer(
+        "https://cartodb-basemaps-{s}.global.ssl.fastly.net/rastertiles/voyager/{z}/{x}/{y}.png",
+        {
+          maxZoom: 18,
+        }
+      ).addTo(this.mapa);
 
-  const drawnItems = new L.FeatureGroup();
-  this.mapa.addLayer(drawnItems);
+      // Initialize drawnItems only if it's not already defined
+      if (!this.drawnItems) {
+        this.drawnItems = new L.FeatureGroup();
+        this.mapa.addLayer(this.drawnItems);
+      }
 
-  // Ensure the Draw plugin is initialized with the correct feature group
-  this.drawControl = new L.Control.Draw({
-    edit: {
-      featureGroup: drawnItems,
-      remove: false,
+      // Ensure the Draw plugin is initialized with the correct feature group
+      this.drawControl = new L.Control.Draw({
+        edit: {
+          featureGroup: this.drawnItems,
+          remove: false,
+          edit: false,
+        },
+        draw: {
+          polygon: false,
+          circle: false,
+          rectangle: false,
+          marker: false,
+          polyline: false,
+          circlemarker: false,
+        },
+      });
+
+      this.mapa.addControl(this.drawControl);
+
+      // Register the Draw.Event.CREATED event as before
+      this.mapa.on(L.Draw.Event.CREATED, (event) => {
+        const layer = event.layer;
+        this.drawnItems.addLayer(layer);
+      });
     },
-    draw: {
-      polygon: false,
-      circle: false,
-      rectangle: false,
-      marker: false,
-      polyline: false,
-      circlemarker: false,
-    },
-  });
-
-  this.mapa.addControl(this.drawControl);
-
-  // Register the Draw.Event.CREATED event as before
-  this.mapa.on(L.Draw.Event.CREATED, (event) => {
-    const layer = event.layer;
-    drawnItems.addLayer(layer);
-  });
-},
-
 
 
     async buscarArea() {
@@ -272,39 +274,21 @@ export default {
       if (areaEncontrada && areaEncontrada.coordenadas) {
         const geoJsonLayer = await this.cargarCoordenadasEnMapaSelect(areaEncontrada.coordenadas);
 
-        if (this.drawnItems.getLayers().length > 0) {
-          // Enable editing on the first layer
-          const layer = this.drawnItems.getLayers()[0];
-          if (layer.editing) {
-            layer.editing.enable();
-          } else {
-            console.error("Editing not available on the layer.");
-          }
-        } else {
-          console.error("No layers in drawnItems to enable editing.");
-        }
+        const layers = this.drawnItems.getLayers();
 
-      }
-    },
+if (layers.length > 0) {
+  const layerToEdit = layers[0];
 
+  if (layerToEdit && layerToEdit.editing) {
+    layerToEdit.editing.enable();
+  } else {
+    console.error("Editing not available on the layer.");
+  }
+} else {
+  console.error("No layers in drawnItems to enable editing.");
+}
 
 
-
-
-
-
-
-
-    deleteArea() {
-      if (this.areaEncontrada) {
-        console.log(this.areaEncontrada._id);
-        deletearea(this.areaEncontrada._id);
-        this.limpiarEdicion();
-        this.limpiarMapaSelect();
-        this.cerrarEditarDialog();
-        this.getAreas();
-      } else {
-        console.error("No area to delete");
       }
     },
 
@@ -340,18 +324,18 @@ export default {
 
       // Dibujar el área en el mapa y agregarla al grupo de capas
       const geoJsonLayer = L.geoJSON({
-    type: "Feature",
-    geometry: {
-      type: "Polygon",
-      coordinates: coordenadas,
-    },
-  }, {
-    // Add Draw plugin options for editing support
-    editOptions: {
-      featureGroup: drawnItems,
-      remove: false,
-    },
-  }).addTo(drawnItems);
+        type: "Feature",
+        geometry: {
+          type: "Polygon",
+          coordinates: coordenadas,
+        },
+      }, {
+        // Add Draw plugin options for editing support
+        editOptions: {
+          featureGroup: drawnItems,
+          remove: false,
+        },
+      }).addTo(drawnItems);
 
 
       // Update the map view
@@ -383,12 +367,6 @@ export default {
       this.mapa.fitBounds(geoJsonLayer.getBounds());
     },
 
-    limpiarEdicion() {
-      this.nombreLugarBusqueda = "";
-      this.nuevoNombreLugar = "";
-      this.areaEncontrada = null;
-    },
-
     limpiarMapaSelect() {
       if (this.mapa) {
         // Remover el control de dibujo antes de destruir el mapa
@@ -406,6 +384,25 @@ export default {
       }
     },
 
+    limpiarEdicion() {
+      this.nombreLugarBusqueda = "";
+      this.nuevoNombreLugar = "";
+      this.areaEncontrada = null;
+    },
+
+    deleteArea() {
+      if (this.areaEncontrada) {
+        console.log(this.areaEncontrada._id);
+        deletearea(this.areaEncontrada._id);
+        this.limpiarEdicion();
+        this.limpiarMapaSelect();
+        this.cerrarEditarDialog();
+        this.getAreas();
+      } else {
+        console.error("No area to delete");
+      }
+    },
+
     // GUARDAS DIBUJOS
     saveGeometry(geojson) {
       // Guardar solo las coordenadas en el array
@@ -419,6 +416,7 @@ export default {
   //CONSOLA
   created() {
     console.log("CREADO");
+
   },
 
   mounted() {
