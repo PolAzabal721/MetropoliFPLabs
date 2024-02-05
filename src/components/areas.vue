@@ -32,13 +32,27 @@
 
             <!-- NUEVO NOMBRE AREA -->
             <v-col>
-              <v-text-field class="small-text-field" v-model="nuevoNombre" label="Nuevo nombre Area"></v-text-field>
+              <v-text-field class="small-text-field" v-model="nuevoNombre" label="Nuevo nombre Area"
+                :disabled="!areaEncontrada"></v-text-field>
             </v-col>
           </v-row>
 
-          <v-btn class="editarSelect" @click="buscarArea" :disabled="nombreLugarBusqueda === ''">
-            Buscar
-          </v-btn>
+          <v-row>
+            <!-- BTN PARA BUSCAR AREA -->
+            <v-col>
+              <v-btn class="editarSelect" @click="buscarArea" :disabled="nombreLugarBusqueda === ''">
+                Buscar
+              </v-btn>
+            </v-col>
+
+            <!-- BTN PARA ACTIVAR Y DESACTIVAR EDITAR COORDENADAS -->
+            <v-col>
+              <v-btn class="editarArea" @click="editarArea">
+                {{ isEditing ? 'Guardar cambios' : 'Editar Coordenadas' }}
+              </v-btn>
+            </v-col>
+          </v-row>
+
           <br>
           <!-- MAPA PARA EDITAR AREAS -->
           <v-card class="mx-auto slidecontainer" height="860" width="800">
@@ -87,6 +101,9 @@ export default {
       nuevoNombre: null,
       nombreExistente: null,
       drawnItems: null,
+      editedCoordinates: null,
+      layerToEdit: null,
+      isEditing: false,
     };
   },
   methods: {
@@ -199,19 +216,19 @@ export default {
       this.dialogEditar = true;
     },
 
+    // CERRAR EDITOR DE AREAS
     cerrarEditarDialog() {
       this.dialogEditar = false;
       this.reiniciarEstado();
     },
 
+    // REINICAR VALORES AL CERRAR EL EDITOR DE AREAS
     reiniciarEstado() {
       this.areaEncontrada = null;
       this.areaEncontradaID = null;
-    },
+      this.nombreLugarBusqueda = '';
+      this.nuevoNombre = '';
 
-    // HACER UPDATE A LA BD
-    async guardarCambios() {
-      this.cerrarEditarDialog();
     },
 
     // SELECT PARA PILLAR COODS + NOMBRE DEL AREA + ID
@@ -279,12 +296,12 @@ export default {
         const layers = geoJsonLayer.getLayers();
 
         if (layers.length > 0) {
-          const layerToEdit = layers[0];
+          this.layerToEdit = layers[0];
 
-          if (layerToEdit && layerToEdit.editing) {
-            layerToEdit.editing.enable();
+          if (this.layerToEdit && this.layerToEdit.editing) {
+            //this.layerToEdit.editing.enable();
           } else {
-            console.log(layerToEdit);
+            console.log(this.layerToEdit);
             console.error("Editing not available on the layer.");
           }
         } else {
@@ -396,17 +413,85 @@ export default {
       this.areaEncontrada = null;
     },
 
+    // ELIMINAR AREA SELECCIONADA
     deleteArea() {
       if (this.areaEncontrada) {
-        console.log(this.areaEncontrada._id);
-        deletearea(this.areaEncontrada._id);
-        this.limpiarEdicion();
-        this.limpiarMapaSelect();
-        this.cerrarEditarDialog();
-        this.getAreas();
+        const confirmDelete = window.confirm(`¿Estás seguro de querer eliminar el área "${this.areaEncontrada.nombreArea}"?`);
+
+        if (confirmDelete) {
+          console.log(this.areaEncontrada._id);
+          deletearea(this.areaEncontrada._id);
+          this.limpiarEdicion();
+          this.limpiarMapaSelect();
+          this.cerrarEditarDialog();
+          this.getAreas();
+        } else {
+          alert("Eliminación cancelada.");
+        }
       } else {
         console.error("No area to delete");
       }
+    },
+
+    // ROTAR ENTRE EDITAR EL AREA Y NO EDITAR 
+    editarArea() {
+      if (this.layerToEdit) {
+        if (!this.isEditing) {
+          // Habilitar la edición y guardar las coordenadas originales
+          this.layerToEdit.editing.enable();
+          this.editedCoordinates = this.areaEncontrada.coordenadas;
+          this.isEditing = true;
+        } else {
+          // Deshabilitar la edición y guardar las coordenadas editadas
+          this.layerToEdit.editing.disable();
+          this.editedCoordinates = this.layerToEdit.toGeoJSON().geometry.coordinates;
+          this.isEditing = false;
+        }
+
+        console.log(this.editedCoordinates);
+      }
+    },
+
+
+    // GUARDAR LOS DATOS EN BD
+    async guardarCambios() {
+      let cambiosRealizados = false;
+
+      if (this.editedCoordinates && this.editedCoordinates.length > 0) {
+        // Validar el nuevo nombre
+        const nuevoNombreValido = /^[a-zA-Z]{3,}$/.test(this.nuevoNombre.trim());
+
+        if (nuevoNombreValido || !this.nuevoNombre.trim()) {
+          // Si el nuevo nombre es válido o está vacío, actualizar el nombre del área
+          this.areaEncontrada.nombreArea = this.nuevoNombre.trim();
+          cambiosRealizados = true;
+        } else {
+          alert("El nuevo nombre no es válido. Debe contener al menos 3 letras y solo caracteres alfabéticos.");
+          return;
+        }
+      }
+
+      if (cambiosRealizados) {
+        try {
+          // Actualizar las coordenadas y el nombre en la base de datos
+          await actualizarCoordenadas(this.areaEncontradaID, this.editedCoordinates);
+          alert("Cambios guardados exitosamente.");
+        } catch (error) {
+          console.error("Error guardando cambios:", error);
+          alert("Error al guardar cambios");
+        }
+      } else {
+        alert("No se ha realizado ningún cambio.");
+      }
+
+      this.cerrarEditarDialog();
+    },
+
+
+    // HACER EL UPDATE A LA BD
+    actualizarCoordenadas() {
+      // las nuevas coordenadas === this.editedCoordinates
+
     },
 
     // GUARDAS DIBUJOS
@@ -446,6 +531,11 @@ import DefaultBar from "@/components/appbar.vue";
 .editarSelect {
   width: 350px;
   margin-left: 50px;
+}
+
+.editarArea {
+  width: 350px;
+  margin-left: 9px;
 }
 
 .small-text-field {
