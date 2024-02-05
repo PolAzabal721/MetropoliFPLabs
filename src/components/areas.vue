@@ -265,33 +265,37 @@ export default {
       });
     },
 
-
+    // BUSCAMOS EL AREA Y PERMITIMOS EDITAR
     async buscarArea() {
       const areaEncontrada = this.areas.find(
         (area) => area.nombreArea === this.nombreLugarBusqueda
       );
 
+      this.areaEncontrada = areaEncontrada;
+
       if (areaEncontrada && areaEncontrada.coordenadas) {
         const geoJsonLayer = await this.cargarCoordenadasEnMapaSelect(areaEncontrada.coordenadas);
+        // console.log(geoJsonLayer);
+        const layers = geoJsonLayer.getLayers();
 
-        const layers = this.drawnItems.getLayers();
+        if (layers.length > 0) {
+          const layerToEdit = layers[0];
 
-if (layers.length > 0) {
-  const layerToEdit = layers[0];
-
-  if (layerToEdit && layerToEdit.editing) {
-    layerToEdit.editing.enable();
-  } else {
-    console.error("Editing not available on the layer.");
-  }
-} else {
-  console.error("No layers in drawnItems to enable editing.");
-}
+          if (layerToEdit && layerToEdit.editing) {
+            layerToEdit.editing.enable();
+          } else {
+            console.log(layerToEdit);
+            console.error("Editing not available on the layer.");
+          }
+        } else {
+          console.error("No layers in drawnItems to enable editing.");
+        }
 
 
       }
     },
 
+    // CARGAOS LAS COORDENADAS EN EL MAPA
     async cargarCoordenadasEnMapaSelect(coordenadas) {
       // Limpiar el mapa
       this.limpiarMapaSelect();
@@ -308,6 +312,7 @@ if (layers.length > 0) {
         edit: {
           featureGroup: drawnItems,
           remove: false,
+          edit: false,
         },
         draw: {
           polygon: false,
@@ -334,6 +339,7 @@ if (layers.length > 0) {
         editOptions: {
           featureGroup: drawnItems,
           remove: false,
+          edit: false,
         },
       }).addTo(drawnItems);
 
@@ -351,8 +357,7 @@ if (layers.length > 0) {
       return geoJsonLayer;
     },
 
-
-
+    // DIBUJAMOS EN EL MAPA
     dibujarAreaEnMapa(coordenadas) {
       // Create a GeoJSON layer and add it to the map
       const geoJsonLayer = L.geoJSON({
@@ -367,6 +372,7 @@ if (layers.length > 0) {
       this.mapa.fitBounds(geoJsonLayer.getBounds());
     },
 
+    // LIMPIAR DATOS MAPA ANETS DE CARGAR OTRO
     limpiarMapaSelect() {
       if (this.mapa) {
         // Remover el control de dibujo antes de destruir el mapa
