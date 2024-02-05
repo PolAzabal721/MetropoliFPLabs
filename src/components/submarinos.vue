@@ -12,9 +12,15 @@
         <v-spacer></v-spacer>
       </v-toolbar>
       <v-col v-for="submarino in submarinosDisponibles" :key="submarino.id">
-        <v-checkbox v-model="submarinosAsignados" :label="submarino.nom_sub" :value="submarino"></v-checkbox>
+        <v-checkbox
+          v-model="submarinosAsignados"
+          :label="submarino.nom_sub"
+          :value="submarino"
+        ></v-checkbox>
       </v-col>
-      <v-btn @click="asignarSubmarinos" :disabled="!selectedArea">Añadir Submarinos</v-btn>
+      <v-btn @click="asignarSubmarinos" :disabled="!selectedArea"
+        >Añadir Submarinos</v-btn
+      >
     </v-navigation-drawer>
 
     <v-main>
@@ -198,7 +204,11 @@ import "leaflet-draw/dist/leaflet.draw-src";
 import "leaflet-draw/dist/leaflet.draw-src.js";
 
 import Datepicker from "vue3-datepicker";
-import { fetchAreas, getSubmarinos } from "@/services/connectionManager.js";
+import {
+  fetchAreas,
+  getSubmarinos,
+  updateSubmarino,
+} from "@/services/connectionManager.js";
 import { useAppStore } from "@/store/app";
 import { ref } from "vue";
 
@@ -257,10 +267,15 @@ export default {
       }
     },
 
-    asignarSubmarinos() {
+    async asignarSubmarinos() {
       // Verificar si hay submarinos seleccionados
       if (this.submarinosAsignados.length > 0) {
-        
+        console.log(this.submarinosAsignados);
+        console.log(this.areaEncontrada._id);
+        await updateSubmarino(
+          this.areaEncontrada._id,
+          this.submarinosAsignados
+        );
       } else {
         // Mostrar un mensaje o realizar alguna acción si no hay submarinos seleccionados
         console.warn("No se han seleccionado submarinos para asignar.");
@@ -401,10 +416,21 @@ export default {
         this.areaEncontrada = areaEncontrada;
         this.areaEncontradaID = areaEncontrada._id;
         this.nombreExistente = areaEncontrada.nombreArea;
+        this.marcarSubmarinosAsignados(areaEncontrada._id);
+        console.log(areaEncontrada._id);
+        console.log(this.submarinosDisponibles);
+
         //console.log("Nombre");
         // console.log(this.nombreExistente);
       }
       this.actualizarSubmarinos();
+    },
+    marcarSubmarinosAsignados(areaId) {
+      this.submarinosAsignados.forEach((submarino) => {
+        if (submarino.id_area === areaId) {
+          
+        }
+      });
     },
 
     // SELECT A TODOS LOS SUBMARINOS

@@ -117,5 +117,28 @@ export async function deletearea(id) {
       throw new Error("Error al obtener los submarinos");
     }
   }
+
+  export async function updateSubmarino(id, submarino) {
+    try {
+      const response = await fetch("http://localhost:3169/updatesubmarino", {
+        method: "POST",
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({id: id, submarino: submarino})
+      });
+  
+      if (!response.ok) {
+        const errorMessage = await response.text();
+        throw new Error(errorMessage);
+      }
+  
+      const responseData = await response.json();
+      return responseData;
+    } catch (error) {
+      console.error('Error fetching data:', error);
+      throw error;
+    }
+  }
   
 
