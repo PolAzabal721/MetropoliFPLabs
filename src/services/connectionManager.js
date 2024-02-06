@@ -141,4 +141,44 @@ export async function deletearea(id) {
     }
   }
   
+export async function updateAreaSub(id_area, id_sub){
+  try{
+    const response = await fetch("http://localhost:3169/updateAreaSub",{
+      method: "POST",
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ areaId: id_area, submarinoid: id_sub })
+      })
+  }catch(error){
 
+  }
+}
+
+export async function deleteAreaSub(id_sub){
+  try{
+    const response = await fetch("http://localhost:3169/deleteAreaSub",{
+      method: "POST",
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ submarinoid: id_sub })
+      })
+  }catch(error){
+
+  }
+}
+
+export async function deleteSubMongo(id_area, id_sub){
+  try{
+    const response = await fetch("http://localhost:3169/deleteSubmarinomongo",{
+      method: "POST",
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ id_area,  id_sub })
+      })
+  }catch(error){
+
+  }
+}
