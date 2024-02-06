@@ -351,11 +351,11 @@ export default {
         (sub) => sub !== submarino
       );
       this.submarinosDisponibles.push(submarino);
-      console.log("Submarino desvinculado de", this.selectedArea, submarino);
+      console.log("Submarino desvinculado de", this.areaEncontrada._id, submarino);
 
       try{
-        await deleteSubMongo(this.areaEncontrada._id, submarino.id_sub);
-        await deleteAreaSub(submarino.id_sub);
+       await deleteSubMongo(this.areaEncontrada._id, submarino.id_sub);
+       await deleteAreaSub(submarino.id_sub);
       }catch(err){
 
       }
