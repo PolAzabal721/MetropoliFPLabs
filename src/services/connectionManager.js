@@ -176,9 +176,9 @@ export async function deleteSubMongo(id_area, id_sub){
         headers: {
           'Content-Type': 'application/json'
         },
-        body: JSON.stringify({ id_area,  id_sub })
+        body: JSON.stringify({ areaId: id_area, submarinoId: id_sub }) // Ajusta los nombres de las propiedades del objeto
       })
   }catch(error){
-
+    console.log(error);
   }
 }
