@@ -60,7 +60,7 @@
 }
 .dropdown-submari {
   color: #8ecae6 !important;
-  background-color: #8ecae6 !important;
+  background-color: rgba(127, 217, 233, 0.95) !important;
   padding: 5%;
   position: absolute;
   left: 0;
