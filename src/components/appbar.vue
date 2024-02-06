@@ -1,5 +1,5 @@
 <template>
-  <v-toolbar image="https://s1.eestatic.com/2022/12/09/enclave-ods/semanales/724687779_229350113_1706x960.jpg">
+  <v-toolbar color="#259FAF">
     <div style="
         display: flex;
         justify-content: space-between;
@@ -47,10 +47,8 @@
 }
 
 .colorBTN {
-  background-color: rgb(175, 175, 175);
-  border: 1px solid black;
   font-weight: bold;
-  color: black;
+  color: white;
   padding: 5px;
   border-radius: 10px;
   text-decoration: none;
@@ -62,9 +60,8 @@
 
 .colorBTN:hover {
   font-weight: bold;
-  color: white;
-  background-color: rgba(255, 255, 255, 0.178);
-  transition: 0.5s;
+  color: #152636;
+  transition: 0.2s;
 }
 
 .off-btn-red.off-btn-red {
