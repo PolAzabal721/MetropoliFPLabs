@@ -452,10 +452,10 @@ export default {
       }
     },
 
-
     // GUARDAR LOS DATOS EN BD
     async guardarCambios() {
-      let cambiosRealizados = false;
+      let cambiosNombre = false; // Variable para seguir el estado de si el nombre ha sido modificado
+      let cambiosCoordenadas = false; // Variable para seguir el estado de si las coordenadas han sido modificadas
 
       if (this.editedCoordinates && this.editedCoordinates.length > 0) {
         // Validar el nuevo nombre
@@ -463,35 +463,57 @@ export default {
 
         if (nuevoNombreValido || !this.nuevoNombre.trim()) {
           // Si el nuevo nombre es válido o está vacío, actualizar el nombre del área
-          this.areaEncontrada.nombreArea = this.nuevoNombre.trim();
-          cambiosRealizados = true;
+          if (this.areaEncontrada.nombreArea !== this.nuevoNombre.trim()) {
+            // Verificar si el nombre ha sido modificado
+            this.areaEncontrada.nombreArea = this.nuevoNombre.trim();
+            cambiosNombre = true; // Establecer la variable a true si el nombre ha sido modificado
+          }
         } else {
           alert("El nuevo nombre no es válido. Debe contener al menos 3 letras y solo caracteres alfabéticos.");
           return;
         }
       }
 
-      if (cambiosRealizados) {
+      if (this.editedCoordinates && this.editedCoordinates.length > 0) {
+        // Verificar si las coordenadas han sido modificadas
+        cambiosCoordenadas = true;
+      }
+
+      if (cambiosNombre || cambiosCoordenadas) {
         try {
           // Actualizar las coordenadas y el nombre en la base de datos
           await actualizarCoordenadas(this.areaEncontradaID, this.editedCoordinates);
-          alert("Cambios guardados exitosamente.");
+          if (cambiosNombre && cambiosCoordenadas) {
+            alert("El nombre y las coordenadas se han cambiado y los cambios guardados exitosamente.");
+          } else if (cambiosNombre) {
+            alert("El nombre se ha cambiado y los cambios guardados exitosamente.");
+          } else {
+            alert("Las coordenadas se han cambiado y los cambios guardados exitosamente.");
+          }
         } catch (error) {
           console.error("Error guardando cambios:", error);
           alert("Error al guardar cambios");
+          return; // Salir de la función si hay un error al guardar cambios
         }
       } else {
         alert("No se ha realizado ningún cambio.");
+        return; // Salir de la función si no se ha realizado ningún cambio
       }
 
       this.cerrarEditarDialog();
     },
 
 
+
+
+
+
+
+
     // HACER EL UPDATE A LA BD
     actualizarCoordenadas() {
       // las nuevas coordenadas === this.editedCoordinates
-
+      console.log(this.nuevoNombre);
     },
 
     // GUARDAS DIBUJOS
