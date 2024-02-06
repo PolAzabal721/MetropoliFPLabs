@@ -28,7 +28,7 @@
                   </h1>
                   <canvas class="mx-auto" id="myChart" width="850" height="425"></canvas>
                   <br />
-                  <select id="hour-filter">
+                  <select class="filtroBtn" id="hour-filter">
                     <option value="hores">Filtrar Hores</option>
                     <option value="dies">Filtrar Dies</option>
                     <option value="meses">Filtrar Mesos</option>
@@ -339,6 +339,10 @@ import DefaultBar from "@/components/appbar.vue";
 </script>
 
 <style>
+.filtroBtn {
+  margin-left: 30px;
+}
+
 /* Estilos para la leyenda */
 .legend {
   display: flex;

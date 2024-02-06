@@ -503,13 +503,6 @@ export default {
       this.cerrarEditarDialog();
     },
 
-
-
-
-
-
-
-
     // HACER EL UPDATE A LA BD
     actualizarCoordenadas() {
       // las nuevas coordenadas === this.editedCoordinates
