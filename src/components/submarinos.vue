@@ -13,14 +13,11 @@
       </v-toolbar>
       <v-col v-for="submarino in submarinosDisponibles" :key="submarino.id">
         <v-checkbox
-          v-model="submarinosAsignados"
+          v-model="submarino.selected"
           :label="submarino.nom_sub"
-          :value="submarino"
         ></v-checkbox>
       </v-col>
-      <v-btn @click="asignarSubmarinos" :disabled="!selectedArea"
-        >Añadir Submarinos</v-btn
-      >
+      <v-btn @click="asignarSubmarinos">Añadir Submarinos</v-btn>
     </v-navigation-drawer>
 
     <v-main>
@@ -59,7 +56,7 @@
                   v-for="submarino in submarinosAsignadosFiltrados"
                   :key="submarino.id"
                 >
-                  {{ submarino.nom_sub }} - {{ submarino.estado_sub }}<br />
+                  {{ submarino.nom_sub }} - {{ submarino.estado_sub }}<br>
                   Ubicación: {{ submarino.ruta }}
                   <v-btn @click="desvincularSubmarino(submarino)"
                     >Desvincular</v-btn
@@ -208,6 +205,9 @@ import {
   fetchAreas,
   getSubmarinos,
   updateSubmarino,
+  updateAreaSub,
+  deleteAreaSub,
+  deleteSubMongo
 } from "@/services/connectionManager.js";
 import { useAppStore } from "@/store/app";
 import { ref } from "vue";
@@ -252,33 +252,72 @@ export default {
   methods: {
     // VER SI HAY SUBMARINOS EN ESE AREA
     actualizarSubmarinos() {
-      if (this.selectedArea) {
+      if (this.areaEncontrada) {
         this.submarinosAsignados = this.submarinosAsignados.filter(
-          (sub) => sub.area === this.selectedArea
+          (submarino) => submarino.id_area === this.areaEncontrada._id
         );
         this.submarinosDisponibles = this.submarinosDisponibles.filter(
-          (sub) => sub.area !== this.selectedArea
+          (submarino) => submarino.id_area !== this.areaEncontrada._id
         );
       } else {
         this.submarinosAsignados = [];
         this.submarinosDisponibles = this.submarinosDisponibles.filter(
-          (sub) => !sub.selected
+          (submarino) => !submarino.selected
         );
       }
     },
 
     async asignarSubmarinos() {
-      // Verificar si hay submarinos seleccionados
-      if (this.submarinosAsignados.length > 0) {
-        console.log(this.submarinosAsignados);
+      const submarinosSeleccionados = this.submarinosDisponibles.filter(
+        (sub) => sub.selected
+      );
+
+      // Verificar duración de batería antes de asignar
+      const duracionTotal = submarinosSeleccionados.reduce(
+        (total, sub) => total + sub.duracionBateria,
+        0
+      );
+
+      if (duracionTotal > this.duracionMaximaPorTurno) {
+        console.error(
+          "Error: La duración total de la batería supera el límite por turno."
+        );
+        return;
+      }
+
+      // Actualizar submarinosAsignados y submarinosDisponibles
+      this.submarinosAsignados = [
+        ...this.submarinosAsignados,
+        ...submarinosSeleccionados,
+      ];
+      this.submarinosDisponibles = this.submarinosDisponibles.filter(
+        (sub) => !sub.selected
+      );
+
+      console.log(this.areaEncontrada._id);
+
+      for (let i = 0; i < this.submarinosAsignados.length; i++) {
+        try {
+          await updateAreaSub(
+            this.areaEncontrada._id,
+            this.submarinosAsignados[i].id_sub
+          );
+          this.submarinosAsignados[i].id_area = this.areaEncontrada._id;
+        } catch (error) {
+          console.error("Error al actualizar submarinos:", error);
+          // Manejar el error según tus necesidades
+        }
+      }
+      try {
         console.log(this.areaEncontrada._id);
+        // Realizar la llamada para actualizar los submarinos asignados en el backend
         await updateSubmarino(
           this.areaEncontrada._id,
           this.submarinosAsignados
         );
-      } else {
-        // Mostrar un mensaje o realizar alguna acción si no hay submarinos seleccionados
-        console.warn("No se han seleccionado submarinos para asignar.");
+      } catch (error) {
+        console.error("Error al actualizar submarinos:", error);
+        // Manejar el error según tus necesidades
       }
     },
 
@@ -303,14 +342,23 @@ export default {
       this.cerrarDialogRutina();
     },
 
-    desvincularSubmarino(submarino) {
+   async desvincularSubmarino(submarino) {
       // Desvincular un submarino específico del área seleccionada
       submarino.area = null;
+      console.log(submarino.id_sub);
+      console.log(submarino.id_area);
       this.submarinosAsignados = this.submarinosAsignados.filter(
         (sub) => sub !== submarino
       );
       this.submarinosDisponibles.push(submarino);
       console.log("Submarino desvinculado de", this.selectedArea, submarino);
+
+      try{
+        await deleteSubMongo(this.areaEncontrada._id, submarino.id_sub);
+        await deleteAreaSub(submarino.id_sub);
+      }catch(err){
+
+      }
     },
 
     crearRutina() {
@@ -404,33 +452,33 @@ export default {
       }
     },
 
-    // BUSCAMOS EL AREA SELECCIONADA
-    async buscarArea() {
+    buscarArea() {
       const areaEncontrada = this.areas.find(
         (area) => area.nombreArea === this.nombreLugarBusqueda
       );
-      this.selectedArea = true;
+
       if (areaEncontrada && areaEncontrada.coordenadas) {
         // Cargar coordenadas en mapaSelect
         this.cargarCoordenadasEnMapaSelect(areaEncontrada.coordenadas);
         this.areaEncontrada = areaEncontrada;
         this.areaEncontradaID = areaEncontrada._id;
         this.nombreExistente = areaEncontrada.nombreArea;
-        this.marcarSubmarinosAsignados(areaEncontrada._id);
-        console.log(areaEncontrada._id);
-        console.log(this.submarinosDisponibles);
 
-        //console.log("Nombre");
-        // console.log(this.nombreExistente);
-      }
-      this.actualizarSubmarinos();
-    },
-    marcarSubmarinosAsignados(areaId) {
-      this.submarinosAsignados.forEach((submarino) => {
-        if (submarino.id_area === areaId) {
-          
+        // Mover submarinos disponibles a submarinos asignados
+        for (let i = 0; i < this.submarinosDisponibles.length; i++) {
+          if (
+            this.submarinosDisponibles[i].id_area === this.areaEncontrada._id
+          ) {
+            this.submarinosAsignados.push(this.submarinosDisponibles[i]);
+            // Eliminar el submarino asignado del array de submarinos disponibles
+            this.submarinosDisponibles.splice(i, 1);
+            // Reducir el índice para seguir iterando correctamente
+            i--;
+          }
         }
-      });
+      }
+
+      this.actualizarSubmarinos();
     },
 
     // SELECT A TODOS LOS SUBMARINOS
@@ -537,7 +585,7 @@ export default {
   computed: {
     submarinosAsignadosFiltrados() {
       return this.submarinosAsignados.filter(
-        (sub) => sub.area === this.selectedArea
+        (submarino) => submarino.id_area === this.areaEncontradaID
       );
     },
   },
