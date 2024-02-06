@@ -25,8 +25,7 @@
       <div style="width: 50%" v-if="userRole === 'admin' || userRole === 'tecnico_web'">
         <router-link :to="'/'" class="colorBTN" @click.prevent="logout">Cerrar Sesión</router-link>
         <v-btn id="gestioSubmari" class="colorBTN" @mouseover="mostrarSubmari = true" @mouseleave="mostrarSubmari = false">Gestiò Sumbarins</v-btn>
-        <v-btn id="gestioIncidencies" class="colorBTN">Gestiò Incidències</v-btn>
-
+       <router-link :to="'/incidencias'" class="colorBTN">Gestiò Incidències</router-link>
         <div class="dropdown-incidencies">
           prova
         </div>

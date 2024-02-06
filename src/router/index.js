@@ -57,6 +57,14 @@ const routes = [
 
   },
 
+  // GESTION DE INCIDENCIAS
+  {
+    path: '/incidencias/',
+    component: () => import('@/components/incidencias.vue'),
+    meta: { title: 'Sea Shepherd - submarinos' }
+
+  },
+
   // CREAR LOGIN
   {
     path: '/login',
