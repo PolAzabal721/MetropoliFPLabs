@@ -42,7 +42,7 @@
                     </thead>
                     <tbody>
                         <tr v-for="(item, index) in incidenciasFiltradas" :key="index">
-                            <td>{{ item.nombre }}</td>
+                            <td>{{ item.nombre }}</td>                               
                             <td>{{ item.submarino }}</td>
                             <td>{{ item.autor }}</td>
                             <td>{{ item.responsable }}</td>
@@ -52,14 +52,31 @@
                             <td>{{ formatearFecha(item.fechaInicio) }}</td>
                             <td>{{ formatearFecha(item.fechaFin) }}</td>
                             <td style="border:none;">
+                                <v-icon @click="mostrarDescripcion(item.descripcion)">mdi-eye</v-icon>
+                            </td>
+                            <td style="border:none; margin-left: ;">
                                 <v-icon @click="editarIncidencia(index)">mdi-pencil</v-icon>
                             </td>
-                        </tr>
+                        </tr>                       
                     </tbody>
-
                 </table>
             </v-container>
         </v-layout>
+     
+<!-- Diálogo para mostrar la descripción de la incidencia -->
+<v-dialog v-model="dialogDescripcion" max-width="500">
+    <v-card>
+        <v-card-title>Descripción de la incidencia</v-card-title>
+        <v-card-text>
+            {{ descripcionSeleccionada }}
+        </v-card-text>
+        <v-card-actions>
+            <v-btn color="primary" @click="dialogDescripcion = false">Cerrar</v-btn>
+        </v-card-actions>
+    </v-card>
+</v-dialog>
+
+
 
         <!-- Diálogo para crear una nueva incidencia -->
         <v-dialog v-model="dialogoVisible" max-width="600px">
@@ -164,6 +181,9 @@ export default {
             submarinos: [],
             submarinoOptions: [],
             nomCompleto: '',
+            descripcionVisible: null,
+            dialogDescripcion: false,
+            descripcionSeleccionada: '',
             
         };
     },
@@ -375,7 +395,6 @@ export default {
             this.indiceEdicion = null;
         },
 
-
         // SELECT A TODOS LOS SUBMARINOS
         async getSubmarino() {
             const store = useAppStore();
@@ -389,6 +408,11 @@ export default {
                 console.error("Error fetching submarinos:", error);
             }
         },
+
+        mostrarDescripcion(descripcion) {
+        this.descripcionSeleccionada = descripcion;
+        this.dialogDescripcion = true;
+    },
 
 
     },
@@ -421,7 +445,7 @@ import DefaultBar from "@/components/appbar.vue";
     right: 10px;
     /* Ajusta esta posición según sea necesario */
     left: 13px;
-    width: 500px;
+    width: 605px;
     z-index: 1000;
     /* Asegura que esté por encima de otros elementos */
 }

@@ -1,5 +1,5 @@
 <template>
-  <default-bar class="barra" />
+  <default-bar/>
   <v-layout class="rounded rounded-md">
     <v-container fluid>
       <!-- MAPA PRINCIPAL -->
