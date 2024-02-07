@@ -117,6 +117,8 @@ export default {
       if (loginData.authorization) {
         store.setUserRole(loginData.roles);
         store.setUserEmpresa(loginData.idEmpresa);
+        store.setUserName(loginData.nom);
+        store.setUserApellido(loginData.apellido);
         this.$router.push('/');
       } else {
         window.alert("Nombre de usuario o contraseña incorrectos");

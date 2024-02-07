@@ -70,8 +70,6 @@
                     <v-textarea v-model="nuevaIncidencia.descripcion" label="Descripción de la incidencia"></v-textarea>
                     <v-select v-model="nuevaIncidencia.submarinoSeleccionado" label="Submarino"
                         :items="submarinos.map(submarino => submarino.nom_sub)"></v-select>
-                    <v-select v-model="nuevaIncidencia.autor" :items="['Usuario1', 'Usuario2', 'Usuario3']"
-                        label="Autor"></v-select>
                     <v-select v-model="nuevaIncidencia.tipo" :items="['Actualización de software', 'Reparación']"
                         label="Tipo"></v-select>
                     <v-select v-model="nuevaIncidencia.prioridad" :items="prioridades" label="Prioridad"></v-select>
@@ -83,7 +81,7 @@
             </v-card>
         </v-dialog>
 
-        <!-- Diálogo para editar nombre y descripción -->
+        <!-- Diálogo para editar nombre, descripción y prioridad -->
         <v-dialog v-model="dialogoEdicionVisible" max-width="600px">
             <v-card>
                 <v-card-title>Editar Incidencia</v-card-title>
@@ -165,6 +163,8 @@ export default {
             mostrarFiltroCard: false,
             submarinos: [],
             submarinoOptions: [],
+            nomCompleto: '',
+            
         };
     },
     methods: {
@@ -181,12 +181,11 @@ export default {
 
         // GUARDAR LA INCIDENCIA
         guardarIncidencia() {
-
+            const store = useAppStore();
             // Validar que todos los campos obligatorios estén llenos
             if (
                 !this.nuevaIncidencia.nombre ||
                 !this.nuevaIncidencia.descripcion ||
-                !this.nuevaIncidencia.autor ||
                 !this.nuevaIncidencia.tipo ||
                 !this.nuevaIncidencia.prioridad ||
                 !this.nuevaIncidencia.submarinoSeleccionado
@@ -207,11 +206,12 @@ export default {
                 alert('La descripción no puede tener más de 250 caracteres.');
                 return;
             }
-
+            this.nomCompleto= store.getUserName + ' ' + store.getUserApellido;
+            console.log(this.nomCompleto);
             this.listaItems.push({
                 nombre: this.nuevaIncidencia.nombre,
                 descripcion: this.nuevaIncidencia.descripcion,
-                autor: this.nuevaIncidencia.autor,
+                autor: this.nomCompleto,
                 tipo: this.nuevaIncidencia.tipo,
                 prioridad: this.nuevaIncidencia.prioridad,
                 estado: 'Nueva',
@@ -225,7 +225,7 @@ export default {
             // Limpiar el formulario y cerrar el diálogo
             this.nuevaIncidencia.nombre = '';
             this.nuevaIncidencia.descripcion = '';
-            this.nuevaIncidencia.autor = '';
+            this.nomCompleto = '';
             this.nuevaIncidencia.tipo = '';
             this.nuevaIncidencia.prioridad = '';
             this.nuevaIncidencia.submarinoSeleccionado = null;
