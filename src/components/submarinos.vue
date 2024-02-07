@@ -95,10 +95,11 @@
                       v-model="selectedDate"
                       @dayclick="dayClickHandler"
                     />
+                    <!-- 
                     <v-time-picker
                       v-model="selectedHour"
                       label="Hora de asignación"
-                    ></v-time-picker>
+                    ></v-time-picker>-->
                     <br />
                     <v-btn
                       type="submit"
@@ -112,14 +113,14 @@
                 <v-col cols="6">
                   <!-- Lista de tareas -->
                   <v-list>
-                    <v-list-item-group v-if="tareas.length > 0">
+                    <v-list-item v-if="tareas.length > 0">
                       <v-list-item
                         v-for="(tarea, index) in tareas"
                         :key="index"
                       >
-                        <v-list-item-content>
+                        <v-list-item>
                           <v-list-item-title>{{ tarea }}</v-list-item-title>
-                        </v-list-item-content>
+                        </v-list-item>
                         <v-list-item-action>
                           <v-btn icon @click="editarTarea(index)">
                             <v-icon>mdi-pencil</v-icon>
@@ -129,9 +130,9 @@
                           </v-btn>
                         </v-list-item-action>
                       </v-list-item>
-                    </v-list-item-group>
+                    </v-list-item>
                     <v-list-item v-else>
-                      <v-list-item-content>No hay rutinas.</v-list-item-content>
+                      <v-list-item>No hay rutinas.</v-list-item>
                     </v-list-item>
                   </v-list>
                 </v-col>
@@ -167,12 +168,12 @@
                   v-model="selectedDate"
                   @dayclick="dayClickHandler"
                   required
-                >
-                </datepicker>
-                <v-time-picker
+                />
+
+                <!-- <v-time-picker
                   v-model="tareaEnEdicion.hora"
                   label="Hora de asignación"
-                ></v-time-picker>
+                ></v-time-picker> -->
               </v-form>
             </v-card-text>
             <v-card-actions>
