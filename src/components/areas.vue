@@ -14,7 +14,7 @@
         </div>
         <br />
         <v-card height="700" width="800">
-          <div id="map" style="height: 650px; width: 800px"></div>
+          <div id="map" style="height: 665px; width: 800px"></div>
         </v-card>
       </v-card>
 
