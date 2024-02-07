@@ -56,7 +56,7 @@
                   v-for="submarino in submarinosAsignadosFiltrados"
                   :key="submarino.id"
                 >
-                  {{ submarino.nom_sub }} - {{ submarino.estado_sub }}<br>
+                  {{ submarino.nom_sub }} - {{ submarino.estado_sub }}<br />
                   Ubicación: {{ submarino.ruta }}
                   <v-btn @click="desvincularSubmarino(submarino)"
                     >Desvincular</v-btn
@@ -207,7 +207,8 @@ import {
   updateSubmarino,
   updateAreaSub,
   deleteAreaSub,
-  deleteSubMongo
+  deleteSubMongo,
+  addRutina,
 } from "@/services/connectionManager.js";
 import { useAppStore } from "@/store/app";
 import { ref } from "vue";
@@ -232,6 +233,7 @@ export default {
       descripciones: [],
       horas: [],
       nuevaDescripcion: "",
+      newRutina: [],
       selectedHour: null,
       editingTaskIndex: null,
       tareaEnEdicion: {
@@ -335,14 +337,13 @@ export default {
     },
 
     guardarRutina() {
-      // Aquí puedes implementar la lógica para guardar la rutina seleccionada
       console.log("Fecha seleccionada:", this.selectedDate);
 
       // Cerrar la ventana emergente de rutinas
       this.cerrarDialogRutina();
     },
 
-   async desvincularSubmarino(submarino) {
+    async desvincularSubmarino(submarino) {
       // Desvincular un submarino específico del área seleccionada
       submarino.area = null;
       console.log(submarino.id_sub);
@@ -351,14 +352,16 @@ export default {
         (sub) => sub !== submarino
       );
       this.submarinosDisponibles.push(submarino);
-      console.log("Submarino desvinculado de", this.areaEncontrada._id, submarino);
+      console.log(
+        "Submarino desvinculado de",
+        this.areaEncontrada._id,
+        submarino
+      );
 
-      try{
-       await deleteSubMongo(this.areaEncontrada._id, submarino.id_sub);
-       await deleteAreaSub(submarino.id_sub);
-      }catch(err){
-
-      }
+      try {
+        await deleteSubMongo(this.areaEncontrada._id, submarino.id_sub);
+        await deleteAreaSub(submarino.id_sub);
+      } catch (err) {}
     },
 
     crearRutina() {
@@ -366,18 +369,29 @@ export default {
       this.dialogRutina = true;
     },
 
-    // AGREGAMOS RUtina AL SUB
-    agregarTarea() {
+    // Método agregarTarea
+    async agregarTarea(nuevaTarea, nuevaDescripcion, selectedHour) {
       if (this.editingTaskIndex !== null) {
         this.actualizarTareaEditada();
       } else if (this.nuevaTarea.trim() !== "") {
-        this.tareas.push(this.nuevaTarea);
-        this.descripciones.push(this.nuevaDescripcion);
-        this.horas.push(this.selectedHour);
+        this.tareas.push(nuevaTarea);
+        this.descripciones.push(nuevaDescripcion);
+        this.horas.push(selectedHour);
+
+        // Agregar los valores a newRutina
+        this.newRutina.push({
+          nombre: nuevaTarea,
+          descripcion: nuevaDescripcion,
+          hora: selectedHour,
+          
+        });
+
+        await addRutina(this.areaEncontradaID, this.newRutina);
         // Limpiar el campo después de agregar la tarea
         this.nuevaTarea = "";
         this.nuevaDescripcion = "";
         this.selectedHour = null;
+        this.newRutina = [];
       }
     },
 
