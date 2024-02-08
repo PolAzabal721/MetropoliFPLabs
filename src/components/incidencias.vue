@@ -86,7 +86,7 @@
                     <v-text-field v-model="nuevaIncidencia.nombre" label="Asunto de la incidencia"></v-text-field>
                     <v-textarea v-model="nuevaIncidencia.descripcion" label="Descripción de la incidencia"></v-textarea>
                     <v-select v-model="nuevaIncidencia.submarinoSeleccionado" label="Submarino"
-                        :items="submarinos.map(submarino => submarino.nom_sub)"></v-select>
+                        :items="submarinos.map(submarino => submarino.id_sub)"></v-select>
                     <v-select v-model="nuevaIncidencia.tipo" :items="['Actualización de software', 'Reparación']"
                         label="Tipo"></v-select>
                     <v-select v-model="nuevaIncidencia.prioridad" :items="prioridades" label="Prioridad"></v-select>
@@ -118,7 +118,7 @@
 </template>
 
 <script>
-import { getSubmarinos } from "@/services/connectionManager.js";
+import { getSubmarinos, insertIncidencia } from "@/services/connectionManager.js";
 import { useAppStore } from "@/store/app";
 
 export default {
@@ -200,7 +200,7 @@ export default {
         },
 
         // GUARDAR LA INCIDENCIA
-        guardarIncidencia() {
+        async guardarIncidencia() {
             const store = useAppStore();
             // Validar que todos los campos obligatorios estén llenos
             if (
@@ -227,20 +227,22 @@ export default {
                 return;
             }
             this.nomCompleto= store.getUserName + ' ' + store.getUserApellido;
-            console.log(this.nomCompleto);
+            
+            
             this.listaItems.push({
-                nombre: this.nuevaIncidencia.nombre,
+                Asunto: this.nuevaIncidencia.nombre,
                 descripcion: this.nuevaIncidencia.descripcion,
-                autor: this.nomCompleto,
+                Autor: this.nomCompleto,
                 tipo: this.nuevaIncidencia.tipo,
                 prioridad: this.nuevaIncidencia.prioridad,
                 estado: 'Nueva',
-                fechaInicio: this.nuevaIncidencia.fechaInicio,
-                fechaFin: '',
-                submarino: this.nuevaIncidencia.submarinoSeleccionado,
+                fecha_inicio: this.nuevaIncidencia.fechaInicio,
+                id_sub: this.nuevaIncidencia.submarinoSeleccionado,
 
             });
-            console.log();
+
+            console.log(this.listaItems);
+            await insertIncidencia(this.listaItems);
 
             // Limpiar el formulario y cerrar el diálogo
             this.nuevaIncidencia.nombre = '';
