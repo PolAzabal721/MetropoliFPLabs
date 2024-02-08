@@ -205,3 +205,16 @@ export async function addRutina(areaId, rutinaData) {
     throw error;
   }
 }
+
+export async function selectRutinas(areaId) {
+  const url = `http://localhost:3169/selectRutinas/${areaId}`;
+
+  try {
+    const response = await fetch(url);
+    const data = await response.json();
+    return data;
+  } catch (error) {
+    console.error('Error selecting rutinas:', error);
+    throw new Error('Error selecting rutinas');
+  }
+}

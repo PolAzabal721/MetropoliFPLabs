@@ -59,8 +59,7 @@
                   {{ submarino.nom_sub }} - {{ submarino.estado_sub }}<br />
                   Ubicación: {{ submarino.ruta }}
                   <v-btn @click="desvincularSubmarino(submarino)"
-                    >Desvincular</v-btn
-                  >
+                    >Desvincular</v-btn>
                 </v-col>
                 <v-col>
                   <v-btn @click="crearRutina">Rutinas de los submarinos</v-btn>
@@ -68,6 +67,8 @@
               </v-col>
             </v-row>
           </v-col>
+
+          
         </v-row>
 
         <!-- Diálogo para rutinas -->
@@ -95,11 +96,7 @@
                       v-model="selectedDate"
                       @dayclick="dayClickHandler"
                     />
-                    <!-- 
-                    <v-time-picker
-                      v-model="selectedHour"
-                      label="Hora de asignación"
-                    ></v-time-picker>-->
+                   
                     <br />
                     <v-btn
                       type="submit"
@@ -113,13 +110,13 @@
                 <v-col cols="6">
                   <!-- Lista de tareas -->
                   <v-list>
-                    <v-list-item v-if="tareas.length > 0">
+                    <v-list-item v-if="rutinas.length > 0">
                       <v-list-item
-                        v-for="(tarea, index) in tareas"
-                        :key="index"
+                        v-for="(rutina, id) in rutinas"
+                        :key="id"
                       >
                         <v-list-item>
-                          <v-list-item-title>{{ tarea }}</v-list-item-title>
+                          <v-list-item-title>{{ rutina.nombre }}</v-list-item-title>
                         </v-list-item>
                         <v-list-item-action>
                           <v-btn icon @click="editarTarea(index)">
@@ -130,9 +127,6 @@
                           </v-btn>
                         </v-list-item-action>
                       </v-list-item>
-                    </v-list-item>
-                    <v-list-item v-else>
-                      <v-list-item>No hay rutinas.</v-list-item>
                     </v-list-item>
                   </v-list>
                 </v-col>
@@ -210,6 +204,7 @@ import {
   deleteAreaSub,
   deleteSubMongo,
   addRutina,
+  selectRutinas
 } from "@/services/connectionManager.js";
 import { useAppStore } from "@/store/app";
 import { ref } from "vue";
@@ -234,6 +229,7 @@ export default {
       descripciones: [],
       horas: [],
       nuevaDescripcion: "",
+      rutinas: [],
       newRutina: [],
       selectedHour: null,
       editingTaskIndex: null,
@@ -371,22 +367,21 @@ export default {
     },
 
     // Método agregarTarea
-    async agregarTarea(nuevaTarea, nuevaDescripcion, selectedHour) {
+    async agregarTarea() {
       if (this.editingTaskIndex !== null) {
         this.actualizarTareaEditada();
       } else if (this.nuevaTarea.trim() !== "") {
-        this.tareas.push(nuevaTarea);
-        this.descripciones.push(nuevaDescripcion);
-        this.horas.push(selectedHour);
+        this.tareas.push(this.nuevaTarea);
+        this.descripciones.push(this.nuevaDescripcion);
+        this.horas.push(this.selectedDate);
 
         // Agregar los valores a newRutina
-        this.newRutina.push({
-          nombre: nuevaTarea,
-          descripcion: nuevaDescripcion,
-          hora: selectedHour,
-          
-        });
-
+        this.newRutina = {
+          nombre: this.nuevaTarea,
+          descripcion: this.nuevaDescripcion,
+          hora: this.selectedDate,   
+        }
+               
         await addRutina(this.areaEncontradaID, this.newRutina);
         // Limpiar el campo después de agregar la tarea
         this.nuevaTarea = "";
@@ -467,7 +462,7 @@ export default {
       }
     },
 
-    buscarArea() {
+    async buscarArea() {
       const areaEncontrada = this.areas.find(
         (area) => area.nombreArea === this.nombreLugarBusqueda
       );
@@ -494,6 +489,8 @@ export default {
       }
 
       this.actualizarSubmarinos();
+      this.rutinas = await selectRutinas(this.areaEncontradaID);
+      console.log(this.rutinas);
     },
 
     // SELECT A TODOS LOS SUBMARINOS
@@ -577,6 +574,8 @@ export default {
       // Update the map view
       this.mapa.fitBounds(geoJsonLayer.getBounds());
     },
+
+
 
     // LIMPIAR EL MAPA
     limpiarMapaSelect() {
