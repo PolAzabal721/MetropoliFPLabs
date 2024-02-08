@@ -333,7 +333,7 @@ export default {
       if (index >= 0 && index < this.rutinas.rutinas.length) {
         // Acceder a los datos dentro de la rutina en lugar de directamente en this.tareas, this.descripciones, etc.
         const rutina = this.rutinas.rutinas[index];
-        this.tareaEnEdicion.nombre = rutina.tareas.trim();  // Asegurar que sea una cadena antes de trim
+        this.tareaEnEdicion.nombre = rutina.tareas !== undefined ? rutina.tareas.trim() : "";
         this.tareaEnEdicion.descripcion = rutina.descripciones || "";
         this.tareaEnEdicion.hora = rutina.horas || null;
 
