@@ -12,10 +12,7 @@
         <v-spacer></v-spacer>
       </v-toolbar>
       <v-col v-for="submarino in submarinosDisponibles" :key="submarino.id">
-        <v-checkbox
-          v-model="submarino.selected"
-          :label="submarino.nom_sub"
-        ></v-checkbox>
+        <v-checkbox v-model="submarino.selected" :label="submarino.nom_sub"></v-checkbox>
       </v-col>
       <v-btn @click="asignarSubmarinos">Añadir Submarinos</v-btn>
     </v-navigation-drawer>
@@ -26,19 +23,11 @@
           <!-- Columna izquierda (Mapa y buscador) -->
           <v-col cols="12" sm="5">
             <!-- CONFIG MAPA + SELECT AREA -->
-            <v-select
-              style="height: 75px; font-size: auto"
-              v-model="nombreLugarBusqueda"
-              :items="areas.map((area) => area.nombreArea)"
-              label="Seleccionar Área"
-              @change="actualizarSubmarinos"
-            ></v-select>
-            <v-btn
-              class="small-select"
-              @click="buscarArea"
-              :disabled="nombreLugarBusqueda === ''"
-              style="margin-bottom: 30px"
-            >
+            <v-select style="height: 75px; font-size: auto" v-model="nombreLugarBusqueda"
+              :items="areas.map((area) => area.nombreArea)" label="Seleccionar Área"
+              @change="actualizarSubmarinos"></v-select>
+            <v-btn class="small-select" @click="buscarArea" :disabled="nombreLugarBusqueda === ''"
+              style="margin-bottom: 30px">
               Buscar
             </v-btn>
             <!-- MAPA -->
@@ -52,14 +41,10 @@
             <v-row v-if="nombreLugarBusqueda">
               <v-col>
                 <h3>Submarinos Asignados a {{ nombreLugarBusqueda }}</h3>
-                <v-col
-                  v-for="submarino in submarinosAsignadosFiltrados"
-                  :key="submarino.id"
-                >
+                <v-col v-for="submarino in submarinosAsignadosFiltrados" :key="submarino.id">
                   {{ submarino.nom_sub }} - {{ submarino.estado_sub }}<br />
                   Ubicación: {{ submarino.ruta }}
-                  <v-btn @click="desvincularSubmarino(submarino)"
-                    >Desvincular</v-btn>
+                  <v-btn @click="desvincularSubmarino(submarino)">Desvincular</v-btn>
                 </v-col>
                 <v-col>
                   <v-btn @click="crearRutina">Rutinas de los submarinos</v-btn>
@@ -67,8 +52,6 @@
               </v-col>
             </v-row>
           </v-col>
-
-          
         </v-row>
 
         <!-- Diálogo para rutinas -->
@@ -81,61 +64,39 @@
                 <v-col cols="6">
                   <!-- Formulario para añadir tareas -->
                   <v-form ref="taskForm" @submit.prevent="agregarTarea">
-                    <v-text-field
-                      v-model="nuevaTarea"
-                      label="* Nombre la rutina"
-                    ></v-text-field>
-                    <v-text-field
-                      style="height: 500px; margin-bottom: -210px"
-                      v-model="nuevaDescripcion"
-                      label="Descripción"
-                    ></v-text-field>
+                    <v-text-field v-model="nuevaTarea" label="* Nombre la rutina"></v-text-field>
+                    <v-text-field style="height: 500px; margin-bottom: -210px" v-model="nuevaDescripcion"
+                      label="Descripción"></v-text-field>
                     *
-                    <datepicker
-                      class="dialog-content"
-                      v-model="selectedDate"
-                      @dayclick="dayClickHandler"
-                    />
-                   
+                    <datepicker class="dialog-content" v-model="selectedDate" @dayclick="dayClickHandler" />
+
                     <br />
-                    <v-btn
-                      type="submit"
-                      :disabled="!nuevaTarea.trim() || !selectedDate"
-                      >Agregar Rutina</v-btn
-                    >
+                    <v-btn type="submit" :disabled="!nuevaTarea.trim() || !selectedDate">Agregar Rutina</v-btn>
                   </v-form>
                 </v-col>
 
                 <!-- Columna derecha -->
                 <v-col cols="6">
                   <!-- Lista de tareas -->
-                  <v-list>
-                    <v-list-item v-if="rutinas.length > 0">
-                      <v-list-item
-                        v-for="(rutina, id) in rutinas"
-                        :key="id"
-                      >
-                        <v-list-item>
-                          <v-list-item-title>{{ rutina.nombre }}</v-list-item-title>
-                        </v-list-item>
-                        <v-list-item-action>
+                  <v-row>
+                    <v-col v-for="(rutina, index) in rutinas.rutinas" :key="index" cols="12">
+                      <v-card>
+                        <v-card-title>{{ rutina.nombre }}
                           <v-btn icon @click="editarTarea(index)">
                             <v-icon>mdi-pencil</v-icon>
                           </v-btn>
                           <v-btn icon @click="eliminarTarea(index)">
                             <v-icon>mdi-delete</v-icon>
                           </v-btn>
-                        </v-list-item-action>
-                      </v-list-item>
-                    </v-list-item>
-                  </v-list>
+                        </v-card-title>
+                      </v-card>
+                    </v-col>
+                  </v-row>
                 </v-col>
               </v-row>
             </v-card-text>
-
             <v-card-actions>
-              <v-btn @click="guardarRutina">Guardar</v-btn>
-              <v-btn @click="cerrarDialogRutina">Cancelar</v-btn>
+              <v-btn @click="cerrarDialogRutina">Cerrar</v-btn>
             </v-card-actions>
           </v-card>
         </v-dialog>
@@ -146,36 +107,17 @@
             <v-card-title>Editar Rutina</v-card-title>
             <v-card-text>
               <v-form @submit.prevent="actualizarTareaEditada">
-                <v-text-field
-                  v-model="tareaEnEdicion.nombre"
-                  label="* Nombre de la rutina"
-                  required
-                ></v-text-field>
-                <v-text-field
-                  style="height: 500px; margin-bottom: -210px"
-                  v-model="tareaEnEdicion.descripcion"
-                  label="Descripción"
-                ></v-text-field>
+                <v-text-field v-model="tareaEnEdicion.nombre" label="* Nombre de la rutina" required></v-text-field>
+                <v-text-field style="height: 500px; margin-bottom: -210px" v-model="tareaEnEdicion.descripcion"
+                  label="Descripción"></v-text-field>
                 *
-                <datepicker
-                  class="dialog-content"
-                  v-model="selectedDate"
-                  @dayclick="dayClickHandler"
-                  required
-                />
+                <datepicker class="dialog-content" v-model="selectedDate" @dayclick="dayClickHandler" required />
 
-                <!-- <v-time-picker
-                  v-model="tareaEnEdicion.hora"
-                  label="Hora de asignación"
-                ></v-time-picker> -->
               </v-form>
             </v-card-text>
             <v-card-actions>
-              <v-btn
-                @click="actualizarTareaEditada"
-                :disabled="!tareaEnEdicion.nombre.trim() || !selectedDate"
-                >Actualizar Rutina</v-btn
-              >
+              <v-btn @click="actualizarTareaEditada" :disabled="!tareaEnEdicion.nombre.trim() || !selectedDate">Actualizar
+                Rutina</v-btn>
               <v-btn @click="this.showDialogEdicion = false">Cancelar</v-btn>
             </v-card-actions>
           </v-card>
@@ -229,9 +171,8 @@ export default {
       descripciones: [],
       horas: [],
       nuevaDescripcion: "",
-      rutinas: [],
+      rutinas: "",
       newRutina: [],
-      selectedHour: null,
       editingTaskIndex: null,
       tareaEnEdicion: {
         nombre: "",
@@ -331,13 +272,7 @@ export default {
 
       // Restablecer la selección de la rutina
       this.selectedDate = null;
-    },
-
-    guardarRutina() {
-      console.log("Fecha seleccionada:", this.selectedDate);
-
-      // Cerrar la ventana emergente de rutinas
-      this.cerrarDialogRutina();
+      this.selectRutinas();
     },
 
     async desvincularSubmarino(submarino) {
@@ -358,7 +293,7 @@ export default {
       try {
         await deleteSubMongo(this.areaEncontrada._id, submarino.id_sub);
         await deleteAreaSub(submarino.id_sub);
-      } catch (err) {}
+      } catch (err) { }
     },
 
     crearRutina() {
@@ -379,26 +314,28 @@ export default {
         this.newRutina = {
           nombre: this.nuevaTarea,
           descripcion: this.nuevaDescripcion,
-          hora: this.selectedDate,   
+          hora: this.selectedDate,
         }
-               
+
         await addRutina(this.areaEncontradaID, this.newRutina);
         // Limpiar el campo después de agregar la tarea
         this.nuevaTarea = "";
         this.nuevaDescripcion = "";
-        this.selectedHour = null;
         this.newRutina = [];
+        this.selectedDate = null;
       }
+      this.selectRutinas();
     },
 
     // EDITAR RUTINA
     editarTarea(index) {
       // Verificar si el índice es válido
-      if (index >= 0 && index < this.tareas.length) {
-        // Inicializar la tarea en edición con los datos actuales de la tarea
-        this.tareaEnEdicion.nombre = this.tareas[index];
-        this.tareaEnEdicion.descripcion = this.descripciones[index] || "";
-        this.tareaEnEdicion.hora = this.horas[index] || null;
+      if (index >= 0 && index < this.rutinas.rutinas.length) {
+        // Acceder a los datos dentro de la rutina en lugar de directamente en this.tareas, this.descripciones, etc.
+        const rutina = this.rutinas.rutinas[index];
+        this.tareaEnEdicion.nombre = rutina.tareas.trim();  // Asegurar que sea una cadena antes de trim
+        this.tareaEnEdicion.descripcion = rutina.descripciones || "";
+        this.tareaEnEdicion.hora = rutina.horas || null;
 
         // Establecer el índice de tarea en edición
         this.editingTaskIndex = index;
@@ -408,7 +345,10 @@ export default {
       } else {
         console.error("Índice de tarea no válido:", index);
       }
+
+      this.selectRutinas();
     },
+
 
     actualizarTareaEditada() {
       // Verificar si el índice de edición es válido
@@ -456,7 +396,7 @@ export default {
     async getAreas() {
       try {
         this.areas = await fetchAreas();
-        console.log(this.areas);
+        // console.log(this.areas);
       } catch (error) {
         console.error("Error fetching areas:", error);
       }
@@ -489,8 +429,12 @@ export default {
       }
 
       this.actualizarSubmarinos();
+      this.selectRutinas();
+    },
+
+    // HACER SELECT A RUTINAS
+    async selectRutinas() {
       this.rutinas = await selectRutinas(this.areaEncontradaID);
-      console.log(this.rutinas);
     },
 
     // SELECT A TODOS LOS SUBMARINOS
@@ -500,7 +444,7 @@ export default {
       //console.log(userEmpresa);
       try {
         this.submarinosDisponibles = await getSubmarinos(userEmpresa);
-        console.log(this.submarinosDisponibles[0].nom_sub);
+        //console.log(this.submarinosDisponibles[0].nom_sub);
       } catch (error) {
         console.error("Error fetching submarinos:", error);
       }
@@ -560,7 +504,7 @@ export default {
 
     // DIBUJAR COODS EN EL MAPA
     dibujarAreaEnMapa(coordenadas) {
-      console.log("Coordenadas:", coordenadas);
+      //console.log("Coordenadas:", coordenadas);
 
       // Create a GeoJSON layer and add it to the map
       const geoJsonLayer = L.geoJSON({
@@ -574,8 +518,6 @@ export default {
       // Update the map view
       this.mapa.fitBounds(geoJsonLayer.getBounds());
     },
-
-
 
     // LIMPIAR EL MAPA
     limpiarMapaSelect() {
@@ -607,15 +549,7 @@ export default {
   //CONSOLA
   created() {
     console.log("CREADO");
-    /*
-    try {
-      this.areas = await fetchAreas();
-      console.log(this.areas);
-    } catch (error) {
-      console.error("Error fetching areas:", error);
-      // Manejar el error de acuerdo a tus necesidades
-    }
-    */
+
   },
 
   mounted() {
