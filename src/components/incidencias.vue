@@ -1,7 +1,7 @@
 <template>
-     <v-app-bar>
+    
             <default-bar />
-        </v-app-bar>
+       
 <div>
     <v-btn class="ml-4" style="margin-top: 20px;" color="primary" @click="mostrarDialogo">Crear Incidencia</v-btn>
 
