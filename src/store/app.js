@@ -7,7 +7,9 @@ export const useAppStore = defineStore('app', {
     userRole: localStorage.getItem('userRole') || '',
     userEmpresa: localStorage.getItem('userEmpresa') || '',
     userName: localStorage.getItem('userName') || '',
-    userApellido: localStorage.getItem('userApellido') || ''
+    userApellido: localStorage.getItem('userApellido') || '',
+    userID: localStorage.getItem('userID') || ''
+
   }),
   getters: {
     getUserRole() {
@@ -22,6 +24,9 @@ export const useAppStore = defineStore('app', {
     },
     getUserApellido(){
       return this.userApellido;
+    },
+    getUserID(){
+      return this.userID;
     }
   },
   actions: {
@@ -42,6 +47,10 @@ export const useAppStore = defineStore('app', {
     setUserApellido(apellido){
       this.userApellido = apellido;
       localStorage.setItem('userApellido', apellido);
+    },
+    setUserID(ID){
+      this.userID = ID;
+      localStorage.setItem('userID', ID);
     },
     // Agregar un método para limpiar la sesión al cerrar sesión
     clearSession() {
