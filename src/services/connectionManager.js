@@ -218,3 +218,26 @@ export async function selectRutinas(areaId) {
     throw new Error('Error selecting rutinas');
   }
 }
+
+export async function insertIncidencia(listaItems) {
+  try {
+    const response = await fetch('http://localhost:3169/insertarIncidencia', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({ listaItems: listaItems})
+    });
+
+    if (!response.ok) {
+      const errorMessage = await response.text();
+      throw new Error(`Error al agregar rutina: ${errorMessage}`);
+    }
+
+    const responseData = await response.json();
+    return responseData;
+  } catch (error) {
+    console.error('Error en la comunicación:', error.message);
+    throw error;
+  }
+}
