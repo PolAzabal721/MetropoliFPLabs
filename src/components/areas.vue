@@ -228,7 +228,6 @@ export default {
       this.areaEncontradaID = null;
       this.nombreLugarBusqueda = '';
       this.nuevoNombre = '';
-
     },
 
     // SELECT PARA PILLAR COODS + NOMBRE DEL AREA + ID
@@ -284,6 +283,7 @@ export default {
 
     // BUSCAMOS EL AREA Y PERMITIMOS EDITAR
     async buscarArea() {
+      
       const areaEncontrada = this.areas.find(
         (area) => area.nombreArea === this.nombreLugarBusqueda
       );
@@ -415,23 +415,42 @@ export default {
 
     // ELIMINAR AREA SELECCIONADA
     deleteArea() {
-      if (this.areaEncontrada) {
-        const confirmDelete = window.confirm(`¿Estás seguro de querer eliminar el área "${this.areaEncontrada.nombreArea}"?`);
+  if (this.areaEncontrada) {
+    const confirmDelete = window.confirm(`¿Estás seguro de querer eliminar el área "${this.areaEncontrada.nombreArea}"?`);
 
-        if (confirmDelete) {
-          console.log(this.areaEncontrada._id);
-          deletearea(this.areaEncontrada._id);
-          this.limpiarEdicion();
-          this.limpiarMapaSelect();
-          this.cerrarEditarDialog();
+    if (confirmDelete) {
+      console.log(this.areaEncontrada._id);
+      
+      // Eliminar el área de la base de datos
+      deletearea(this.areaEncontrada._id)
+        .then(() => {
+          // Después de eliminar el área, actualiza la lista de áreas mostradas en la interfaz de usuario
           this.getAreas();
-        } else {
-          alert("Eliminación cancelada.");
-        }
-      } else {
-        console.error("No area to delete");
-      }
-    },
+          
+          // Limpia la edición, el mapa y cierra el diálogo
+          this.limpiarEdicion();
+          if (this.mapa) {
+            this.mapa.eachLayer((layer) => {
+              this.mapa.removeLayer(layer);
+            });
+            this.mapa.remove();
+            this.mapa = null;
+          }
+          this.cerrarEditarDialog();
+        })
+        .catch((error) => {
+          console.error("Error al eliminar el área:", error);
+        });
+    } else {
+      alert("Eliminación cancelada.");
+    }
+  } else {
+    console.error("No area to delete");
+  }
+},
+
+
+
 
     // ROTAR ENTRE EDITAR EL AREA Y NO EDITAR 
     editarArea() {

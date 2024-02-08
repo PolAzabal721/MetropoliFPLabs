@@ -187,6 +187,7 @@ export default {
       areaEncontrada: null,
       areaEncontradaID: null,
       mapaInicializado: false,
+      submarinosAsignadosPorArea: {},
     };
   },
   methods: {
@@ -234,7 +235,7 @@ export default {
         (sub) => !sub.selected
       );
 
-      console.log(this.areaEncontrada._id);
+      //console.log(this.areaEncontrada._id);
 
       for (let i = 0; i < this.submarinosAsignados.length; i++) {
         try {
@@ -293,7 +294,10 @@ export default {
       try {
         await deleteSubMongo(this.areaEncontrada._id, submarino.id_sub);
         await deleteAreaSub(submarino.id_sub);
-      } catch (err) { }
+      } catch (err) { 
+
+      }
+      this.getSubmarino();
     },
 
     crearRutina() {
