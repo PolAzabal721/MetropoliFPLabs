@@ -187,25 +187,28 @@ export default {
       areaEncontrada: null,
       areaEncontradaID: null,
       mapaInicializado: false,
-      submarinosAsignadosPorArea: {},
     };
   },
   methods: {
     // VER SI HAY SUBMARINOS EN ESE AREA
     actualizarSubmarinos() {
-      if (this.areaEncontrada) {
-        this.submarinosAsignados = this.submarinosAsignados.filter(
-          (submarino) => submarino.id_area === this.areaEncontrada._id
-        );
-        this.submarinosDisponibles = this.submarinosDisponibles.filter(
-          (submarino) => submarino.id_area !== this.areaEncontrada._id
-        );
-      } else {
+      // Verificar si hay un área seleccionada
+      if (!this.areaEncontrada) {
+        // Limpiar submarinos asignados si no hay un área seleccionada
         this.submarinosAsignados = [];
-        this.submarinosDisponibles = this.submarinosDisponibles.filter(
-          (submarino) => !submarino.selected
-        );
+        this.submarinosDisponibles = [];
+        return;
       }
+
+      // Filtrar submarinos asignados por el área seleccionada
+      this.submarinosAsignados = this.submarinosAsignados.filter(
+        submarino => submarino.id_area === this.areaEncontrada._id
+      );
+
+      // Filtrar submarinos disponibles por áreas diferentes a la seleccionada
+      this.submarinosDisponibles = this.submarinosDisponibles.filter(
+        submarino => submarino.id_area !== this.areaEncontrada._id
+      );
     },
 
     async asignarSubmarinos() {
@@ -250,7 +253,7 @@ export default {
         }
       }
       try {
-        console.log(this.areaEncontrada._id);
+        //console.log(this.areaEncontrada._id);
         // Realizar la llamada para actualizar los submarinos asignados en el backend
         await updateSubmarino(
           this.areaEncontrada._id,
@@ -279,8 +282,8 @@ export default {
     async desvincularSubmarino(submarino) {
       // Desvincular un submarino específico del área seleccionada
       submarino.area = null;
-      console.log(submarino.id_sub);
-      console.log(submarino.id_area);
+      // console.log(submarino.id_sub);
+      // console.log(submarino.id_area);
       this.submarinosAsignados = this.submarinosAsignados.filter(
         (sub) => sub !== submarino
       );
@@ -294,7 +297,7 @@ export default {
       try {
         await deleteSubMongo(this.areaEncontrada._id, submarino.id_sub);
         await deleteAreaSub(submarino.id_sub);
-      } catch (err) { 
+      } catch (err) {
 
       }
       this.getSubmarino();
@@ -406,6 +409,7 @@ export default {
       }
     },
 
+    // BUSCAR AREA + CARGAR SUBMARINSO ASIGNADOS
     async buscarArea() {
       const areaEncontrada = this.areas.find(
         (area) => area.nombreArea === this.nombreLugarBusqueda
@@ -419,21 +423,19 @@ export default {
         this.nombreExistente = areaEncontrada.nombreArea;
 
         // Mover submarinos disponibles a submarinos asignados
-        for (let i = 0; i < this.submarinosDisponibles.length; i++) {
-          if (
-            this.submarinosDisponibles[i].id_area === this.areaEncontrada._id
-          ) {
-            this.submarinosAsignados.push(this.submarinosDisponibles[i]);
-            // Eliminar el submarino asignado del array de submarinos disponibles
-            this.submarinosDisponibles.splice(i, 1);
-            // Reducir el índice para seguir iterando correctamente
-            i--;
-          }
-        }
+        const submarinosDisponiblesEnArea = this.submarinosDisponibles.filter(
+          submarino => submarino.id_area === this.areaEncontradaID
+        );
+
+        this.submarinosAsignados.push(...submarinosDisponiblesEnArea);
+        this.submarinosDisponibles = this.submarinosDisponibles.filter(
+          submarino => submarino.id_area !== this.areaEncontradaID
+        );
       }
 
       this.actualizarSubmarinos();
       this.selectRutinas();
+      this.getSubmarino();
     },
 
     // HACER SELECT A RUTINAS
@@ -445,10 +447,16 @@ export default {
     async getSubmarino() {
       const store = useAppStore();
       const userEmpresa = store.getUserEmpresa;
-      //console.log(userEmpresa);
+
       try {
-        this.submarinosDisponibles = await getSubmarinos(userEmpresa);
-        //console.log(this.submarinosDisponibles[0].nom_sub);
+        // Obtener todos los submarinos
+        const submarinos = await getSubmarinos(userEmpresa);
+
+        // Filtrar submarinos disponibles excluyendo los ya asignados
+        this.submarinosDisponibles = submarinos.filter(submarino => {
+          // Verificar si el submarino no está asignado en ninguna área
+          return !this.submarinosAsignados.find(asignado => asignado.id_sub === submarino.id_sub);
+        });
       } catch (error) {
         console.error("Error fetching submarinos:", error);
       }
