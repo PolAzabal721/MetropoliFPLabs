@@ -1,12 +1,18 @@
 <template>
-  <default-bar/>
+  <default-bar />
   <v-layout class="rounded rounded-md">
     <v-container fluid>
       <!-- MAPA PRINCIPAL -->
       <v-card class="mx-auto" height="800" width="800">
-        <v-text-field v-model="nombreLugar" label="Intoduce un nombre para el area"></v-text-field>
+        <v-text-field
+          v-model="nombreLugar"
+          label="Intoduce un nombre para el area"
+        ></v-text-field>
         <div class="ml-4 d-flex">
-          <v-btn @click="crearLugar" :disabled="nombreLugar === '' || drawnGeometries.length === 0">
+          <v-btn
+            @click="crearLugar"
+            :disabled="nombreLugar === '' || drawnGeometries.length === 0"
+          >
             Crear
           </v-btn>
 
@@ -26,21 +32,33 @@
           <v-row>
             <!-- SELECT AREA -->
             <v-col class="mr-3">
-              <v-select class="editarSelect" v-model="nombreLugarBusqueda" :items="areas.map((area) => area.nombreArea)"
-                label="Selecciona el área que quieras editar"></v-select>
+              <v-select
+                class="editarSelect"
+                v-model="nombreLugarBusqueda"
+                :items="areas.map((area) => area.nombreArea)"
+                label="Selecciona el área que quieras editar"
+              ></v-select>
             </v-col>
 
             <!-- NUEVO NOMBRE AREA -->
             <v-col>
-              <v-text-field class="small-text-field" v-model="nuevoNombre" label="Nuevo nombre Area"
-                :disabled="!areaEncontrada"></v-text-field>
+              <v-text-field
+                class="small-text-field"
+                v-model="nuevoNombre"
+                label="Nuevo nombre Area"
+                :disabled="!areaEncontrada"
+              ></v-text-field>
             </v-col>
           </v-row>
 
           <v-row>
             <!-- BTN PARA BUSCAR AREA -->
             <v-col>
-              <v-btn class="editarSelect" @click="buscarArea" :disabled="nombreLugarBusqueda === ''">
+              <v-btn
+                class="editarSelect"
+                @click="buscarArea"
+                :disabled="nombreLugarBusqueda === ''"
+              >
                 Buscar
               </v-btn>
             </v-col>
@@ -48,15 +66,15 @@
             <!-- BTN PARA ACTIVAR Y DESACTIVAR EDITAR COORDENADAS -->
             <v-col>
               <v-btn class="editarArea" @click="editarArea">
-                {{ isEditing ? 'Guardar cambios' : 'Editar Coordenadas' }}
+                {{ isEditing ? "Guardar cambios" : "Editar Coordenadas" }}
               </v-btn>
             </v-col>
           </v-row>
 
-          <br>
+          <br />
           <!-- MAPA PARA EDITAR AREAS -->
           <v-card class="mx-auto slidecontainer" height="860" width="800">
-            <div id="mapaSelect" style="height: 650px; width: 800px;"></div>
+            <div id="mapaSelect" style="height: 650px; width: 800px"></div>
           </v-card>
           <v-card-actions>
             <v-btn @click="guardarCambios" color="primary"> Guardar </v-btn>
@@ -77,7 +95,12 @@ import "leaflet-draw/dist/leaflet.draw.css";
 import "leaflet-draw/dist/leaflet.draw";
 import "leaflet-draw/dist/leaflet.draw-src";
 import "leaflet-draw/dist/leaflet.draw-src.js";
-import { fetchAreas, insertarArea, deletearea } from "@/services/connectionManager.js";
+import {
+  fetchAreas,
+  insertarArea,
+  deletearea,
+  updateArea,
+} from "@/services/connectionManager.js";
 import { useAppStore } from "@/store/app";
 
 export default {
@@ -226,8 +249,8 @@ export default {
     reiniciarEstado() {
       this.areaEncontrada = null;
       this.areaEncontradaID = null;
-      this.nombreLugarBusqueda = '';
-      this.nuevoNombre = '';
+      this.nombreLugarBusqueda = "";
+      this.nuevoNombre = "";
     },
 
     // SELECT PARA PILLAR COODS + NOMBRE DEL AREA + ID
@@ -283,7 +306,6 @@ export default {
 
     // BUSCAMOS EL AREA Y PERMITIMOS EDITAR
     async buscarArea() {
-      
       const areaEncontrada = this.areas.find(
         (area) => area.nombreArea === this.nombreLugarBusqueda
       );
@@ -291,7 +313,9 @@ export default {
       this.areaEncontrada = areaEncontrada;
 
       if (areaEncontrada && areaEncontrada.coordenadas) {
-        const geoJsonLayer = await this.cargarCoordenadasEnMapaSelect(areaEncontrada.coordenadas);
+        const geoJsonLayer = await this.cargarCoordenadasEnMapaSelect(
+          areaEncontrada.coordenadas
+        );
         // console.log(geoJsonLayer);
         const layers = geoJsonLayer.getLayers();
 
@@ -307,8 +331,6 @@ export default {
         } else {
           console.error("No layers in drawnItems to enable editing.");
         }
-
-
       }
     },
 
@@ -345,21 +367,23 @@ export default {
       this.mapa.addControl(newDrawControl);
 
       // Dibujar el área en el mapa y agregarla al grupo de capas
-      const geoJsonLayer = L.geoJSON({
-        type: "Feature",
-        geometry: {
-          type: "Polygon",
-          coordinates: coordenadas,
+      const geoJsonLayer = L.geoJSON(
+        {
+          type: "Feature",
+          geometry: {
+            type: "Polygon",
+            coordinates: coordenadas,
+          },
         },
-      }, {
-        // Add Draw plugin options for editing support
-        editOptions: {
-          featureGroup: drawnItems,
-          remove: false,
-          edit: false,
-        },
-      }).addTo(drawnItems);
-
+        {
+          // Add Draw plugin options for editing support
+          editOptions: {
+            featureGroup: drawnItems,
+            remove: false,
+            edit: false,
+          },
+        }
+      ).addTo(drawnItems);
 
       // Update the map view
       this.mapa.fitBounds(geoJsonLayer.getBounds());
@@ -415,44 +439,43 @@ export default {
 
     // ELIMINAR AREA SELECCIONADA
     deleteArea() {
-  if (this.areaEncontrada) {
-    const confirmDelete = window.confirm(`¿Estás seguro de querer eliminar el área "${this.areaEncontrada.nombreArea}"?`);
+      if (this.areaEncontrada) {
+        const confirmDelete = window.confirm(
+          `¿Estás seguro de querer eliminar el área "${this.areaEncontrada.nombreArea}"?`
+        );
 
-    if (confirmDelete) {
-      console.log(this.areaEncontrada._id);
-      
-      // Eliminar el área de la base de datos
-      deletearea(this.areaEncontrada._id)
-        .then(() => {
-          // Después de eliminar el área, actualiza la lista de áreas mostradas en la interfaz de usuario
-          this.getAreas();
-          
-          // Limpia la edición, el mapa y cierra el diálogo
-          this.limpiarEdicion();
-          if (this.mapa) {
-            this.mapa.eachLayer((layer) => {
-              this.mapa.removeLayer(layer);
+        if (confirmDelete) {
+          console.log(this.areaEncontrada._id);
+
+          // Eliminar el área de la base de datos
+          deletearea(this.areaEncontrada._id)
+            .then(() => {
+              // Después de eliminar el área, actualiza la lista de áreas mostradas en la interfaz de usuario
+              this.getAreas();
+
+              // Limpia la edición, el mapa y cierra el diálogo
+              this.limpiarEdicion();
+              if (this.mapa) {
+                this.mapa.eachLayer((layer) => {
+                  this.mapa.removeLayer(layer);
+                });
+                this.mapa.remove();
+                this.mapa = null;
+              }
+              this.cerrarEditarDialog();
+            })
+            .catch((error) => {
+              console.error("Error al eliminar el área:", error);
             });
-            this.mapa.remove();
-            this.mapa = null;
-          }
-          this.cerrarEditarDialog();
-        })
-        .catch((error) => {
-          console.error("Error al eliminar el área:", error);
-        });
-    } else {
-      alert("Eliminación cancelada.");
-    }
-  } else {
-    console.error("No area to delete");
-  }
-},
+        } else {
+          alert("Eliminación cancelada.");
+        }
+      } else {
+        console.error("No area to delete");
+      }
+    },
 
-
-
-
-    // ROTAR ENTRE EDITAR EL AREA Y NO EDITAR 
+    // ROTAR ENTRE EDITAR EL AREA Y NO EDITAR
     editarArea() {
       if (this.layerToEdit) {
         if (!this.isEditing) {
@@ -463,7 +486,8 @@ export default {
         } else {
           // Deshabilitar la edición y guardar las coordenadas editadas
           this.layerToEdit.editing.disable();
-          this.editedCoordinates = this.layerToEdit.toGeoJSON().geometry.coordinates;
+          this.editedCoordinates =
+            this.layerToEdit.toGeoJSON().geometry.coordinates;
           this.isEditing = false;
         }
 
@@ -478,7 +502,13 @@ export default {
 
       if (this.editedCoordinates && this.editedCoordinates.length > 0) {
         // Validar el nuevo nombre
-        const nuevoNombreValido = /^[a-zA-Z]{3,}$/.test(this.nuevoNombre.trim());
+        if (this.nuevoNombre === "") {
+          this.nuevoNombre = this.areaEncontrada.nombreArea;
+        } else {
+          this.nuevoNombre = this.nuevoNombre.trim();
+        }
+
+        const nuevoNombreValido = /^[a-zA-Z]{3,}$/.test(this.nuevoNombre);
 
         if (nuevoNombreValido || !this.nuevoNombre.trim()) {
           // Si el nuevo nombre es válido o está vacío, actualizar el nombre del área
@@ -488,7 +518,9 @@ export default {
             cambiosNombre = true; // Establecer la variable a true si el nombre ha sido modificado
           }
         } else {
-          alert("El nuevo nombre no es válido. Debe contener al menos 3 letras y solo caracteres alfabéticos.");
+          alert(
+            "El nuevo nombre no es válido. Debe contener al menos 3 letras y solo caracteres alfabéticos."
+          );
           return;
         }
       }
@@ -501,13 +533,23 @@ export default {
       if (cambiosNombre || cambiosCoordenadas) {
         try {
           // Actualizar las coordenadas y el nombre en la base de datos
-          await actualizarCoordenadas(this.areaEncontradaID, this.editedCoordinates);
+          await this.actualizarCoordenadas(
+            this.areaEncontrada._id,
+            cambiosNombre ? this.nuevoNombre : this.areaEncontrada.nombreArea,
+            this.editedCoordinates
+          );
           if (cambiosNombre && cambiosCoordenadas) {
-            alert("El nombre y las coordenadas se han cambiado y los cambios guardados exitosamente.");
+            alert(
+              "El nombre y las coordenadas se han cambiado y los cambios guardados exitosamente."
+            );
           } else if (cambiosNombre) {
-            alert("El nombre se ha cambiado y los cambios guardados exitosamente.");
+            alert(
+              "El nombre se ha cambiado y los cambios guardados exitosamente."
+            );
           } else {
-            alert("Las coordenadas se han cambiado y los cambios guardados exitosamente.");
+            alert(
+              "Las coordenadas se han cambiado y los cambios guardados exitosamente."
+            );
           }
         } catch (error) {
           console.error("Error guardando cambios:", error);
@@ -523,9 +565,12 @@ export default {
     },
 
     // HACER EL UPDATE A LA BD
-    actualizarCoordenadas() {
-      // las nuevas coordenadas === this.editedCoordinates
-      console.log(this.nuevoNombre);
+    async actualizarCoordenadas(id, nombre, coods) {
+      await updateArea(id, nombre, coods);
+      console.log(nombre);
+      console.log(id);
+      console.log(coods);
+      this.getAreas();
     },
 
     // GUARDAS DIBUJOS
@@ -541,7 +586,6 @@ export default {
   //CONSOLA
   created() {
     console.log("CREADO");
-
   },
 
   mounted() {

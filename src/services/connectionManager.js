@@ -281,4 +281,29 @@ export async function updateIncidencias(asunto, descripcio, prioridad, idInciden
 }
 
 
+export async function updateArea(id, nombre, coordenadas){
+  try {
+    const response = await fetch('http://localhost:3169/updatearea', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({ id: id, nombre: nombre, coordenadas: coordenadas,  })
+    });
+
+    if (!response.ok) {
+      const errorMessage = await response.text();
+      throw new Error(`Error al agregar rutina: ${errorMessage}`);
+    }
+
+    const responseData = await response.json();
+    return responseData;
+  } catch (error) {
+    console.error('Error en la comunicación:', error.message);
+    throw error;
+  }
+}
+
+
+
 
