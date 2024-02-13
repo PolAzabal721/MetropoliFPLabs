@@ -2,7 +2,7 @@
   <default-bar />
   <v-layout class="rounded rounded-md">
     <v-main style="height: 100vh">
-      <v-container fluid>
+      <v-container fluid v-if="seleccionado">
         <v-row>
           <v-col cols="6">
             <v-card class="mx-5" height="800" width="800">
@@ -30,21 +30,27 @@
                     <v-col>
                       <div class="scroll-container">
                         <v-list>
-                          <v-list-item-group v-if="state.movimientos.length > 0">
+                          <v-list-item-group
+                            v-if="state.movimientos.length > 0"
+                          >
                             <v-list-item
-                              v-for="(
-                                movimiento, index
-                              ) in state.movimientos.slice().reverse()"
+                              v-for="(movimiento, index) in state.movimientos
+                                .slice()
+                                .reverse()"
                               :key="index"
                             >
                               <v-list-item-content class="message">
-                                <v-list-item-title>{{ movimiento }}</v-list-item-title>
+                                <v-list-item-title>{{
+                                  movimiento
+                                }}</v-list-item-title>
                               </v-list-item-content>
                             </v-list-item>
                           </v-list-item-group>
                           <v-list-item v-else>
                             <v-list-item-content>
-                              <v-list-item-title>No hi ha moviments</v-list-item-title>
+                              <v-list-item-title
+                                >No hi ha moviments</v-list-item-title
+                              >
                             </v-list-item-content>
                           </v-list-item>
                         </v-list>
@@ -57,21 +63,48 @@
           </v-col>
         </v-row>
       </v-container>
+      <v-container fluid v-else>
+        <v-row justify="center">
+          <v-col cols="12" sm="8" md="6">
+            <v-card class="mx-auto" max-width="400">
+              <v-card-title class="text-center">
+                <h2>Selecciona un submarino</h2>
+              </v-card-title>
+              <v-card-actions class="justify-center">
+                <v-select
+                  v-model="submarinoSeleccionado"
+                  label="Submarino"
+                  :items="submarinos.map((submarino) => submarino.nom_sub)"
+                  item-text="text"
+                  item-value="value"
+                ></v-select>
+                <v-btn color="primary" @click="avanzar">Seleccionar</v-btn>
+              </v-card-actions>
+            </v-card>
+          </v-col>
+        </v-row>
+      </v-container>
     </v-main>
   </v-layout>
 </template>
 
 <script>
 import { state } from "../services/socket";
+import { useAppStore } from "@/store/app";
+import { getSubmarinos } from "@/services/connectionManager.js";
 
 export default {
-
   //192.168.205.140
   data() {
-    return {};
+    return {
+      submarinos: [],
+      submarinoSeleccionado: null,
+      seleccionado: false,
+    };
   },
 
   created() {
+    this.getSubmarino();
     // Recuperar valores del almacenamiento local al iniciar la página
     if (localStorage.getItem("motor")) {
       state.motor = localStorage.getItem("motor");
@@ -132,6 +165,25 @@ export default {
       var hrs = (s - mins) / 60;
       return hrs + ":" + mins + ":" + secs;
     },
+    async getSubmarino() {
+      const store = useAppStore();
+      const userEmpresa = store.getUserEmpresa;
+      try {
+        const submarinosProxy = await getSubmarinos(userEmpresa);
+        // Extraer los datos del Proxy
+        this.submarinos = Array.from(submarinosProxy);
+        //console.log(this.submarinos);
+      } catch (error) {
+        console.error("Error fetching submarinos:", error);
+      }
+    },
+    avanzar(){
+      this.seleccionado = true;
+      this.submarinoSeleccionado = this.submarinos.find(
+        (submarino) => submarino.nom_sub === this.submarinoSeleccionado
+      );
+      console.log(this.submarinoSeleccionado);
+    }
   },
 };
 </script>

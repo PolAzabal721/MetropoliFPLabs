@@ -113,11 +113,7 @@
           <v-select
             v-model="nuevaIncidencia.submarinoSeleccionado"
             label="Submarino"
-            :items="
-              submarinos.map((submarino) => ({
-                text: submarino.nom_sub,
-                value: submarino,
-              }))
+            :items=" submarinos.map((submarino) => submarino.nom_sub )
             "
             item-text="text"
             item-value="value"
@@ -279,6 +275,10 @@ export default {
     async guardarIncidencia() {
       const store = useAppStore();
       // Validar que todos los campos obligatorios estén llenos
+      const submarino = this.submarinos.find(
+        (submarinos) => submarinos.nom_sub === this.nuevaIncidencia.submarinoSeleccionado
+      );
+
       if (
         !this.nuevaIncidencia.nombre ||
         !this.nuevaIncidencia.descripcion ||
@@ -306,7 +306,7 @@ export default {
       }
       this.nomCompleto = store.getUserName + " " + store.getUserApellido;
 
-      console.log(this.nuevaIncidencia.submarinoSeleccionado);
+      console.log(submarino);
 
       this.listaItems.push({
         Asunto: this.nuevaIncidencia.nombre,
@@ -317,7 +317,7 @@ export default {
         estado: "Nueva",
         fecha_inicio: this.nuevaIncidencia.fechaInicio,
         fecha_fin: "",
-        nom_sub: this.nuevaIncidencia.submarinoSeleccionado.nom_sub,
+        nom_sub: submarino.nom_sub,
       });
 
       this.listaEnviar.push(
@@ -328,7 +328,7 @@ export default {
         this.nuevaIncidencia.prioridad,
         "Nueva",
         this.nuevaIncidencia.fechaInicio,
-        this.nuevaIncidencia.submarinoSeleccionado.id_sub
+        submarino.id_sub
       );
 
       console.log(this.listaEnviar);
