@@ -121,7 +121,7 @@ export default {
       areaEncontrada: null,
       areaEncontradaID: null,
       mapaInicializado: false,
-      nuevoNombre: null,
+      nuevoNombre: "",
       nombreExistente: null,
       drawnItems: null,
       editedCoordinates: null,
@@ -502,10 +502,8 @@ export default {
 
       if (this.editedCoordinates && this.editedCoordinates.length > 0) {
         // Validar el nuevo nombre
-        if (this.nuevoNombre === "") {
+        if (this.nuevoNombre === "" || this.nuevoNombre === null) {
           this.nuevoNombre = this.areaEncontrada.nombreArea;
-        } else {
-          this.nuevoNombre = this.nuevoNombre.trim();
         }
 
         const nuevoNombreValido = /^[a-zA-Z]{3,}$/.test(this.nuevoNombre);
@@ -535,7 +533,7 @@ export default {
           // Actualizar las coordenadas y el nombre en la base de datos
           await this.actualizarCoordenadas(
             this.areaEncontrada._id,
-            cambiosNombre ? this.nuevoNombre : this.areaEncontrada.nombreArea,
+            this.nuevoNombre,
             this.editedCoordinates
           );
           if (cambiosNombre && cambiosCoordenadas) {
