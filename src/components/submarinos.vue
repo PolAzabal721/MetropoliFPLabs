@@ -1,10 +1,9 @@
 <template>
-  <v-layout class="rounded rounded-md">
-    <v-app-bar>
-      <default-bar />
-    </v-app-bar>
+        <default-bar />
 
-    <v-navigation-drawer width="250">
+  <v-layout class="rounded rounded-md">
+
+    <v-navigation-drawer width="250" class="navDrawer">
       <!-- Contenido del Drawer -->
       <v-toolbar height="60">
         <v-toolbar-title>Submarinos Disponibles</v-toolbar-title>
@@ -582,6 +581,11 @@ import DefaultBar from "@/components/appbar.vue";
 </script>
 
 <style scoped>
+.navDrawer{
+    float: left;
+    z-index: -1 !important;
+    position: relative !important;
+}
 .dialog-content {
   border: 2px solid black;
   padding: 5px;

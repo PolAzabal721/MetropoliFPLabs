@@ -1,5 +1,11 @@
 <template>
   <v-toolbar color="#259FAF">
+    <div v-if="isWideScreen" style="
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        width: 100%;
+      ">
     <div style="
         display: flex;
         justify-content: space-between;
@@ -15,7 +21,7 @@
         }}</v-btn>
       </div>
       <div style="width: 50%" v-if="userRole === 'cliente'">
-        <router-link :to="'/'" class="colorBTN" @click.prevent="logout">Cerrar Sesión</router-link>
+        <router-link :to="'/'" class="colorBTN" @click.prevent="logout">Tancar Sessió</router-link>
         <router-link :to="'/camara'" class="colorBTN"> Càmera</router-link>
       </div>
       <div style="width: 50%" v-if="userRole === ''">
@@ -23,7 +29,7 @@
         <router-link :to="'/camara'" class="colorBTN"> Càmera</router-link>
       </div>
       <div style="width: 50%" v-if="userRole === 'admin' || userRole === 'tecnico_web'">
-        <router-link :to="'/'" class="colorBTN" @click.prevent="logout">Cerrar Sesión</router-link>
+        <router-link :to="'/'" class="colorBTN" @click.prevent="logout">Tancar Sessió</router-link>
         <v-btn id="gestioSubmari" class="colorBTN" @mouseover="mostrarSubmari = true" @mouseleave="mostrarSubmari = false">Gestiò Sumbarins</v-btn>
        <router-link :to="'/incidencias'" class="colorBTN">Gestiò Incidències</router-link>
         <div class="dropdown-incidencies">
@@ -34,6 +40,21 @@
       </div>
 
     </div>
+  </div>
+  <div v-else class="collapsat">
+      <!-- Your collapsed view for smaller screens -->
+      
+
+      <router-link style="width: 80%; !important" :to="'/'" class="titulo">
+        <v-toolbar-title class="mx-5 titulo">Sea Shepherd</v-toolbar-title>
+      </router-link>
+      <v-btn icon @click="toggleCollapsedView">
+        <v-icon>mdi-menu</v-icon>
+      </v-btn>
+      <!-- Add other collapsed view items as needed -->
+
+      <!-- ... Your existing code for collapsed view ... -->
+    </div>
   </v-toolbar>
   <transition name="fade">
     <div v-if="mostrarSubmari" class="dropdown-submari" @mouseover="mostrarSubmari = true" @mouseleave="mostrarSubmari = false">
@@ -41,9 +62,9 @@
       <router-link :to="'/datos'" class="colorBTN"> Dades</router-link>
       <router-link :to="'/ubicacion'" class="colorBTN"> Ubicació</router-link>
       <router-link :to="'/areas'" class="colorBTN">
-        Configurar áreas</router-link>
+        Configurar àrees</router-link>
       <router-link :to="'/submarinos'" class="colorBTN">
-        submarinos</router-link>
+        Submarins</router-link>
       <router-link :to="'/informes'" class="colorBTN"> Informes</router-link>
     </div>
 
@@ -51,6 +72,9 @@
 </template>
 
 <style>
+.collapsat{
+  width: 100%;
+}
 .fade-enter-active, .fade-leave-active {
   transition: opacity 0.5s;
 }
@@ -134,7 +158,6 @@ export default {
   },
   methods: {
     cambiar() {
-      console.log("ASASASASAS")
       if (this.mostrarSubmari) {
         this.mostrarSubmari = false
       } else {
@@ -145,12 +168,26 @@ export default {
       const appStore = useAppStore();
       appStore.clearSession();
     },
+    toggleCollapsedView() {
+      this.mostrarSubmari = !this.mostrarSubmari;
+    },
+    handleResize() {
+      this.isWideScreen = window.innerWidth >= 1300; // Adjust the breakpoint as needed
+    },
   },
   data() {
     return {
       mostrarSubmari: false,
+      isWideScreen: window.innerWidth >= 1300, // Adjust the breakpoint as needed
+    };
+  },
+  mounted() {
+    window.addEventListener('resize', this.handleResize);
+  },
 
-    }
-  }
+  destroyed() {
+    window.removeEventListener('resize', this.handleResize);
+  },
 };
+
 </script>

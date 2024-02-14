@@ -1,26 +1,11 @@
 <template>
+      <default-bar />
+
     <v-layout class="rounded rounded-md">
 
-        <v-app-bar>
-            <default-bar />
-        </v-app-bar>
-
-
-        <v-main>
-            <br>
-            <v-container fluid fill-height>
-                <v-row align="center" justify="center">
-                    <v-col cols="12" sm="10" md="8">
-                        <v-card height="900" width="900" class="d-flex align-center mx-auto">
-                            <!--<v-img :src="frame"></v-img>-->
-                            <img :src="frame" alt="Vídeo en temps real (S'ha d'encendre la càmera)">
-                        </v-card>
-                    </v-col>
-                </v-row>
-            </v-container>
-        </v-main>
-        <!-- Barra lateral con archivos o grabaciones anteriores -->
-        <v-navigation-drawer>
+       
+<!-- Barra lateral con archivos o grabaciones anteriores -->
+<v-navigation-drawer class="navDrawer">
             <v-card>
                 <v-toolbar height="60">
                     <v-toolbar-title>Vídeos</v-toolbar-title>
@@ -38,6 +23,21 @@
                 </v-list>
             </v-card>
         </v-navigation-drawer>
+
+        <v-main>
+            <br>
+            <v-container fluid fill-height>
+                <v-row align="center" justify="center">
+                    <v-col cols="12" sm="10" md="8">
+                        <v-card height="900" width="900" class="d-flex align-center mx-auto">
+                            <!--<v-img :src="frame"></v-img>-->
+                            <img :src="frame" alt="Vídeo en temps real (S'ha d'encendre la càmera)">
+                        </v-card>
+                    </v-col>
+                </v-row>
+            </v-container>
+        </v-main>
+        
         <v-main>
 
      
@@ -101,4 +101,10 @@ import DefaultBar from '@/components/appbar.vue'
 
 </script>
 <style>
+.navDrawer{
+    top: 62 !important;
+    float: left;
+    z-index: -1 !important;
+    position:relative !important;
+}
 </style>
