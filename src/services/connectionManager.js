@@ -118,6 +118,28 @@ export async function getSubmarinos(id_empresa) {
   }
 }
 
+export async function selectIncidenciasEmpresa(id_empresa) {
+  try {
+    const response = await fetch("http://localhost:3169/selectIncidenciaEmpresa", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({ id_empresa: id_empresa })
+    });
+
+    if (!response.ok) {
+      throw new Error("Error al obtener las incidencias");
+    }
+
+    const data = await response.json();
+    return data;
+  } catch (error) {
+    console.error(error);
+    throw new Error("Error al obtener los submarinos");
+  }
+}
+
 export async function updateSubmarino(id, submarino) {
   try {
     const response = await fetch("http://localhost:3169/updatesubmarino", {

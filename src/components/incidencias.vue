@@ -126,6 +126,7 @@ import {
   insertIncidencia,
   getIncidencias,
   updateIncidencias,
+  selectIncidenciasEmpresa
 } from "@/services/connectionManager.js";
 import { useAppStore } from "@/store/app";
 
@@ -481,8 +482,22 @@ export default {
 
     // SELECT INCIDENCIA
     async getIncidencia() {
-      this.listaItems = await getIncidencias();
-     // console.log(this.listaItems);
+      const store = useAppStore();
+      const userEmpresa = store.getUserEmpresa;
+      try {
+        if (userEmpresa === null) {
+          this.listaItems = await getIncidencias();
+          console.log(this.listaItems);
+        } else {
+          this.listaItems = await selectIncidenciasEmpresa(userEmpresa);
+          console.log(this.listaItems);
+        }
+      } catch (error) {
+        console.error("Error fetching incidencias:", error);
+      }
+
+
+      // console.log(this.listaItems);
     },
   },
   //CONSOLA
@@ -581,4 +596,5 @@ import DefaultBar from "@/components/appbar.vue";
 .table th {
   background-color: #f2f2f2;
   font-weight: bold;
-}</style>
+}
+</style>
