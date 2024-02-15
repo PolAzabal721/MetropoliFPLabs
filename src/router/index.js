@@ -25,7 +25,7 @@ const routes = [
     meta: { title: 'Sea Shepherd - Càmera' }
   },
 
-  // UBI DEL ROBOT
+  // UBI DEL ROBOTS
   {
     path: '/ubicacion/',
     component: () => import('@/components/ubicacion.vue'),
@@ -79,6 +79,13 @@ const routes = [
     component: () => import('@/components/appbar.vue'),
   },
 
+    // CREAR LOGIN
+    {
+      path: '/gestioEmpresas',
+      component: () => import('@/components/gestioEmpresas.vue'),
+      meta: { title: 'Sea Shepherd - Login' }
+  
+    },
 ]
 
 const router = createRouter({
