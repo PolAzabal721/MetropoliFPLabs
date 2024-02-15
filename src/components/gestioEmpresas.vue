@@ -295,7 +295,7 @@
         <!-- SITIO WEB -->
         <div style="margin-top: 15px;">
           <label>Sitio Web: </label>
-          <input v-model="nuevaEmpresa.sitioWeb" required class="bordered-input" style="height: auto; width: 653px;" maxlength="250">
+          <input v-model="nuevaEmpresa.sitioWeb" required class="bordered-input" style="height: auto; width: 653px;" maxlength="250" type="url">
         </div>
 
       </form>
@@ -303,6 +303,62 @@
     <v-card-actions>
           <v-btn color="primary" @click="crearYGuardarEmpresa">Crear y guardar</v-btn>
           <v-btn color="error" @click="cerrarModalEmpresa">Cancelar</v-btn>
+        </v-card-actions>
+  </v-card>
+</v-dialog>
+
+
+<!-- Diálogo para editar cliente -->
+<v-dialog v-model="mostrarModalEditar" max-width="820" max-height="700">
+  <v-card width="auto" height="auto">
+    <v-card-title>Editar Cliente </v-card-title>
+    <v-card-text>
+      <form @submit.prevent="modoEdicionCliente">
+        <!-- Campos de edición de cliente -->
+        <div style="display: flex; flex-direction: row; justify-content: space-between;">
+          <div style="width: 48%;">
+            <label>Nombre: </label>
+            <input v-model="clienteEditado.nombre" required class="bordered-input" style="height: auto; width: 300px;" maxlength="30">
+          </div>
+          <div style="width: 48%;">
+            <label>Teléfono: </label>
+            <input v-model="clienteEditado.telefono" required class="bordered-input" type="tel" pattern="[0-9]*" maxlength="15">
+          </div>
+        </div>
+
+        <!-- Dirección -->
+        <div style="margin-top: 15px;">
+          <label>Dirección: </label>
+          <v-textarea v-model="clienteEditado.direccion" required class="bordered-input" style="height: auto; width: 653px;" maxlength="245"></v-textarea>
+        </div>
+
+        <!-- Correo electrónico + Plan de suscripción -->
+        <div style="display: flex; flex-direction: row; justify-content: space-between; margin-top: 15px;">
+          <div style="width: 48%;">
+            <label>Correo Electrónico: </label>
+            <input v-model="clienteEditado.correo" required class="bordered-input" style="height: auto; width: 220px;" type="email">
+          </div>
+          <div style="width: 48%;">
+            <label>Plan de Suscripción: </label>
+            <select v-model="clienteEditado.plan" required class="bordered-input" style="height: auto; width: 173px;">
+              <option value="bronce">Bronce</option>
+              <option value="plata">Plata</option>
+              <option value="oro">Oro</option>
+              <option value="diamante">Diamante</option>
+            </select>
+          </div>
+        </div>
+
+        <!-- Sitio web -->
+        <div style="margin-top: 15px;">
+          <label>Sitio Web: </label>
+          <input v-model="clienteEditado.sitioWeb" required class="bordered-input" style="height: auto; width: 653px;" maxlength="250" type="url">
+        </div>
+      </form>
+    </v-card-text>
+    <v-card-actions>
+          <v-btn color="primary" @click="">Guardar cambios</v-btn>
+          <v-btn color="error" @click="cerrarModalEditar">Cancelar</v-btn>
         </v-card-actions>
   </v-card>
 </v-dialog>
@@ -346,6 +402,9 @@ export default {
         sitioWeb: '',
       },
       prefijoTelefono: '+1',
+      mostrarModalEditar: false,
+    clienteEditado: null,
+    modoEdicionCliente: false,
         };
     },
     computed: {
@@ -366,31 +425,33 @@ export default {
     // Actualizar el valor del campo de entrada con los números filtrados
     this.nuevaEmpresa.telefono = filteredInput;
   },
-
-        editarCliente(index) {
-            this.clienteSeleccionado = { ...this.clientes[index] };
-            this.modoEdicion = true;
-        },
+  
         eliminarCliente(index) {
             this.clientes.splice(index, 1);
         },
-        guardarCliente() {
-            if (this.modoEdicion) {
-                // Lógica para guardar cambios en la edición
-            } else {
-                // Lógica para agregar un nuevo cliente
-                this.clientes.push({ ...this.clienteSeleccionado });
-            }
 
-            // Limpiar formulario después de guardar
-            this.clienteSeleccionado = null;
-            this.modoEdicion = false;
-        },
-        cancelarEdicion() {
-            // Cancelar la edición y limpiar formulario
-            this.clienteSeleccionado = null;
-            this.modoEdicion = false;
-        },
+         // Método para abrir el diálogo de edición con los datos del cliente seleccionado
+  editarCliente(index) {
+    this.clienteEditado = { ...this.clientes[index] };
+    this.modoEdicionCliente = true;
+    this.mostrarModalEditar = true;
+  },
+  
+  // Método para guardar los cambios realizados en la edición del cliente
+  guardarCambiosCliente() {
+    // Realizar la lógica para guardar los cambios en el cliente
+    // Actualizar la lista de clientes con los nuevos datos
+    // Cerrar el diálogo de edición
+    this.mostrarModalEditar = false;
+  },
+  
+  // Método para cerrar el diálogo de edición sin guardar cambios
+  cerrarModalEditar() {
+    this.mostrarModalEditar = false;
+    // Limpiar los datos del cliente editado y el modo de edición
+    this.clienteEditado = null;
+    this.modoEdicionCliente = false;
+  },
 
         mostrarFormularioEmpresa() {
       // Mostrar el modal o sección para crear empresa
