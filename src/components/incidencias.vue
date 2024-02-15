@@ -485,7 +485,7 @@ export default {
       const store = useAppStore();
       const userEmpresa = store.getUserEmpresa;
       try {
-        if (userEmpresa === null) {
+        if (userEmpresa === null || userEmpresa === "null") {
           this.listaItems = await getIncidencias();
           console.log(this.listaItems);
         } else {

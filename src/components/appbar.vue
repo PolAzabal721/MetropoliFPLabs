@@ -24,8 +24,9 @@
               <option disabled value="">Selecciona una empresa</option>
               <option v-for="empresa in empresas" :value="empresa.id_empresa">{{ empresa.nom_empresa }}</option>
             </select>
-
           </div>
+          <span class="icon" @click="limpiarSeleccion"><i class="mdi mdi-close mdi-36px"></i></span>
+          
         </div>
 
         <!-- CLIENTE SIN INICIAR SESION -->
@@ -222,6 +223,14 @@ export default {
       // Recargar la página
       location.reload();
 
+    },
+    limpiarSeleccion() {
+      const appStore = useAppStore();
+      this.selectedEmpresa = '';
+      localStorage.removeItem('selectedEmpresa');
+      appStore.setUserEmpresa(null);
+
+      location.reload();
     },
     logout() {
       const appStore = useAppStore();
