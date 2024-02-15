@@ -1,5 +1,5 @@
 <template>
-  <default-bar />
+  <!-- <default-bar /> -->
   <v-layout class="rounded rounded-md">
     <v-main style="height: 100vh">
       <v-container fluid>
@@ -15,7 +15,7 @@
                   v-model="submarinoSeleccionado"
                   @change="avanzar"
                 >
-                  <option disabled value="">Selecciona un submarino</option>
+                  <option disabled value="Selecciona un submarino">Selecciona un submarino</option>
                   <option v-for="submarino in submarinos" :value="submarino">
                     {{ submarino.nom_sub }}
                   </option>

@@ -9,7 +9,7 @@ export const useAppStore = defineStore('app', {
     userName: localStorage.getItem('userName') || '',
     userApellido: localStorage.getItem('userApellido') || '',
     userID: localStorage.getItem('userID') || '',
-    empresas: [],
+    empresas: JSON.parse(localStorage.getItem('empresas')) || [],
 
   }),
   getters: {
@@ -56,23 +56,26 @@ export const useAppStore = defineStore('app', {
       this.userID = ID;
       localStorage.setItem('userID', ID);
     },
+    setEmpresas(empresas) {
+      this.empresas = empresas;
+      localStorage.setItem('empresas', JSON.stringify(empresas));
+    },
     // Agregar un método para limpiar la sesión al cerrar sesión
     clearSession() {
       this.userRole = '';
       this.userEmpresa = '';
       this.userName = '';
       this.userApellido = '';
-      this.empresa = [];
+      this.userID = '';
+      this.empresas = [];
+      localStorage.removeItem('empresas');
       localStorage.removeItem('userRole');
       localStorage.removeItem('userEmpresa');
       localStorage.removeItem('userName');
       localStorage.removeItem('userApellido');
-      localStorage.removeItem('empresas');
+      localStorage.removeItem('userID');
     },
-    setEmpresas(empresas) {
-      this.empresas = empresas;
-      localStorage.setItem('empresas', JSON.stringify(empresas));
-    },
+    
   },
   persist: true
 })
