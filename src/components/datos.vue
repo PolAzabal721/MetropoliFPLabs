@@ -10,18 +10,20 @@
                 <h2>Selecciona un submarino</h2>
               </v-card-title>
               <v-card-text class="text-center">
-                <v-select
+                <select
+                  class="select"
                   v-model="submarinoSeleccionado"
-                  label="Submarino"
-                  :items="submarinos.map((submarino) => submarino.nom_sub)"
-                  item-text="text"
-                  item-value="value"
-                  outlined
-                ></v-select>
+                  @change="avanzar"
+                >
+                  <option disabled value="">Selecciona un submarino</option>
+                  <option v-for="submarino in submarinos" :value="submarino">
+                    {{ submarino.nom_sub }}
+                  </option>
+                </select>
+                <span class="icon" @click="limpiarSeleccion">
+                  <i class="mdi mdi-close mdi-24px"></i>
+                </span>
               </v-card-text>
-              <v-card-actions class="justify-center">
-                <v-btn color="primary" @click="avanzar">Seleccionar</v-btn>
-              </v-card-actions>
             </v-card>
             <v-card
               class="mx-5"
@@ -56,9 +58,7 @@
                     <v-col>
                       <div class="scroll-container">
                         <v-list>
-                          <v-list-item
-                            v-if="state.movimientos.length > 0"
-                          >
+                          <v-list-item v-if="state.movimientos.length > 0">
                             <v-list-item
                               v-for="(movimiento, index) in state.movimientos
                                 .slice()
@@ -104,6 +104,7 @@ export default {
     return {
       submarinos: [],
       submarinoSeleccionado: null,
+      nombreSubmarino: "",
       seleccionado: false,
     };
   },
@@ -184,15 +185,11 @@ export default {
     },
     avanzar() {
       this.seleccionado = true;
-      const submarinoEncontrado = this.submarinos.find(
-        (submarino) => submarino.nom_sub === this.submarinoSeleccionado
-      );
-      if (submarinoEncontrado) {
-        this.submarinoSeleccionado = submarinoEncontrado;
-        console.log("Submarino seleccionado:", this.submarinoSeleccionado);
-      } else {
-        console.error("No se encontró el submarino seleccionado en la lista.");
-      }
+      console.log(this.submarinoSeleccionado);
+    },
+    limpiarSeleccion() {
+      this.submarinoSeleccionado = null;
+      this.seleccionado = false;
     },
   },
 };
@@ -231,5 +228,27 @@ import DefaultBar from "@/components/appbar.vue";
   border-radius: 8px;
   margin-bottom: 8px;
   display: inline-block;
+}
+
+.select {
+  width: 300px; /* Ajusta el ancho según sea necesario */
+  padding: 10px;
+  font-size: 16px; /* Ajusta el tamaño de la fuente según sea necesario */
+  text-align: center; /* Centra el texto */
+  border: 2px solid #333; /* Añade bordes */
+  background-color: #fff8f8; /* Color de fondo más oscuro */
+  color: black; /* Color del texto */
+  border-radius: 8px; /* Agrega bordes redondeados */
+  margin: 0 auto; /* Centra horizontalmente */
+}
+
+
+.icon {
+  position: absolute;
+  top: 65%;
+  right: 200px;
+  size: 20px;
+  transform: translateY(-50%);
+  cursor: pointer;
 }
 </style>
