@@ -482,7 +482,7 @@ export default {
     // SELECT INCIDENCIA
     async getIncidencia() {
       this.listaItems = await getIncidencias();
-      // console.log(this.listaItems);
+     // console.log(this.listaItems);
     },
   },
   //CONSOLA

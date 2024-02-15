@@ -21,17 +21,17 @@
   
   <!-- Campo de búsqueda -->
   <div class="search-wrapper">
-    <input class="search-input" type="text" v-model="filtroCliente" placeholder=" Buscar cliente">
+    <input class="search-input" type="text" v-model="filtroEmpresa" placeholder=" Buscar cliente">
   </div>
 </div>
 
 
           <!-- Mostrar lista de clientes filtrada -->
-          <v-card v-for="(cliente, index) in clientesFiltrados" :key="index" style="margin: 15px; width: auto; height: auto;">
+          <v-card v-for="(empresa, index) in clientesFiltrados" :key="index" style="margin: 15px; width: auto; height: auto;">
             <v-row align="center">
               <v-col>
                 <p style="margin: 20px;">
-                  {{ cliente.nombre }}
+                  {{ empresa.nom_empresa }}
                 </p>
               </v-col>
             </v-row>
@@ -43,19 +43,6 @@
               <v-icon>mdi-delete</v-icon>
             </v-btn>
           </v-card>
-
-          <!-- Sección para agregar o editar un cliente -->
-          <div v-if="clienteSeleccionado !== null">
-            <h3>{{ modoEdicion ? 'Editar Cliente' : 'Agregar Cliente' }}</h3>
-            <!-- Formulario para editar o agregar cliente -->
-            <form @submit.prevent="guardarCliente">
-              <label>Nombre:</label>
-              <input v-model="clienteSeleccionado.nombre" required>
-              <!-- Otros campos del cliente según tus necesidades -->
-              <button type="submit">{{ modoEdicion ? 'Guardar cambios' : 'Agregar Cliente' }}</button>
-              <button @click="cancelarEdicion">Cancelar</button>
-            </form>
-          </div>
 
      <!-- Modal o sección para crear empresa -->
 <v-dialog v-model="mostrarModalEmpresa" max-width="820" max-height="700">
@@ -371,6 +358,7 @@
 </template>
 
 <script>
+import { useAppStore } from "@/store/app";
 import { socket, state } from '../services/socket';
 
 export default {
@@ -390,7 +378,7 @@ export default {
             ],
             clienteSeleccionado: null,
             modoEdicion: false,
-            filtroCliente: '',
+            filtroEmpresa: '',
 
             mostrarModalEmpresa: false,
       nuevaEmpresa: {
@@ -405,13 +393,18 @@ export default {
       mostrarModalEditar: false,
     clienteEditado: null,
     modoEdicionCliente: false,
+    empresas: [],
         };
     },
     computed: {
+      userRole() {
+      const appStore = useAppStore();
+      return appStore.userRole; // Añade el rol del usuario a tus datos computados
+    },  
   // Computed property para filtrar clientes
   clientesFiltrados() {
-      return this.clientes.filter(cliente => {
-        return cliente.nombre.toLowerCase().includes(this.filtroCliente.toLowerCase());
+      return this.empresas.filter(empresa => {
+        return empresa.nom_empresa.toLowerCase().includes(this.filtroEmpresa.toLowerCase());
       });
     },
   },
@@ -517,11 +510,18 @@ export default {
     // Ocultamos el modal
     this.mostrarModalEmpresa = false;
   },
+
+  getEmpresa(){
+      const appStore = useAppStore()
+      this.empresas = appStore.getEmpresas;
+    },
     },
 
     //CONSOLA
     created() {
         console.log("CREADO");
+        this.getEmpresa();
+console.log(this.empresas);
     },
     mounted() {
         console.log("MONTADO");
