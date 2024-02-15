@@ -10,6 +10,7 @@ export const useAppStore = defineStore('app', {
     userApellido: localStorage.getItem('userApellido') || '',
     userID: localStorage.getItem('userID') || '',
     empresas: JSON.parse(localStorage.getItem('empresas')) || [],
+    selectedEmpresa: localStorage.getItem('selectedEmpresa') || '',
 
   }),
   getters: {
@@ -31,6 +32,9 @@ export const useAppStore = defineStore('app', {
     },
     getEmpresas() {
       return this.empresas;
+    },
+    getSelectedEmpresa() {
+      return this.selectedEmpresa;
     },
   },
   actions: {
@@ -60,6 +64,10 @@ export const useAppStore = defineStore('app', {
       this.empresas = empresas;
       localStorage.setItem('empresas', JSON.stringify(empresas));
     },
+    setSelectedEmpresa(empresa) {
+      this.selectedEmpresa = empresa;
+      localStorage.setItem('selectedEmpresa', empresa);
+    },
     // Agregar un método para limpiar la sesión al cerrar sesión
     clearSession() {
       this.userRole = '';
@@ -67,6 +75,7 @@ export const useAppStore = defineStore('app', {
       this.userName = '';
       this.userApellido = '';
       this.userID = '';
+      this.selectedEmpresa = '';
       this.empresas = [];
       localStorage.removeItem('empresas');
       localStorage.removeItem('userRole');
@@ -74,6 +83,7 @@ export const useAppStore = defineStore('app', {
       localStorage.removeItem('userName');
       localStorage.removeItem('userApellido');
       localStorage.removeItem('userID');
+      localStorage.removeItem('selectedEmpresa');
     },
     
   },

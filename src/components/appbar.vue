@@ -13,21 +13,21 @@
         width: 100%;
       ">
         <div class="header-container">
-  <div class="title-container">
-    <router-link :to="'/'" class="titulo">
-      <v-toolbar-title class="mx-5 titulo">Sea Shepherd</v-toolbar-title>
-    </router-link>
-  </div>
-  <i class="mdi mdi-cog-box mdi-36px"></i>
-  <div v-if="userRole === 'admin'" class="select-container">
-  
-  <select id="selectEmpresa" class="select" v-model="selectedEmpresa" @change="seleccionarEmpresa(selectedEmpresa)">
-    <option disabled value="Selecciona una empresa">Selecciona una empresa</option>
-    <option v-for="empresa in empresas" :value="empresa.id_empresa">{{ empresa.nom_empresa }}</option>
-  </select>
-</div>
+          <div class="title-container">
+            <router-link :to="'/'" class="titulo">
+              <v-toolbar-title class="mx-5 titulo">Sea Shepherd</v-toolbar-title>
+            </router-link>
+          </div>
+          <i class="mdi mdi-cog-box mdi-36px"></i>
+          <div v-if="userRole === 'admin'" class="select-container">
+            <select class="select" v-model="selectedEmpresa" @change="seleccionarEmpresa">
+              <option disabled value="">Selecciona una empresa</option>
+              <option v-for="empresa in empresas" :value="empresa.id_empresa">{{ empresa.nom_empresa }}</option>
+            </select>
 
-</div>
+          </div>
+
+        </div>
 
         <!-- CLIENTE SIN INICIAR SESION -->
         <div style="width: 50%" v-if="userRole === ''">
@@ -58,7 +58,7 @@
           <router-link :to="'/incidencias'" class="colorBTN">Gestiò Incidències</router-link>
           <router-link :to="'/camara'" class="colorBTN"> Càmera</router-link>
           <router-link :to="'/gestioEmpresas'" class="colorBTN"> Empresas</router-link>
-          
+
 
         </div>
 
@@ -93,8 +93,6 @@
     </div>
 
   </transition>
-
-
 </template>
 
 <style>
@@ -157,27 +155,29 @@
   color: #152636;
   transition: 0.2s;
 }
+
 .header-container {
   display: flex;
   align-items: center;
 }
 
 .title-container {
-  margin-right: auto; /* Esto empujará el select hacia la derecha */
+  margin-right: auto;
+  /* Esto empujará el select hacia la derecha */
 }
 
 .select-container {
-  flex-grow: 1; /* Esto permite que el select ocupe todo el espacio restante disponible */
+  flex-grow: 1;
+  /* Esto permite que el select ocupe todo el espacio restante disponible */
 }
 
 .select {
   /* Estilos del select según tus preferencias */
   padding: 5px;
   border-radius: 5px;
-  border: 2px solid #333; /* Añade bordes */
+  border: 2px solid #333;
+  /* Añade bordes */
 }
-
-
 </style>
 
 <script>
@@ -193,7 +193,14 @@ export default {
       const appStore = useAppStore();
       return appStore.userRole; // Añade el rol del usuario a tus datos computados
     },
-    
+    selectedEmpresa: {
+      get() {
+        return localStorage.getItem('selectedEmpresa') || ''; // Get selectedEmpresa from localStorage or default to an empty string
+      },
+      set(value) {
+        localStorage.setItem('selectedEmpresa', value); // Store selectedEmpresa in localStorage
+      }
+    }
   },
   methods: {
     cambiar() {
@@ -203,12 +210,16 @@ export default {
         this.mostrarSubmari = true
       }
     },
-    seleccionarEmpresa(idEmpresa) {
-      const appStore = useAppStore();
-      appStore.setUserEmpresa(idEmpresa);
+    seleccionarEmpresa(event) {
+      const selectedValue = event.target.value;
+      // Update selectedEmpresa value
+      this.selectedEmpresa = selectedValue;
+      // Update selected empresa in localStorage
+      localStorage.setItem('selectedEmpresa', selectedValue);
       window.alert('¡Empresa cambiada!');
     },
-    cambiar2(){
+
+    cambiar2() {
       if (this.mostrarEmpresa) {
         this.mostrarEmpresa = false
       } else {
@@ -225,7 +236,7 @@ export default {
     handleResize() {
       this.isWideScreen = window.innerWidth >= 1300; // Adjust the breakpoint as needed
     },
-    getEmpresa(){
+    getEmpresa() {
       const appStore = useAppStore()
       this.empresas = appStore.getEmpresas;
     }
@@ -236,7 +247,7 @@ export default {
       mostrarEmpresa: false,
       isWideScreen: window.innerWidth >= 1300, // Adjust the breakpoint as needed
       empresas: [],
-      selectedEmpresa: null,
+      selectedEmpresa: localStorage.getItem('selectedEmpresa') || null, // Initialize selectedEmpresa from localStorage or default to null
     };
   },
   mounted() {
@@ -246,7 +257,7 @@ export default {
   destroyed() {
     window.removeEventListener('resize', this.handleResize);
   },
-  created(){
+  created() {
     this.getEmpresa()
   }
 };
