@@ -79,13 +79,13 @@ const routes = [
     component: () => import('@/components/appbar.vue'),
   },
 
-    // CREAR LOGIN
-    {
-      path: '/gestioEmpresas',
-      component: () => import('@/components/gestioEmpresas.vue'),
-      meta: { title: 'Sea Shepherd - Login' }
-  
-    },
+  // GESTION EMPRESAS 
+  {
+    path: '/gestioEmpresas',
+    component: () => import('@/components/gestioEmpresas.vue'),
+    meta: { title: 'Sea Shepherd - Login' }
+
+  },
 ]
 
 const router = createRouter({
@@ -97,7 +97,7 @@ router.beforeEach((to, from, next) => {
   const appStore = useAppStore();
   const isAdmin = appStore.userRole === 'admin'; // Comprueba si userRole es 'admin'
 
-  if (!isAdmin && to.path !== '/' && to.path !== '/home' && to.path !== '/camara'&& to.path !== '/login') {
+  if (!isAdmin && to.path !== '/' && to.path !== '/home' && to.path !== '/camara' && to.path !== '/login') {
     window.alert('Acceso denegado: no eres administrador');
     next('/home'); // Redirige al usuario a la página de inicio
   } else {
