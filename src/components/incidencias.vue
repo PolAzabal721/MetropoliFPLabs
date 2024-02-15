@@ -2,13 +2,7 @@
   <default-bar />
 
   <div>
-    <v-btn
-      class="ml-4"
-      style="margin-top: 20px"
-      color="primary"
-      @click="mostrarDialogo"
-      >Crear Incidencia</v-btn
-    >
+    <v-btn class="ml-4" style="margin-top: 20px" color="primary" @click="mostrarDialogo">Crear Incidencia</v-btn>
 
     <v-btn class="ml-4" style="margin-top: 20px" @click="toggleFiltro" text>
       Filtro <v-icon>mdi-menu-down</v-icon>
@@ -17,13 +11,8 @@
     <!-- Filtro de incidencias -->
     <v-card v-if="mostrarFiltroCard" class="filtro-card">
       <v-card-text>
-        <v-btn
-          class="filtro-btn"
-          v-for="filtro in filtros"
-          :key="filtro.id"
-          @click="aplicarFiltro(filtro)"
-          :class="{ 'filtro-btn-selected': esFiltroSeleccionado(filtro) }"
-        >
+        <v-btn class="filtro-btn" v-for="filtro in filtros" :key="filtro.id" @click="aplicarFiltro(filtro)"
+          :class="{ 'filtro-btn-selected': esFiltroSeleccionado(filtro) }">
           {{ filtro.label }}
         </v-btn>
       </v-card-text>
@@ -53,28 +42,25 @@
             </tr>
           </thead>
           <tbody>
-            <tr
-              v-for="(item, index) in incidenciasFiltradas"
-              :key="item.id_incidencia"
-            >
+            <tr v-for="(item, index) in incidenciasFiltradas" :key="item.id_incidencia">
               <td>{{ item.Asunto }}</td>
               <td>{{ item.nom_sub }}</td>
               <td>{{ item.Autor }}</td>
               <td>{{ item.Asignado }}</td>
-              <td>{{ item.prioridad }}</td>
+              <td>
+                <div
+                  :class="{ 'circle': true, 'high-priority': item.prioridad === 'Alta', 'medium-priority': item.prioridad === 'Media', 'low-priority': item.prioridad === 'Baja' }">
+                  {{ item.prioridad }}</div>
+              </td>
               <td>{{ item.estado }}</td>
               <td>{{ item.tipo }}</td>
               <td>{{ formatearFecha(item.fecha_inicio) }}</td>
               <td>{{ formatearFecha(item.fecha_fin) }}</td>
               <td style="border: none">
-                <v-icon @click="mostrarDescripcion(item.descripcion)"
-                  >mdi-eye</v-icon
-                >
+                <v-icon @click="mostrarDescripcion(item.descripcion)">mdi-eye</v-icon>
               </td>
               <td style="border: none; margin-left: ">
-                <v-icon @click="editarIncidencia(index, item.id_incidencia)"
-                  >mdi-pencil</v-icon
-                >
+                <v-icon @click="editarIncidencia(index, item.id_incidencia)">mdi-pencil</v-icon>
               </td>
             </tr>
           </tbody>
@@ -90,9 +76,7 @@
           {{ descripcionSeleccionada }}
         </v-card-text>
         <v-card-actions>
-          <v-btn color="primary" @click="dialogDescripcion = false"
-            >Cerrar</v-btn
-          >
+          <v-btn color="primary" @click="dialogDescripcion = false">Cerrar</v-btn>
         </v-card-actions>
       </v-card>
     </v-dialog>
@@ -102,38 +86,17 @@
       <v-card>
         <v-card-title>Crear Nueva Incidencia</v-card-title>
         <v-card-text>
-          <v-text-field
-            v-model="nuevaIncidencia.nombre"
-            label="Asunto de la incidencia"
-          ></v-text-field>
-          <v-textarea
-            v-model="nuevaIncidencia.descripcion"
-            label="Descripción de la incidencia"
-          ></v-textarea>
-          <v-select
-            v-model="nuevaIncidencia.submarinoSeleccionado"
-            label="Submarino"
-            :items=" submarinos.map((submarino) => submarino.nom_sub )
-            "
-            item-text="text"
-            item-value="value"
-          ></v-select>
+          <v-text-field v-model="nuevaIncidencia.nombre" label="Asunto de la incidencia"></v-text-field>
+          <v-textarea v-model="nuevaIncidencia.descripcion" label="Descripción de la incidencia"></v-textarea>
+          <v-select v-model="nuevaIncidencia.submarinoSeleccionado" label="Submarino" :items="submarinos.map((submarino) => submarino.nom_sub)
+            " item-text="text" item-value="value"></v-select>
 
-          <v-select
-            v-model="nuevaIncidencia.tipo"
-            :items="['Actualización software', 'Reparación']"
-            label="Tipo"
-          ></v-select>
-          <v-select
-            v-model="nuevaIncidencia.prioridad"
-            :items="prioridades"
-            label="Prioridad"
-          ></v-select>
+          <v-select v-model="nuevaIncidencia.tipo" :items="['Actualización software', 'Reparación']"
+            label="Tipo"></v-select>
+          <v-select v-model="nuevaIncidencia.prioridad" :items="prioridades" label="Prioridad"></v-select>
         </v-card-text>
         <v-card-actions>
-          <v-btn color="primary" @click="guardarIncidencia"
-            >Crear y guardar</v-btn
-          >
+          <v-btn color="primary" @click="guardarIncidencia">Crear y guardar</v-btn>
           <v-btn color="error" @click="cerrarDialogo">Cancelar</v-btn>
         </v-card-actions>
       </v-card>
@@ -144,24 +107,12 @@
       <v-card>
         <v-card-title>Editar Incidencia</v-card-title>
         <v-card-text>
-          <v-text-field
-            v-model="edicionIncidencia.nombre"
-            label="Nuevo nombre"
-          ></v-text-field>
-          <v-textarea
-            v-model="edicionIncidencia.descripcion"
-            label="Nueva descripción"
-          ></v-textarea>
-          <v-select
-            v-model="edicionIncidencia.prioridad"
-            :items="prioridades"
-            label="Cambiar prioridad"
-          ></v-select>
+          <v-text-field v-model="edicionIncidencia.nombre" label="Nuevo nombre"></v-text-field>
+          <v-textarea v-model="edicionIncidencia.descripcion" label="Nueva descripción"></v-textarea>
+          <v-select v-model="edicionIncidencia.prioridad" :items="prioridades" label="Cambiar prioridad"></v-select>
         </v-card-text>
         <v-card-actions>
-          <v-btn color="primary" @click="guardarEdicionIncidencia"
-            >Guardar</v-btn
-          >
+          <v-btn color="primary" @click="guardarEdicionIncidencia">Guardar</v-btn>
           <v-btn color="error" @click="cancelarEdicion">Cancelar</v-btn>
         </v-card-actions>
       </v-card>
@@ -331,7 +282,7 @@ export default {
         submarino.id_sub
       );
 
-      console.log(this.listaEnviar);
+      //console.log(this.listaEnviar);
       await insertIncidencia(this.listaEnviar);
 
       // Limpiar el formulario y cerrar el diálogo
@@ -343,6 +294,7 @@ export default {
       this.nuevaIncidencia.submarinoSeleccionado = null;
       this.dialogoVisible = false;
     },
+
     // FORMATO DE LA FECHA DE INICIO
     formatearFecha(fecha) {
       if (!fecha) return "";
@@ -429,9 +381,9 @@ export default {
 
 
       // Asignar los valores al formulario de edición
-      this.edicionIncidencia.nombre = incidenciaSeleccionada.nombre;
+      this.edicionIncidencia.nombre = incidenciaSeleccionada.Asunto;
       this.edicionIncidencia.descripcion = incidenciaSeleccionada.descripcion;
-
+      this.edicionIncidencia.prioridad = incidenciaSeleccionada.prioridad;
       // Guardar el índice de la incidencia para utilizarlo en el método guardarEdicionIncidencia
       this.indiceEdicion = index;
       this.idIncidenciaEditando = id;
@@ -441,7 +393,7 @@ export default {
     },
 
     // GUARDAR Y HACER UPDATE
-   async guardarEdicionIncidencia() {
+    async guardarEdicionIncidencia() {
       // Verificar que el índice de edición esté definido
       if (this.indiceEdicion !== null) {
         // Validar que todos los campos obligatorios estén llenos
@@ -473,21 +425,12 @@ export default {
         const incidenciaSeleccionada =
           this.incidenciasFiltradas[this.indiceEdicion];
 
-        console.log("idddddd");
-        console.log(this.idIncidenciaEditando);
-
         // Actualizar los campos de nombre y descripción
         incidenciaSeleccionada.nombre = this.edicionIncidencia.nombre;
         incidenciaSeleccionada.descripcion = this.edicionIncidencia.descripcion;
         incidenciaSeleccionada.prioridad = this.edicionIncidencia.prioridad;
-        // Cerrar el diálogo de edición
 
-        console.log(incidenciaSeleccionada.nombre,
-          incidenciaSeleccionada.descripcion,
-          incidenciaSeleccionada.prioridad,
-          this.idIncidenciaEditando);
-
-       await updateIncidencias(
+        await updateIncidencias(
           incidenciaSeleccionada.nombre,
           incidenciaSeleccionada.descripcion,
           incidenciaSeleccionada.prioridad,
@@ -495,7 +438,8 @@ export default {
         );
 
         this.getIncidencia();
-        
+
+        // Cerrar el diálogo de edición
         this.dialogoEdicionVisible = false;
 
         // Limpiar los datos de edición
@@ -529,13 +473,16 @@ export default {
       }
     },
 
+    // MOSTRAR LA DESCRIPCIÓN
     mostrarDescripcion(descripcion) {
       this.descripcionSeleccionada = descripcion;
       this.dialogDescripcion = true;
     },
+
+    // SELECT INCIDENCIA
     async getIncidencia() {
       this.listaItems = await getIncidencias();
-      console.log(this.listaItems);
+      // console.log(this.listaItems);
     },
   },
   //CONSOLA
@@ -560,6 +507,31 @@ import DefaultBar from "@/components/appbar.vue";
 </script>
 
 <style scoped>
+.circle {
+  width: auto;
+  height: auto;
+  border-radius: 20px !important;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  color: black;
+}
+
+.high-priority {
+  background-color: #ff0000;
+  /* rojo para alta prioridad */
+}
+
+.medium-priority {
+  background-color: #ffff00;
+  /* amarillo para media prioridad */
+}
+
+.low-priority {
+  background-color: #00ff00;
+  /* verde para baja prioridad */
+}
+
 .filtro-card {
   background-color: #ccc;
   top: 5px;
@@ -609,5 +581,4 @@ import DefaultBar from "@/components/appbar.vue";
 .table th {
   background-color: #f2f2f2;
   font-weight: bold;
-}
-</style>
+}</style>

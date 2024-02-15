@@ -4,15 +4,11 @@
     <v-container fluid>
       <!-- MAPA PRINCIPAL -->
       <v-card class="mx-auto" height="800" width="800">
-        <v-text-field
-          v-model="nombreLugar"
-          label="Intoduce un nombre para el area"
-        ></v-text-field>
+        <v-text-field v-model="nombreLugar" label="Intoduce un nombre para el area" @input="verificarLongitudNombre"
+          @paste="truncarValor" maxlength="45"></v-text-field>
         <div class="ml-4 d-flex">
-          <v-btn
-            @click="crearLugar"
-            :disabled="nombreLugar === '' || drawnGeometries.length === 0"
-          >
+          <v-btn @click="crearLugar"
+            :disabled="nombreLugar === '' || drawnGeometries.length === 0 || nombreLugarExcedeLongitud">
             Crear
           </v-btn>
 
@@ -32,33 +28,22 @@
           <v-row>
             <!-- SELECT AREA -->
             <v-col class="mr-3">
-              <v-select
-                class="editarSelect"
-                v-model="nombreLugarBusqueda"
-                :items="areas.map((area) => area.nombreArea)"
-                label="Selecciona el área que quieras editar"
-              ></v-select>
+              <v-select class="editarSelect" v-model="nombreLugarBusqueda" :items="areas.map((area) => area.nombreArea)"
+                label="Selecciona el área que quieras editar"></v-select>
             </v-col>
 
             <!-- NUEVO NOMBRE AREA -->
             <v-col>
-              <v-text-field
-                class="small-text-field"
-                v-model="nuevoNombre"
-                label="Nuevo nombre Area"
-                :disabled="!areaEncontrada"
-              ></v-text-field>
+              <v-text-field class="small-text-field" v-model="nuevoNombre" label="Nuevo nombre Area"
+                :disabled="!areaEncontrada" @input="verificarLongitudNuevoNombre" @paste="truncarNuevoNombre"
+                maxlength="45"></v-text-field>
             </v-col>
           </v-row>
 
           <v-row>
             <!-- BTN PARA BUSCAR AREA -->
             <v-col>
-              <v-btn
-                class="editarSelect"
-                @click="buscarArea"
-                :disabled="nombreLugarBusqueda === ''"
-              >
+              <v-btn class="editarSelect" @click="buscarArea" :disabled="nombreLugarBusqueda === ''">
                 Buscar
               </v-btn>
             </v-col>
@@ -74,10 +59,10 @@
           <br />
           <!-- MAPA PARA EDITAR AREAS -->
           <v-card class="mx-auto slidecontainer" height="860" width="800">
-            <div id="mapaSelect" style="height: 650px; width: 800px"></div>
+            <div id="mapaSelect" style="height: 740px; width: 800px"></div>
           </v-card>
           <v-card-actions>
-            <v-btn @click="guardarCambios" color="primary"> Guardar </v-btn>
+            <v-btn @click="guardarCambiosClick" color="primary"> Guardar </v-btn>
             <v-btn @click="deleteArea" color="error"> Eliminar Area </v-btn>
           </v-card-actions>
         </v-card>
@@ -127,9 +112,58 @@ export default {
       editedCoordinates: null,
       layerToEdit: null,
       isEditing: false,
+      nombreLugarExcedeLongitud: false,
+      nuevoNombreExcedeLongitud: false,
+      cambiosNombre: false,
     };
   },
   methods: {
+
+    // LONGITUG MAX PARA EL NOMBRE DEL AREA
+    verificarLongitudNombre() {
+      if (this.nombreLugar.length > 45) {
+        this.nombreLugar = this.nombreLugar.slice(0, 45);
+        this.nombreLugarExcedeLongitud = true;
+        alert('El nombre no puede exceder los 45 caracteres.');
+      } else {
+        this.nombreLugarExcedeLongitud = false;
+      }
+    },
+
+    // TRUNCAR VALOR SI EXCEDE EL MAX
+    truncarValor(event) {
+      const pastedText = event.clipboardData.getData('text/plain');
+      if (pastedText.length > 45) {
+        event.preventDefault();
+        const truncatedText = pastedText.slice(0, 45);
+        this.nombreLugar = truncatedText;
+        alert('El valor ha sido truncado a 45 caracteres.');
+      }
+    },
+
+    // LONGITUG MAX PARA EL NUEVO NOMBRE DEL AREA
+    verificarLongitudNuevoNombre() {
+
+      if (this.nuevoNombre.length > 45) {
+        this.nuevoNombre = this.nuevoNombre.slice(0, 45);
+        this.nuevoNombreExcedeLongitud = true;
+        alert('El nuevo nombre no puede exceder los 45 caracteres.');
+      } else {
+        this.nuevoNombreExcedeLongitud = false;
+      }
+    },
+
+    // TRUNCAR VALOR NUEVO SI EXCEDE EL MAX
+    truncarNuevoNombre(event) {
+      const pastedText = event.clipboardData.getData('text/plain');
+      if (pastedText.length > 45) {
+        event.preventDefault();
+        const truncatedText = pastedText.slice(0, 45);
+        this.nuevoNombre = truncatedText;
+        alert('El nuevo nombre ha sido truncado a 45 caracteres.');
+      }
+    },
+
     // INICIO Y CONFIG DEL MAPA
     initMap() {
       this.map = L.map("map").setView([41.38879, 2.15899], 11);
@@ -306,6 +340,8 @@ export default {
 
     // BUSCAMOS EL AREA Y PERMITIMOS EDITAR
     async buscarArea() {
+      this.isEditing = false;
+
       const areaEncontrada = this.areas.find(
         (area) => area.nombreArea === this.nombreLugarBusqueda
       );
@@ -318,6 +354,9 @@ export default {
         );
         // console.log(geoJsonLayer);
         const layers = geoJsonLayer.getLayers();
+
+        // Validar el nuevo nombre
+        this.nuevoNombre = this.areaEncontrada.nombreArea;
 
         if (layers.length > 0) {
           this.layerToEdit = layers[0];
@@ -445,7 +484,7 @@ export default {
         );
 
         if (confirmDelete) {
-          console.log(this.areaEncontrada._id);
+          // console.log(this.areaEncontrada._id);
 
           // Eliminar el área de la base de datos
           deletearea(this.areaEncontrada._id)
@@ -491,72 +530,68 @@ export default {
           this.isEditing = false;
         }
 
-        console.log(this.editedCoordinates);
+        //console.log(this.editedCoordinates);
+      }
+    },
+
+    // COMPROBAR EL NOMBRE ANTES DE GUARDAR
+    guardarCambiosClick() {
+      // Después de verificar la longitud, puedes realizar la validación de la expresión regular
+      const nuevoNombreValido = /^[a-zA-Z0-9]{3,}$/.test(this.nuevoNombre);
+
+      if ((nuevoNombreValido || !this.nuevoNombre.trim()) && this.nuevoNombre.trim().length >= 3) {
+        // Resto de tu lógica
+        this.cambiosNombre = true;
+        this.guardarCambios();  // Llama a guardarCambios aquí
+      } else {
+        alert("El nuevo nombre no es válido. Debe contener al menos 3 letras y solo caracteres alfabéticos.");
+        return;
       }
     },
 
     // GUARDAR LOS DATOS EN BD
     async guardarCambios() {
-      let cambiosNombre = false; // Variable para seguir el estado de si el nombre ha sido modificado
+      this.isEditing = false;
+
       let cambiosCoordenadas = false; // Variable para seguir el estado de si las coordenadas han sido modificadas
-
-      if (this.editedCoordinates && this.editedCoordinates.length > 0) {
-        // Validar el nuevo nombre
-        if (this.nuevoNombre === "" || this.nuevoNombre === null) {
-          this.nuevoNombre = this.areaEncontrada.nombreArea;
-        }
-
-        const nuevoNombreValido = /^[a-zA-Z]{3,}$/.test(this.nuevoNombre);
-
-        if (nuevoNombreValido || !this.nuevoNombre.trim()) {
-          // Si el nuevo nombre es válido o está vacío, actualizar el nombre del área
-          if (this.areaEncontrada.nombreArea !== this.nuevoNombre.trim()) {
-            // Verificar si el nombre ha sido modificado
-            this.areaEncontrada.nombreArea = this.nuevoNombre.trim();
-            cambiosNombre = true; // Establecer la variable a true si el nombre ha sido modificado
-          }
-        } else {
-          alert(
-            "El nuevo nombre no es válido. Debe contener al menos 3 letras y solo caracteres alfabéticos."
-          );
-          return;
-        }
-      }
 
       if (this.editedCoordinates && this.editedCoordinates.length > 0) {
         // Verificar si las coordenadas han sido modificadas
         cambiosCoordenadas = true;
       }
 
-      if (cambiosNombre || cambiosCoordenadas) {
+      if (this.cambiosNombre || cambiosCoordenadas) {
         try {
+          // Ver si se han editado las coordenadas
+          const coordenadasAGuardar = cambiosCoordenadas ? this.editedCoordinates : this.areaEncontrada.coordenadas;
+
           // Actualizar las coordenadas y el nombre en la base de datos
           await this.actualizarCoordenadas(
             this.areaEncontrada._id,
             this.nuevoNombre,
-            this.editedCoordinates
+            coordenadasAGuardar
           );
-          if (cambiosNombre && cambiosCoordenadas) {
+          if (this.cambiosNombre && cambiosCoordenadas) {
             alert(
-              "El nombre y las coordenadas se han cambiado y los cambios guardados exitosamente."
+              "El nombre y las coordenadas se han cambiado y guardado exitosamente."
             );
-          } else if (cambiosNombre) {
+          } else if (this.cambiosNombre) {
             alert(
-              "El nombre se ha cambiado y los cambios guardados exitosamente."
+              "El nombre se ha cambiado y guardado exitosamente."
             );
           } else {
             alert(
-              "Las coordenadas se han cambiado y los cambios guardados exitosamente."
+              "Las coordenadas se han cambiado y guardado exitosamente."
             );
           }
         } catch (error) {
           console.error("Error guardando cambios:", error);
           alert("Error al guardar cambios");
-          return; // Salir de la función si hay un error al guardar cambios
+          return;
         }
       } else {
         alert("No se ha realizado ningún cambio.");
-        return; // Salir de la función si no se ha realizado ningún cambio
+        return;
       }
 
       this.cerrarEditarDialog();
@@ -565,9 +600,6 @@ export default {
     // HACER EL UPDATE A LA BD
     async actualizarCoordenadas(id, nombre, coods) {
       await updateArea(id, nombre, coods);
-      console.log(nombre);
-      console.log(id);
-      console.log(coods);
       this.getAreas();
     },
 
