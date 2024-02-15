@@ -6,44 +6,54 @@
         align-items: center;
         width: 100%;
       ">
-    <div style="
+      <div style="
         display: flex;
         justify-content: space-between;
         align-items: center;
         width: 100%;
       ">
-      <div style="display: flex; align-items: center">
-        <router-link :to="'/'" class="titulo">
-          <v-toolbar-title class="mx-5 titulo">Sea Shepherd</v-toolbar-title>
-        </router-link>
-        <v-btn v-if="userRole === 'admin'" :class="estatMotorClass">{{
-          motor
-        }}</v-btn>
-      </div>
-      <div style="width: 50%" v-if="userRole === 'cliente'">
-        <router-link :to="'/'" class="colorBTN" @click.prevent="logout">Tancar Sessió</router-link>
-        <router-link :to="'/camara'" class="colorBTN"> Càmera</router-link>
-      </div>
-      <div style="width: 50%" v-if="userRole === ''">
-        <router-link :to="'/login'" class="colorBTN">Iniciar Sesión</router-link>
-        <router-link :to="'/camara'" class="colorBTN"> Càmera</router-link>
-      </div>
-      <div style="width: 50%" v-if="userRole === 'admin' || userRole === 'tecnico_web'">
-        <router-link :to="'/'" class="colorBTN" @click.prevent="logout">Tancar Sessió</router-link>
-        <v-btn id="gestioSubmari" class="colorBTN" @mouseover="mostrarSubmari = true" @mouseleave="mostrarSubmari = false">Gestiò Sumbarins</v-btn>
-       <router-link :to="'/incidencias'" class="colorBTN">Gestiò Incidències</router-link>
-        <div class="dropdown-incidencies">
-          prova
+        <div style="display: flex; align-items: center">
+          <router-link :to="'/'" class="titulo">
+            <v-toolbar-title class="mx-5 titulo">Sea Shepherd</v-toolbar-title>
+          </router-link>
         </div>
-        <router-link :to="'/camara'" class="colorBTN"> Càmera</router-link>
+
+        <!-- CLIENTE SIN INICIAR SESION -->
+        <div style="width: 50%" v-if="userRole === ''">
+          <router-link :to="'/login'" class="colorBTN">Iniciar Sesión</router-link>
+          <router-link :to="'/camara'" class="colorBTN"> Càmera</router-link>
+        </div>
+
+        <!-- CLIENTE CON SESION INICIADA -->
+        <div style="width: 50%" v-if="userRole === 'cliente'">
+          <router-link :to="'/'" class="colorBTN" @click.prevent="logout">Tancar Sessió</router-link>
+          <router-link :to="'/camara'" class="colorBTN"> Càmera</router-link>
+        </div>
+
+        <!-- TECNICO WEB -->
+        <div style="width: 50%" v-if="userRole === 'tecnico_web'">
+          <router-link :to="'/'" class="colorBTN" @click.prevent="logout">Tancar Sessió</router-link>
+          <v-btn id="gestioSubmari" class="colorBTN" @mouseover="mostrarSubmari = true"
+            @mouseleave="mostrarSubmari = false">Gestiò Sumbarins</v-btn>
+          <router-link :to="'/incidencias'" class="colorBTN">Gestiò Incidències</router-link>
+          <router-link :to="'/camara'" class="colorBTN"> Càmera</router-link>
+        </div>
+
+        <!-- ADMIN DE TODO -->
+        <div style="width: 50%" v-if="userRole === 'admin'">
+          <router-link :to="'/'" class="colorBTN" @click.prevent="logout">Tancar Sessió</router-link>
+          <v-btn id="gestioSubmari" class="colorBTN" @mouseover="mostrarSubmari = true"
+            @mouseleave="mostrarSubmari = false">Gestiò Sumbarins</v-btn>
+          <router-link :to="'/incidencias'" class="colorBTN">Gestiò Incidències</router-link>
+          <router-link :to="'/camara'" class="colorBTN"> Càmera</router-link>
+          <router-link :to="'/gestioEmpresas'" class="colorBTN"> Empresas</router-link>
+        </div>
 
       </div>
-
     </div>
-  </div>
-  <div v-else class="collapsat">
+    <div v-else class="collapsat">
       <!-- Your collapsed view for smaller screens -->
-      
+
 
       <router-link style="width: 80%; !important" :to="'/'" class="titulo">
         <v-toolbar-title class="mx-5 titulo">Sea Shepherd</v-toolbar-title>
@@ -57,8 +67,9 @@
     </div>
   </v-toolbar>
   <transition name="fade">
-    <div v-if="mostrarSubmari" class="dropdown-submari" @mouseover="mostrarSubmari = true" @mouseleave="mostrarSubmari = false">
-      a
+    <div v-if="mostrarSubmari" class="dropdown-submari" @mouseover="mostrarSubmari = true"
+      @mouseleave="mostrarSubmari = false">
+
       <router-link :to="'/datos'" class="colorBTN"> Dades</router-link>
       <router-link :to="'/ubicacion'" class="colorBTN"> Ubicació</router-link>
       <router-link :to="'/areas'" class="colorBTN">
@@ -72,15 +83,23 @@
 </template>
 
 <style>
-.collapsat{
+.collapsat {
   width: 100%;
 }
-.fade-enter-active, .fade-leave-active {
+
+.fade-enter-active,
+.fade-leave-active {
   transition: opacity 0.5s;
 }
-.fade-enter, .fade-leave-to /* .fade-leave-active in <2.1.8 */ {
+
+.fade-enter,
+.fade-leave-to
+
+/* .fade-leave-active in <2.1.8 */
+  {
   opacity: 0;
 }
+
 .dropdown-submari {
   color: #8ecae6 !important;
   background-color: rgba(127, 217, 233, 0.95) !important;
@@ -88,8 +107,10 @@
   position: absolute;
   left: 0;
   width: 100%;
-  z-index: 1000; /* Ensure it appears over everything */
-  box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.2); /* Optional: Add a box shadow */
+  z-index: 1000;
+  /* Ensure it appears over everything */
+  box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.2);
+  /* Optional: Add a box shadow */
 }
 
 .dropdown-incidencies {
@@ -121,22 +142,6 @@
   color: #152636;
   transition: 0.2s;
 }
-
-.off-btn-red.off-btn-red {
-  background-color: red;
-  color: #ffffff;
-  border-radius: 100px;
-  height: fit-content;
-  width: fit-content;
-}
-
-.off-btn-green.off-btn-green {
-  background-color: green;
-  color: #ffffff;
-  border-radius: 100px;
-  height: fit-content;
-  width: fit-content;
-}
 </style>
 
 <script>
@@ -147,9 +152,6 @@ export default {
     // ESTADO DEL MOTOR
     motor() {
       return state.motor;
-    },
-    estatMotorClass() {
-      return this.motor === "OFF" ? "off-btn-red" : "off-btn-green";
     },
     userRole() {
       const appStore = useAppStore();
