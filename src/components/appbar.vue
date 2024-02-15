@@ -26,7 +26,6 @@
             </select>
 
           </div>
-
         </div>
 
         <!-- CLIENTE SIN INICIAR SESION -->
@@ -203,6 +202,7 @@ export default {
     }
   },
   methods: {
+    
     cambiar() {
       if (this.mostrarSubmari) {
         this.mostrarSubmari = false
@@ -218,6 +218,10 @@ export default {
       appStore.setUserEmpresa(selectedValue);
       localStorage.setItem('selectedEmpresa', selectedValue);
       window.alert('¡Empresa cambiada!', selectedValue);
+
+      // Recargar la página
+      location.reload();
+
     },
     logout() {
       const appStore = useAppStore();
