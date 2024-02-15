@@ -17,7 +17,7 @@
             <!-- Contenedor para el botón y el campo de búsqueda -->
 <div style="display: flex; justify-content: space-between; align-items: center; margin-left: 15px;">
   <!-- Botón para crear empresa -->
-  <v-btn color="primary" @click="mostrarFormularioEmpresa">Crear Empresa</v-btn>
+  <v-btn color="primary" @click="abrirModalCrearEmpresa">Crear Empresa</v-btn>
   
   <!-- Campo de búsqueda -->
   <div class="search-wrapper">
@@ -35,246 +35,59 @@
                 </p>
               </v-col>
             </v-row>
-            <!-- Botones para editar y eliminar al final del v-card -->
-            <v-btn icon @click="editarCliente(index)" style="position: absolute; right: 70px; bottom: 10px;">
-              <v-icon>mdi-pencil</v-icon>
-            </v-btn>
             <v-btn icon @click="eliminarCliente(index)" style="position: absolute; right: 10px; bottom: 10px;">
               <v-icon>mdi-delete</v-icon>
             </v-btn>
+            <!-- Botón para editar empresa -->
+<v-btn icon @click="editarEmpresa(empresa)" style="position: absolute; right: 70px; bottom: 10px;">
+  <v-icon>mdi-pencil</v-icon>
+</v-btn>
+
+            <!-- Botón para ver todos los datos de las empresas -->
+            <v-btn icon @click="mostrarDatosEmpresa(empresa)" style="position: absolute; right: 130px; bottom: 10px;">
+              <v-icon>mdi-eye</v-icon>
+            </v-btn>
           </v-card>
 
-     <!-- Modal o sección para crear empresa -->
-<v-dialog v-model="mostrarModalEmpresa" max-width="820" max-height="700">
+<!-- EDITAR EMPRESA -->
+<v-dialog v-model="mostrarModalEditarEmpresa" max-width="820" max-height="700">
   <v-card width="auto" height="auto">
-    <v-card-title>Crear Empresa</v-card-title>
+    <v-card-title>Editar Empresa</v-card-title>
     <v-card-text>
-      <form @submit.prevent="crearEmpresa">
+      <form>
         <!-- NOMBRE + TEL -->
         <div style="display: flex; flex-direction: row; justify-content: space-between;">
           <div style="width: 48%;">
             <label>Nombre: </label>
-            <input v-model="nuevaEmpresa.nombre" required class="bordered-input" style="height: auto; width: 300px;" maxlength="30">
+            <input v-model="empresaEditada.nombre" required class="bordered-input" style="height: auto; width: 300px;" maxlength="30">
           </div>
           <div style="width: 48%;">
             <label>Teléfono: </label>
-             <!-- Campo para seleccionar el prefijo -->
-      <select v-model="prefijoTelefono" class="select-prefijo">
-        <option value="+1">+1</option>
-        <option value="+44">+44</option>
-        <option value="+49">+49</option>
-        <option value="+33">+33</option>
-        <option value="+34">+34</option>
-  <option value="+61">+61</option>
-  <option value="+81">+81</option>
-  <option value="+82">+82</option>
-  <option value="+86">+86</option>
-  <option value="+91">+91</option>
-  <option value="+92">+92</option>
-  <option value="+93">+93</option>
-  <option value="+94">+94</option>
-  <option value="+95">+95</option>
-  <option value="+98">+98</option>
-  <option value="+212">+212</option>
-  <option value="+213">+213</option>
-  <option value="+216">+216</option>
-  <option value="+218">+218</option>
-  <option value="+220">+220</option>
-  <option value="+221">+221</option>
-  <option value="+222">+222</option>
-  <option value="+223">+223</option>
-  <option value="+224">+224</option>
-  <option value="+225">+225</option>
-  <option value="+226">+226</option>
-  <option value="+227">+227</option>
-  <option value="+228">+228</option>
-  <option value="+229">+229</option>
-  <option value="+230">+230</option>
-  <option value="+231">+231</option>
-  <option value="+232">+232</option>
-  <option value="+233">+233</option>
-  <option value="+234">+234</option>
-  <option value="+235">+235</option>
-  <option value="+236">+236</option>
-  <option value="+237">+237</option>
-  <option value="+238">+238</option>
-  <option value="+239">+239</option>
-  <option value="+240">+240</option>
-  <option value="+241">+241</option>
-  <option value="+242">+242</option>
-  <option value="+243">+243</option>
-  <option value="+244">+244</option>
-  <option value="+245">+245</option>
-  <option value="+246">+246</option>
-  <option value="+247">+247</option>
-  <option value="+248">+248</option>
-  <option value="+249">+249</option>
-  <option value="+250">+250</option>
-  <option value="+251">+251</option>
-  <option value="+252">+252</option>
-  <option value="+253">+253</option>
-  <option value="+254">+254</option>
-  <option value="+255">+255</option>
-  <option value="+256">+256</option>
-  <option value="+257">+257</option>
-  <option value="+258">+258</option>
-  <option value="+259">+259</option>
-  <option value="+260">+260</option>
-  <option value="+261">+261</option>
-  <option value="+262">+262</option>
-  <option value="+263">+263</option>
-  <option value="+264">+264</option>
-  <option value="+265">+265</option>
-  <option value="+266">+266</option>
-  <option value="+267">+267</option>
-  <option value="+268">+268</option>
-  <option value="+269">+269</option>
-  <option value="+290">+290</option>
-  <option value="+291">+291</option>
-  <option value="+297">+297</option>
-  <option value="+298">+298</option>
-  <option value="+299">+299</option>
-  <option value="+350">+350</option>
-  <option value="+351">+351</option>
-  <option value="+352">+352</option>
-  <option value="+353">+353</option>
-  <option value="+354">+354</option>
-  <option value="+355">+355</option>
-  <option value="+356">+356</option>
-  <option value="+357">+357</option>
-  <option value="+358">+358</option>
-  <option value="+359">+359</option>
-  <option value="+370">+370</option>
-  <option value="+371">+371</option>
-  <option value="+372">+372</option>
-  <option value="+373">+373</option>
-  <option value="+374">+374</option>
-  <option value="+375">+375</option>
-  <option value="+376">+376</option>
-  <option value="+377">+377</option>
-  <option value="+378">+378</option>
-  <option value="+379">+379</option>
-  <option value="+380">+380</option>
-  <option value="+381">+381</option>
-  <option value="+382">+382</option>
-  <option value="+383">+383</option>
-  <option value="+384">+384</option>
-  <option value="+385">+385</option>
-  <option value="+386">+386</option>
-  <option value="+387">+387</option>
-  <option value="+388">+388</option>
-  <option value="+389">+389</option>
-  <option value="+420">+420</option>
-  <option value="+421">+421</option>
-  <option value="+423">+423</option>
-  <option value="+500">+500</option>
-  <option value="+501">+501</option>
-  <option value="+502">+502</option>
-  <option value="+503">+503</option>
-  <option value="+504">+504</option>
-  <option value="+505">+505</option>
-  <option value="+506">+506</option>
-  <option value="+507">+507</option>
-  <option value="+508">+508</option>
-  <option value="+509">+509</option>
-  <option value="+590">+590</option>
-  <option value="+591">+591</option>
-  <option value="+592">+592</option>
-  <option value="+593">+593</option>
-  <option value="+594">+594</option>
-  <option value="+595">+595</option>
-  <option value="+596">+596</option>
-  <option value="+597">+597</option>
-  <option value="+598">+598</option>
-  <option value="+599">+599</option>
-  <option value="+670">+670</option>
-  <option value="+672">+672</option>
-  <option value="+673">+673</option>
-  <option value="+674">+674</option>
-  <option value="+675">+675</option>
-  <option value="+676">+676</option>
-  <option value="+677">+677</option>
-  <option value="+678">+678</option>
-  <option value="+679">+679</option>
-  <option value="+680">+680</option>
-  <option value="+681">+681</option>
-  <option value="+682">+682</option>
-  <option value="+683">+683</option>
-  <option value="+685">+685</option>
-  <option value="+686">+686</option>
-  <option value="+687">+687</option>
-  <option value="+688">+688</option>
-  <option value="+689">+689</option>
-  <option value="+690">+690</option>
-  <option value="+691">+691</option>
-  <option value="+692">+692</option>
-  <option value="+850">+850</option>
-  <option value="+852">+852</option>
-  <option value="+853">+853</option>
-  <option value="+855">+855</option>
-  <option value="+856">+856</option>
-  <option value="+870">+870</option>
-  <option value="+871">+871</option>
-  <option value="+872">+872</option>
-  <option value="+873">+873</option>
-  <option value="+874">+874</option>
-  <option value="+878">+878</option>
-  <option value="+879">+879</option>
-  <option value="+880">+880</option>
-  <option value="+881">+881</option>
-  <option value="+882">+882</option>
-  <option value="+883">+883</option>
-  <option value="+886">+886</option>
-  <option value="+888">+888</option>
-  <option value="+960">+960</option>
-  <option value="+961">+961</option>
-  <option value="+962">+962</option>
-  <option value="+963">+963</option>
-  <option value="+964">+964</option>
-  <option value="+965">+965</option>
-  <option value="+966">+966</option>
-  <option value="+967">+967</option>
-  <option value="+968">+968</option>
-  <option value="+969">+969</option>
-  <option value="+971">+971</option>
-  <option value="+972">+972</option>
-  <option value="+973">+973</option>
-  <option value="+974">+974</option>
-  <option value="+975">+975</option>
-  <option value="+976">+976</option>
-  <option value="+977">+977</option>
-  <option value="+992">+992</option>
-  <option value="+993">+993</option>
-  <option value="+994">+994</option>
-  <option value="+995">+995</option>
-  <option value="+996">+996</option>
-  <option value="+998">+998</option>
-      </select>
-              <!-- Campo para el número de teléfono -->
-              <input v-model="nuevaEmpresa.telefono" required class="bordered-input" type="tel" @input="filtrarNumeros" maxlength="15">
-    
+            <!-- Campo para seleccionar el prefijo -->
+            <select v-model="prefijoTelefonoEditar" class="select-prefijo">
+              <!-- Opciones de prefijo telefónico -->
+            </select>
+            <!-- Campo para el número de teléfono -->
+            <input v-model="empresaEditada.telefono" required class="bordered-input" type="tel" @input="filtrarNumeros" maxlength="15">
           </div>
         </div>
 
-                <!-- DIRECCION -->
+        <!-- DIRECCION -->
         <div style="margin-top: 15px;">
           <label>Dirección: </label>
-          <v-textarea  v-model="nuevaEmpresa.direccion" required class="bordered-input" style="height: auto; width: 653px;" maxlength="245"></v-textarea>
+          <v-textarea  v-model="empresaEditada.direccion" required class="bordered-input" style="height: auto; width: 653px;" maxlength="245"></v-textarea>
         </div>
 
-                <!-- CORREO + PLAN DE SUSCRIPCION -->
+        <!-- CORREO + PLAN DE SUSCRIPCION -->
         <div style="display: flex; flex-direction: row; justify-content: space-between; margin-top: 15px;">
           <div style="width: 48%;">
             <label>Correo Electrónico: </label>
-            <input v-model="nuevaEmpresa.correo" required class="bordered-input" style="height: auto; width: 220px;" type="email">
+            <input v-model="empresaEditada.correo" required class="bordered-input" style="height: auto; width: 220px;" type="email">
           </div>
           <div style="width: 48%;">
             <label>Plan de Suscripción: </label>
-            <select v-model="nuevaEmpresa.plan" class="bordered-input" style="height: auto; width: 173px;">
-              <option value="bronce">Bronce</option>
-              <option value="plata">Plata</option>
-              <option value="oro">Oro</option>
-              <option value="diamante">Diamante</option>
+            <select v-model="empresaEditada.plan" class="bordered-input" style="height: auto; width: 173px;">
+              <!-- Opciones de plan de suscripción -->
             </select>
           </div>
         </div>
@@ -282,26 +95,25 @@
         <!-- SITIO WEB -->
         <div style="margin-top: 15px;">
           <label>Sitio Web: </label>
-          <input v-model="nuevaEmpresa.sitioWeb" required class="bordered-input" style="height: auto; width: 653px;" maxlength="250" type="url">
+          <input v-model="empresaEditada.sitioWeb" required class="bordered-input" style="height: auto; width: 653px;" maxlength="250" type="url">
         </div>
 
       </form>
     </v-card-text>
     <v-card-actions>
-          <v-btn color="primary" @click="crearYGuardarEmpresa">Crear y guardar</v-btn>
-          <v-btn color="error" @click="cerrarModalEmpresa">Cancelar</v-btn>
-        </v-card-actions>
+      <v-btn color="primary" @click="guardarEdicionEmpresa">Guardar</v-btn>
+      <v-btn color="error" @click="cancelarEdicionEmpresa">Cancelar</v-btn>
+    </v-card-actions>
   </v-card>
 </v-dialog>
 
 
-<!-- Diálogo para editar cliente -->
-<v-dialog v-model="mostrarModalEditar" max-width="820" max-height="700">
+<!-- Diálogo para CREAER EMPRESA -->
+<v-dialog v-model="mostrarModalCrear" max-width="820" max-height="700">
   <v-card width="auto" height="auto">
     <v-card-title>Editar Cliente </v-card-title>
     <v-card-text>
-      <form @submit.prevent="modoEdicionCliente">
-        <!-- Campos de edición de cliente -->
+      <form>
         <div style="display: flex; flex-direction: row; justify-content: space-between;">
           <div style="width: 48%;">
             <label>Nombre: </label>
@@ -344,9 +156,32 @@
       </form>
     </v-card-text>
     <v-card-actions>
-          <v-btn color="primary" @click="">Guardar cambios</v-btn>
+      <v-btn color="primary" @click="crearYGuardarEmpresa">Guardar</v-btn>
           <v-btn color="error" @click="cerrarModalEditar">Cancelar</v-btn>
         </v-card-actions>
+  </v-card>
+</v-dialog>
+
+<!-- Diálogo para ver todos los datos de las empresas -->
+<v-dialog v-model="mostrarModalDatosEmpresas" max-width="820" max-height="700">
+  <v-card width="auto" height="auto">
+    <v-card-title>Detalles de la Empresa</v-card-title>
+    <v-card-text>
+      <v-list>
+        <v-list-item v-if="empresaSeleccionada">
+          <v-list-item>
+            <v-list-item-title>{{ empresaSeleccionada.nom_empresa }}</v-list-item-title>
+            <v-list-item-subtitle>{{ empresaSeleccionada.direccion }}</v-list-item-subtitle>
+            <v-list-item-subtitle>{{ empresaSeleccionada.numero_teléfono }}</v-list-item-subtitle>
+            <v-list-item-subtitle>{{ empresaSeleccionada.correo }}</v-list-item-subtitle>
+            <v-list-item-subtitle>{{ empresaSeleccionada.sitio_web }}</v-list-item-subtitle>
+          </v-list-item>
+        </v-list-item>
+      </v-list>
+    </v-card-text>
+    <v-card-actions>
+      <v-btn color="primary" @click="mostrarModalDatosEmpresas = false">Cerrar</v-btn>
+    </v-card-actions>
   </v-card>
 </v-dialog>
 
@@ -365,22 +200,20 @@ export default {
 
     data() {
         return {
-            clientes: [
-                { nombre: 'Cliente 1' },
-                { nombre: 'peces ramon' },
-                { nombre: 'rara' },
-                { nombre: 'sobras' },
-                { nombre: 'iaiaiaia' },
-                { nombre: 'Cliente 6' },
-                { nombre: 'Cliente 7' },
-                { nombre: 'Cliente 8' },
-                { nombre: 'Cliente feo' },
-            ],
             clienteSeleccionado: null,
             modoEdicion: false,
             filtroEmpresa: '',
 
-            mostrarModalEmpresa: false,
+            mostrarModalEditarEmpresa: false,
+        empresaEditada: {
+        nombre: '',
+        direccion: '',
+        telefono: '',
+        correo: '',
+        plan: 'bronce',
+        sitioWeb: '',
+      },
+
       nuevaEmpresa: {
         nombre: '',
         direccion: '',
@@ -389,11 +222,13 @@ export default {
         plan: 'bronce',
         sitioWeb: '',
       },
-      prefijoTelefono: '+1',
-      mostrarModalEditar: false,
+      prefijoTelefonoEditar: '+1',
     clienteEditado: null,
     modoEdicionCliente: false,
+    mostrarModalDatosEmpresas:false,
+    empresaSeleccionada: null,
     empresas: [],
+    mostrarModalCrear:false,
         };
     },
     computed: {
@@ -419,40 +254,38 @@ export default {
     this.nuevaEmpresa.telefono = filteredInput;
   },
   
-        eliminarCliente(index) {
+  eliminarCliente(index) {
             this.clientes.splice(index, 1);
-        },
-
-         // Método para abrir el diálogo de edición con los datos del cliente seleccionado
-  editarCliente(index) {
-    this.clienteEditado = { ...this.clientes[index] };
-    this.modoEdicionCliente = true;
-    this.mostrarModalEditar = true;
   },
   
-  // Método para guardar los cambios realizados en la edición del cliente
-  guardarCambiosCliente() {
-    // Realizar la lógica para guardar los cambios en el cliente
-    // Actualizar la lista de clientes con los nuevos datos
-    // Cerrar el diálogo de edición
-    this.mostrarModalEditar = false;
-  },
+  editarEmpresa(empresa) {
+  this.empresaSeleccionada = empresa;
+  // Lógica para abrir el diálogo de edición de empresa con los datos de la empresa seleccionada
+  // Aquí puedes asignar los detalles de la empresa a las variables de datos necesarias
+  // Por ejemplo:
+  this.nuevaEmpresa.nombre = empresa.nom_empresa;
+  this.nuevaEmpresa.direccion = empresa.direccion;
+  this.nuevaEmpresa.telefono = empresa.numero_teléfono;
+  this.nuevaEmpresa.correo = empresa.correo;
+  this.nuevaEmpresa.sitioWeb = empresa.sitio_web;
+  // Abre el modal de edición de empresa
+  this.mostrarModalEditarEmpresa = true;
+},
   
   // Método para cerrar el diálogo de edición sin guardar cambios
   cerrarModalEditar() {
-    this.mostrarModalEditar = false;
     // Limpiar los datos del cliente editado y el modo de edición
     this.clienteEditado = null;
     this.modoEdicionCliente = false;
   },
 
-        mostrarFormularioEmpresa() {
+  mostrarFormularioEmpresa() {
       // Mostrar el modal o sección para crear empresa
-      this.mostrarModalEmpresa = true;
-    },
+      this.mostrarModalEditarEmpresa = true;
+  },
 
-    // CREAR Y GUARDAAR EMPRESA
-    crearYGuardarEmpresa() {
+  // CREAR Y GUARDAAR EMPRESA
+  crearYGuardarEmpresa() {
      // Validar que todos los campos estén rellenados
   if (!this.nuevaEmpresa.nombre || !this.nuevaEmpresa.direccion || !this.nuevaEmpresa.telefono || !this.nuevaEmpresa.correo || !this.nuevaEmpresa.sitioWeb) {
     alert("Por favor, complete todos los campos antes de guardar.");
@@ -474,7 +307,7 @@ export default {
   }
 
   // Agregar la nueva empresa a la lista de empresas
-  this.clientes.push({
+  this.empresas.push({
     nombre: this.nuevaEmpresa.nombre,
     direccion: this.nuevaEmpresa.direccion,
     telefono: this.nuevaEmpresa.telefono,
@@ -492,7 +325,7 @@ export default {
     plan: 'bronce',
     sitioWeb: '',
   };
-  this.mostrarModalEmpresa = false;
+  this.mostrarModalEditarEmpresa = false;
 },
 
   // LIMPIAR FORMULARIO DE CREAR
@@ -508,20 +341,35 @@ export default {
     };
 
     // Ocultamos el modal
-    this.mostrarModalEmpresa = false;
+    this.mostrarModalEditarEmpresa = false;
   },
 
   getEmpresa(){
       const appStore = useAppStore()
       this.empresas = appStore.getEmpresas;
-    },
+  },
+
+  // Método para mostrar los datos de una empresa específica
+  mostrarDatosEmpresa(empresa) {
+    // Asignar la empresa seleccionada
+    this.empresaSeleccionada = empresa;
+    // Abrir el diálogo modal para mostrar los detalles
+    this.mostrarModalDatosEmpresas = true;
+},
+
+abrirModalCrearEmpresa() {
+    this.mostrarModalCrear = true;
+  },
+
+
+
     },
 
     //CONSOLA
     created() {
         console.log("CREADO");
         this.getEmpresa();
-console.log(this.empresas);
+//console.log(this.empresas);
     },
     mounted() {
         console.log("MONTADO");
