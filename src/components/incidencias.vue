@@ -257,7 +257,7 @@ export default {
       }
       this.nomCompleto = store.getUserName + " " + store.getUserApellido;
 
-      console.log(submarino);
+      //console.log(submarino);
 
       this.listaItems.push({
         Asunto: this.nuevaIncidencia.nombre,
