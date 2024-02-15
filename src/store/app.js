@@ -8,7 +8,8 @@ export const useAppStore = defineStore('app', {
     userEmpresa: localStorage.getItem('userEmpresa') || '',
     userName: localStorage.getItem('userName') || '',
     userApellido: localStorage.getItem('userApellido') || '',
-    userID: localStorage.getItem('userID') || ''
+    userID: localStorage.getItem('userID') || '',
+    empresas: [],
 
   }),
   getters: {
@@ -27,7 +28,10 @@ export const useAppStore = defineStore('app', {
     },
     getUserID(){
       return this.userID;
-    }
+    },
+    getEmpresas() {
+      return this.empresas;
+    },
   },
   actions: {
     setUserRole(role) {
@@ -58,11 +62,17 @@ export const useAppStore = defineStore('app', {
       this.userEmpresa = '';
       this.userName = '';
       this.userApellido = '';
+      this.empresa = [];
       localStorage.removeItem('userRole');
       localStorage.removeItem('userEmpresa');
       localStorage.removeItem('userName');
       localStorage.removeItem('userApellido');
-    }
+      localStorage.removeItem('empresas');
+    },
+    setEmpresas(empresas) {
+      this.empresas = empresas;
+      localStorage.setItem('empresas', JSON.stringify(empresas));
+    },
   },
   persist: true
 })

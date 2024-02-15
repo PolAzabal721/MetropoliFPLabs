@@ -256,6 +256,21 @@ export async function getIncidencias() {
   }
 }
 
+
+export async function getEmpresa() {
+  try {
+    const response = await fetch('http://localhost:3169/getEmpresa');
+    if (!response.ok) {
+      throw new Error('Error al obtener las empresas');
+    }
+    const data = await response.json();
+    return data;
+  } catch (error) {
+    console.error('Error en la solicitud:', error.message);
+    throw error;
+  }
+}
+
 export async function updateIncidencias(asunto, descripcio, prioridad, idIncidencia) {
   try {
     const response = await fetch('http://localhost:3169/updateIncidencia', {
