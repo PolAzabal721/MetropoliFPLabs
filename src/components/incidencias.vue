@@ -257,7 +257,7 @@ export default {
       }
       this.nomCompleto = store.getUserName + " " + store.getUserApellido;
 
-      console.log(submarino);
+      //console.log(submarino);
 
       this.listaItems.push({
         Asunto: this.nuevaIncidencia.nombre,
@@ -482,7 +482,7 @@ export default {
     // SELECT INCIDENCIA
     async getIncidencia() {
       this.listaItems = await getIncidencias();
-      // console.log(this.listaItems);
+     // console.log(this.listaItems);
     },
   },
   //CONSOLA
