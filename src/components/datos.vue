@@ -2,13 +2,39 @@
   <default-bar />
   <v-layout class="rounded rounded-md">
     <v-main style="height: 100vh">
-      <v-container fluid v-if="seleccionado">
+      <v-container fluid>
         <v-row>
           <v-col cols="6">
-            <v-card class="mx-5" height="800" width="800">
+            <v-card class="mx-5" max-width="800">
+              <v-card-title class="text-center">
+                <h2>Selecciona un submarino</h2>
+              </v-card-title>
+              <v-card-text class="text-center">
+                <v-select
+                  v-model="submarinoSeleccionado"
+                  label="Submarino"
+                  :items="submarinos.map((submarino) => submarino.nom_sub)"
+                  item-text="text"
+                  item-value="value"
+                  outlined
+                ></v-select>
+              </v-card-text>
+              <v-card-actions class="justify-center">
+                <v-btn color="primary" @click="avanzar">Seleccionar</v-btn>
+              </v-card-actions>
+            </v-card>
+            <v-card
+              class="mx-5"
+              height="600"
+              width="800"
+              style="margin-top: 10px"
+            >
               <v-card-text class="vCardText">
                 <!-- Contenido del segundo v-card (info del robot) -->
-                <div>
+                <div v-if="seleccionado">
+                  <p>
+                    <b>Nom del robot:</b> {{ submarinoSeleccionado.nom_sub }}
+                  </p>
                   <p><b>Estat del robot:</b> {{ motor }}</p>
                   <p><b>Estat de la càmera:</b> {{ camara }}</p>
                   <p><b> Última connexió:</b> {{ ultimaConexion }}</p>
@@ -30,7 +56,7 @@
                     <v-col>
                       <div class="scroll-container">
                         <v-list>
-                          <v-list-item-group
+                          <v-list-item
                             v-if="state.movimientos.length > 0"
                           >
                             <v-list-item
@@ -39,19 +65,19 @@
                                 .reverse()"
                               :key="index"
                             >
-                              <v-list-item-content class="message">
+                              <v-list-item class="message">
                                 <v-list-item-title>{{
                                   movimiento
                                 }}</v-list-item-title>
-                              </v-list-item-content>
+                              </v-list-item>
                             </v-list-item>
-                          </v-list-item-group>
+                          </v-list-item>
                           <v-list-item v-else>
-                            <v-list-item-content>
+                            <v-list-item>
                               <v-list-item-title
                                 >No hi ha moviments</v-list-item-title
                               >
-                            </v-list-item-content>
+                            </v-list-item>
                           </v-list-item>
                         </v-list>
                       </div>
@@ -59,27 +85,6 @@
                   </v-row>
                 </v-container>
               </v-card-text>
-            </v-card>
-          </v-col>
-        </v-row>
-      </v-container>
-      <v-container fluid v-else>
-        <v-row justify="center">
-          <v-col cols="12" sm="8" md="6">
-            <v-card class="mx-auto" max-width="400">
-              <v-card-title class="text-center">
-                <h2>Selecciona un submarino</h2>
-              </v-card-title>
-              <v-card-actions class="justify-center">
-                <v-select
-                  v-model="submarinoSeleccionado"
-                  label="Submarino"
-                  :items="submarinos.map((submarino) => submarino.nom_sub)"
-                  item-text="text"
-                  item-value="value"
-                ></v-select>
-                <v-btn color="primary" @click="avanzar">Seleccionar</v-btn>
-              </v-card-actions>
             </v-card>
           </v-col>
         </v-row>
@@ -177,13 +182,18 @@ export default {
         console.error("Error fetching submarinos:", error);
       }
     },
-    avanzar(){
+    avanzar() {
       this.seleccionado = true;
-      this.submarinoSeleccionado = this.submarinos.find(
+      const submarinoEncontrado = this.submarinos.find(
         (submarino) => submarino.nom_sub === this.submarinoSeleccionado
       );
-      console.log(this.submarinoSeleccionado);
-    }
+      if (submarinoEncontrado) {
+        this.submarinoSeleccionado = submarinoEncontrado;
+        console.log("Submarino seleccionado:", this.submarinoSeleccionado);
+      } else {
+        console.error("No se encontró el submarino seleccionado en la lista.");
+      }
+    },
   },
 };
 </script>
