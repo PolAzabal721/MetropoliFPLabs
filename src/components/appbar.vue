@@ -211,20 +211,13 @@ export default {
       }
     },
     seleccionarEmpresa(event) {
+      const appStore = useAppStore();
+      
       const selectedValue = event.target.value;
-      // Update selectedEmpresa value
       this.selectedEmpresa = selectedValue;
-      // Update selected empresa in localStorage
+      appStore.setUserEmpresa(selectedValue);
       localStorage.setItem('selectedEmpresa', selectedValue);
-      window.alert('¡Empresa cambiada!');
-    },
-
-    cambiar2() {
-      if (this.mostrarEmpresa) {
-        this.mostrarEmpresa = false
-      } else {
-        this.mostrarEmpresa = true
-      }
+      window.alert('¡Empresa cambiada!', selectedValue);
     },
     logout() {
       const appStore = useAppStore();
