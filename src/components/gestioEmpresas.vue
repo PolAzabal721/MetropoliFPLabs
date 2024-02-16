@@ -130,8 +130,8 @@
                     </div>
                     <div style="width: 48%;">
                       <label>Teléfono: </label>
-                      <input v-model="nuevaEmpresa.telefono" required class="bordered-input" type="tel" pattern="[0-9]*"
-                        maxlength="15">
+                      <input v-model="nuevaEmpresa.telefono" required class="bordered-input" @input="filtrarNumeros"
+                        type="tel" pattern="[0-9]*" maxlength="15">
                     </div>
                   </div>
 
@@ -258,7 +258,7 @@ export default {
     // Computed property para filtrar clientes
     clientesFiltrados() {
       return this.empresas.filter(empresa => {
-        return empresa.nom_empresa.toLowerCase().includes(this.filtroEmpresa.toLowerCase());
+        return empresa.nom_empresa && empresa.nom_empresa.toLowerCase().includes(this.filtroEmpresa.toLowerCase());
       });
     },
   },
@@ -322,13 +322,16 @@ export default {
 
       // Agregar la nueva empresa a la lista de empresas
       this.empresas.push({
-        nombre: this.nuevaEmpresa.nombre,
+        nom_empresa: this.nuevaEmpresa.nombre,
         direccion: this.nuevaEmpresa.direccion,
-        telefono: this.nuevaEmpresa.telefono,
+        numero_teléfono: this.nuevaEmpresa.telefono,
         correo: this.nuevaEmpresa.correo,
         plan: this.nuevaEmpresa.plan,
-        sitioWeb: this.nuevaEmpresa.sitioWeb,
+        sitio_web: this.nuevaEmpresa.sitioWeb,
       });
+
+      console.log('Después de agregar a empresas:', this.empresas);
+
 
       // Limpiar el formulario y ocultar el modal
       this.nuevaEmpresa = {
