@@ -240,7 +240,7 @@ export default {
       this.mostrarSubmari = !this.mostrarSubmari;
     },
     handleResize() {
-      this.isWideScreen = window.innerWidth >= 1300; // Adjust the breakpoint as needed
+      this.isWideScreen = window.innerWidth >= 1000; // Adjust the breakpoint as needed
     },
     getEmpresa() {
       const appStore = useAppStore()
@@ -251,9 +251,9 @@ export default {
     return {
       mostrarSubmari: false,
       mostrarEmpresa: false,
-      isWideScreen: window.innerWidth >= 1300, // Adjust the breakpoint as needed
+      isWideScreen: window.innerWidth >= 1000, // Adjust the breakpoint as needed
       empresas: [],
-      selectedEmpresa: localStorage.getItem('selectedEmpresa') || null, // Initialize selectedEmpresa from localStorage or default to null
+      //selectedEmpresa: localStorage.getItem('selectedEmpresa') || null, // Initialize selectedEmpresa from localStorage or default to null
     };
   },
   mounted() {
