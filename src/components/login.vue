@@ -138,7 +138,7 @@ export default {
     };
   },
   created() {
-    this.socket = io("http://localhost:3169/");
+    this.socket = io("http://172.20.10.4:3169/");
   },
 
   methods: {

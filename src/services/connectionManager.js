@@ -1,12 +1,12 @@
 // TEMP + COORDENADAS + HORARIO
 export async function getDades() {
-  const response = await fetch('http://localhost:3169/getDadesCoordenades');
+  const response = await fetch('http://172.20.10.4:3169/getDadesCoordenades');
   const result = await response.json();
   return result;
 }
 export async function insertarArea(coordenadas, nombreArea, idSubmarino) {
   try {
-    const response = await fetch('http://localhost:3169/areas', {
+    const response = await fetch('http://172.20.10.4:3169/areas', {
       method: 'PUT',
       headers: {
         'Content-Type': 'application/json'
@@ -32,7 +32,7 @@ export async function insertarArea(coordenadas, nombreArea, idSubmarino) {
 
 export async function register(nom, apellido, correo, contra, rol) {
   try {
-    const response = await fetch('http://localhost:3169/register', {
+    const response = await fetch('http://172.20.10.4:3169/register', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json'
@@ -59,7 +59,7 @@ export async function register(nom, apellido, correo, contra, rol) {
 
 export async function fetchAreas() {
   try {
-    const response = await fetch('http://localhost:3169/getareas');
+    const response = await fetch('http://172.20.10.4:3169/getareas');
     if (!response.ok) {
       throw new Error('Error getting areas');
     }
@@ -75,7 +75,7 @@ export async function fetchAreas() {
 
 export async function deletearea(id) {
   try {
-    const response = await fetch('http://localhost:3169/deletearea', {
+    const response = await fetch('http://172.20.10.4:3169/deletearea', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json'
@@ -98,7 +98,7 @@ export async function deletearea(id) {
 
 export async function getSubmarinos(id_empresa) {
   try {
-    const response = await fetch("http://localhost:3169/getSubmarino", {
+    const response = await fetch("http://172.20.10.4:3169/getSubmarino", {
       method: "POST",
       headers: {
         "Content-Type": "application/json"
@@ -120,7 +120,7 @@ export async function getSubmarinos(id_empresa) {
 
 export async function selectIncidenciasEmpresa(id_empresa) {
   try {
-    const response = await fetch("http://localhost:3169/selectIncidenciaEmpresa", {
+    const response = await fetch("http://172.20.10.4:3169/selectIncidenciaEmpresa", {
       method: "POST",
       headers: {
         "Content-Type": "application/json"
@@ -142,7 +142,7 @@ export async function selectIncidenciasEmpresa(id_empresa) {
 
 export async function updateSubmarino(id, submarino) {
   try {
-    const response = await fetch("http://localhost:3169/updatesubmarino", {
+    const response = await fetch("http://172.20.10.4:3169/updatesubmarino", {
       method: "POST",
       headers: {
         'Content-Type': 'application/json'
@@ -165,7 +165,7 @@ export async function updateSubmarino(id, submarino) {
 
 export async function updateAreaSub(id_area, id_sub) {
   try {
-    const response = await fetch("http://localhost:3169/updateAreaSub", {
+    const response = await fetch("http://172.20.10.4:3169/updateAreaSub", {
       method: "POST",
       headers: {
         'Content-Type': 'application/json'
@@ -179,7 +179,7 @@ export async function updateAreaSub(id_area, id_sub) {
 
 export async function deleteAreaSub(id_sub) {
   try {
-    const response = await fetch("http://localhost:3169/deleteAreaSub", {
+    const response = await fetch("http://172.20.10.4:3169/deleteAreaSub", {
       method: "POST",
       headers: {
         'Content-Type': 'application/json'
@@ -193,7 +193,7 @@ export async function deleteAreaSub(id_sub) {
 
 export async function deleteSubMongo(id_area, id_sub) {
   try {
-    const response = await fetch("http://localhost:3169/deleteSubmarinomongo", {
+    const response = await fetch("http://172.20.10.4:3169/deleteSubmarinomongo", {
       method: "POST",
       headers: {
         'Content-Type': 'application/json'
@@ -207,7 +207,7 @@ export async function deleteSubMongo(id_area, id_sub) {
 
 export async function addRutina(areaId, rutinaData) {
   try {
-    const response = await fetch('http://localhost:3169/addrutina', {
+    const response = await fetch('http://172.20.10.4:3169/addrutina', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json'
@@ -229,7 +229,7 @@ export async function addRutina(areaId, rutinaData) {
 }
 
 export async function selectRutinas(areaId) {
-  const url = `http://localhost:3169/selectRutinas/${areaId}`;
+  const url = `http://172.20.10.4:3169/selectRutinas/${areaId}`;
 
   try {
     const response = await fetch(url);
@@ -243,7 +243,7 @@ export async function selectRutinas(areaId) {
 
 export async function insertIncidencia(listaItems) {
   try {
-    const response = await fetch('http://localhost:3169/insertarIncidencia', {
+    const response = await fetch('http://172.20.10.4:3169/insertarIncidencia', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json'
@@ -268,7 +268,7 @@ export async function insertIncidencia(listaItems) {
 
 export async function insertEmpresa(listaItems) {
   try {
-    const response = await fetch('http://localhost:3169/insertarEmpresa', {
+    const response = await fetch('http://172.20.10.4:3169/insertarEmpresa', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json'
@@ -291,7 +291,7 @@ export async function insertEmpresa(listaItems) {
 
 export async function getIncidencias() {
   try {
-    const response = await fetch('http://localhost:3169/getIncidencias');
+    const response = await fetch('http://172.20.10.4:3169/getIncidencias');
     if (!response.ok) {
       throw new Error('Error al obtener las incidencias');
     }
@@ -306,7 +306,7 @@ export async function getIncidencias() {
 
 export async function getEmpresa() {
   try {
-    const response = await fetch('http://localhost:3169/getEmpresa');
+    const response = await fetch('http://172.20.10.4:3169/getEmpresa');
     if (!response.ok) {
       throw new Error('Error al obtener las empresas');
     }
@@ -320,7 +320,7 @@ export async function getEmpresa() {
 
 export async function updateIncidencias(asunto, descripcio, prioridad, idIncidencia) {
   try {
-    const response = await fetch('http://localhost:3169/updateIncidencia', {
+    const response = await fetch('http://172.20.10.4:3169/updateIncidencia', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json'
@@ -345,7 +345,7 @@ export async function updateIncidencias(asunto, descripcio, prioridad, idInciden
 
 export async function updateArea(id, nombre, coordenadas){
   try {
-    const response = await fetch('http://localhost:3169/updatearea', {
+    const response = await fetch('http://172.20.10.4:3169/updatearea', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json'
