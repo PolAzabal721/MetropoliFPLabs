@@ -18,14 +18,14 @@
               <v-toolbar-title class="mx-5 titulo">Sea Shepherd</v-toolbar-title>
             </router-link>
           </div>
-          <i class="mdi mdi-cog-box mdi-36px"></i>
+          <i v-if="userRole === 'admin'" class="mdi mdi-cog-box mdi-36px"></i>
           <div v-if="userRole === 'admin'" class="select-container">
             <select class="select" v-model="selectedEmpresa" @change="seleccionarEmpresa">
               <option disabled value="">Selecciona una empresa</option>
               <option v-for="empresa in empresas" :value="empresa.id_empresa">{{ empresa.nom_empresa }}</option>
             </select>
           </div>
-          <span class="icon" @click="limpiarSeleccion"><i class="mdi mdi-close mdi-36px"></i></span>
+          <span v-if="userRole === 'admin'" class="icon" @click="limpiarSeleccion"><i class="mdi mdi-close mdi-36px"></i></span>
           
         </div>
 

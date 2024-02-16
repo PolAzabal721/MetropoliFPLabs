@@ -1,5 +1,5 @@
 <template>
-  <!-- <default-bar /> -->
+  <default-bar />
   <v-layout class="rounded rounded-md">
     <v-main style="height: 100vh">
       <v-container fluid>
@@ -10,11 +10,7 @@
                 <h2>Selecciona un submarino</h2>
               </v-card-title>
               <v-card-text class="text-center">
-                <select
-                  class="select"
-                  v-model="submarinoSeleccionado"
-                  @change="avanzar"
-                >
+                <select class="select" v-model="submarinoSeleccionado" @change="avanzar">
                   <option disabled value="Selecciona un submarino">Selecciona un submarino</option>
                   <option v-for="submarino in submarinos" :value="submarino">
                     {{ submarino.nom_sub }}
@@ -25,12 +21,7 @@
                 </span>
               </v-card-text>
             </v-card>
-            <v-card
-              class="mx-5"
-              height="600"
-              width="800"
-              style="margin-top: 10px"
-            >
+            <v-card class="mx-5" height="600" width="800" style="margin-top: 10px">
               <v-card-text class="vCardText">
                 <!-- Contenido del segundo v-card (info del robot) -->
                 <div v-if="seleccionado">
@@ -59,12 +50,9 @@
                       <div class="scroll-container">
                         <v-list>
                           <v-list-item v-if="state.movimientos.length > 0">
-                            <v-list-item
-                              v-for="(movimiento, index) in state.movimientos
-                                .slice()
-                                .reverse()"
-                              :key="index"
-                            >
+                            <v-list-item v-for="(movimiento, index) in state.movimientos
+                                  .slice()
+                                  .reverse()" :key="index">
                               <v-list-item class="message">
                                 <v-list-item-title>{{
                                   movimiento
@@ -74,9 +62,7 @@
                           </v-list-item>
                           <v-list-item v-else>
                             <v-list-item>
-                              <v-list-item-title
-                                >No hi ha moviments</v-list-item-title
-                              >
+                              <v-list-item-title>No hi ha moviments</v-list-item-title>
                             </v-list-item>
                           </v-list-item>
                         </v-list>
@@ -231,15 +217,23 @@ import DefaultBar from "@/components/appbar.vue";
 }
 
 .select {
-  width: 300px; /* Ajusta el ancho según sea necesario */
+  width: 300px;
+  /* Ajusta el ancho según sea necesario */
   padding: 10px;
-  font-size: 16px; /* Ajusta el tamaño de la fuente según sea necesario */
-  text-align: center; /* Centra el texto */
-  border: 2px solid #333; /* Añade bordes */
-  background-color: #fff8f8; /* Color de fondo más oscuro */
-  color: black; /* Color del texto */
-  border-radius: 8px; /* Agrega bordes redondeados */
-  margin: 0 auto; /* Centra horizontalmente */
+  font-size: 16px;
+  /* Ajusta el tamaño de la fuente según sea necesario */
+  text-align: center;
+  /* Centra el texto */
+  border: 2px solid #333;
+  /* Añade bordes */
+  background-color: #fff8f8;
+  /* Color de fondo más oscuro */
+  color: black;
+  /* Color del texto */
+  border-radius: 8px;
+  /* Agrega bordes redondeados */
+  margin: 0 auto;
+  /* Centra horizontalmente */
 }
 
 
