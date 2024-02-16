@@ -289,6 +289,54 @@ export async function insertEmpresa(listaItems) {
   }
 }
 
+export async function updateEmpresa(listaItems) {
+  try {
+    const response = await fetch('http://localhost:3169/updateEmpresa', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({listaItems: listaItems })
+    });
+
+    if (!response.ok) {
+      const errorMessage = await response.text();
+      throw new Error(`Error al agregar rutina: ${errorMessage}`);
+    }
+
+    const responseData = await response.json();
+    return responseData;
+  } catch (error) {
+    console.error('Error en la comunicación:', error.message);
+    throw error;
+  }
+}
+
+
+
+export async function deleteEmpresa(id_empresa) {
+  try {
+    const response = await fetch('http://localhost:3169/deleteEmpresa', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({id_empresa: id_empresa })
+    });
+
+    if (!response.ok) {
+      const errorMessage = await response.text();
+      throw new Error(`Error al agregar rutina: ${errorMessage}`);
+    }
+
+    const responseData = await response.json();
+    return responseData;
+  } catch (error) {
+    console.error('Error en la comunicación:', error.message);
+    throw error;
+  }
+}
+
 export async function getIncidencias() {
   try {
     const response = await fetch('http://172.20.10.4:3169/getIncidencias');
@@ -339,7 +387,6 @@ export async function updateIncidencias(asunto, descripcio, prioridad, idInciden
     console.error('Error en la comunicación:', error.message);
     throw error;
   }
-
 }
 
 

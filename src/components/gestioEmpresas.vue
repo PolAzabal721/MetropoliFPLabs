@@ -45,7 +45,7 @@
                 </p>
               </v-col>
             </v-row>
-            <v-btn icon @click="eliminarCliente(index)" style="position: absolute; right: 10px; bottom: 10px">
+            <v-btn icon @click="eliminarCliente(empresa)" style="position: absolute; right: 10px; bottom: 10px">
               <v-icon>mdi-delete</v-icon>
             </v-btn>
             <!-- Botón para editar empresa -->
@@ -58,9 +58,6 @@
               <v-icon>mdi-eye</v-icon>
             </v-btn>
           </v-card>
-
-
-
 
           <!-- EDITAR EMPRESA -->
           <v-dialog v-model="mostrarModalEditarEmpresa" max-width="820" max-height="700">
@@ -136,12 +133,6 @@
               </v-card-actions>
             </v-card>
           </v-dialog>
-
-
-
-
-
-
 
           <!-- CREAR EMPRESA -->
           <v-dialog v-model="mostrarModalCrear" max-width="820" max-height="700">
@@ -253,7 +244,7 @@
 </template>
 
 <script>
-import { insertEmpresa, getEmpresa } from "@/services/connectionManager";
+import { insertEmpresa, getEmpresa, updateEmpresa, deleteEmpresa } from "@/services/connectionManager";
 import { socket, state } from "../services/socket";
 
 export default {
@@ -271,6 +262,7 @@ export default {
         correo: "",
         plan: "Standard",
         sitioWeb: "",
+        id: ""
       },
       nuevaEmpresa: {
         nombre: "",
@@ -287,6 +279,7 @@ export default {
       empresaSeleccionada: null,
       empresas: [],
       empresasEnviar: [],
+      empresaEditadaEnviar:[],
       mostrarModalCrear: false,
     };
   },
@@ -317,22 +310,37 @@ export default {
     editarEmpresa(empresa) {
       this.empresaSeleccionada = empresa;
 
-      this.empresaEditada.nombre = empresa.nom_empresa;
-      this.empresaEditada.direccion = empresa.direccion;
-      this.empresaEditada.telefono = empresa.numero_teléfono;
-      this.empresaEditada.correo = empresa.correo;
-      this.empresaEditada.sitioWeb = empresa.sitio_web;
-      this.empresaEditada.plan = empresa.plan;
+       this.empresaEditada.nombre = empresa.nom_empresa;
+       this.empresaEditada.direccion = empresa.direccion;
+       this.empresaEditada.telefono = empresa.numero_teléfono;
+       this.empresaEditada.correo = empresa.correo;
+       this.empresaEditada.sitioWeb = empresa.sitio_web;
+       this.empresaEditada.plan = empresa.plan;
+       this.empresaEditada.id = empresa.id_empresa;
 
       // Abre el modal de edición de empresa
       this.mostrarModalEditarEmpresa = true;
     },
 
-    guardarEdicionEmpresa() {
-      // Realiza la lógica para aplicar los cambios en tu aplicación
-      // Puede ser una llamada a la API, actualización en el estado, etc.
+    async eliminarCliente(empresa){
+      const id_empresa = empresa.id_empresa;
+      await deleteEmpresa(id_empresa);
+      this.getEmpresas();
+    },
 
-      // Cierra el modal después de guardar los cambios
+    async guardarEdicionEmpresa() {
+      this.empresaEditadaEnviar.push(
+        this.empresaEditada.nombre,
+        this.empresaEditada.direccion,
+        this.empresaEditada.telefono,
+        this.empresaEditada.correo,
+        this.empresaEditada.sitioWeb,
+        this.empresaEditada.plan,
+        this.empresaEditada.id
+      );
+      console.log(this.empresaEditadaEnviar);
+      await updateEmpresa(this.empresaEditadaEnviar)
+      this.getEmpresas();
       this.mostrarModalEditarEmpresa = false;
     },
 
