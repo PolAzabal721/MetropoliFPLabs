@@ -264,6 +264,31 @@ export async function insertIncidencia(listaItems) {
   }
 }
 
+
+
+export async function insertEmpresa(listaItems) {
+  try {
+    const response = await fetch('http://localhost:3169/insertarEmpresa', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({ listaItems: listaItems })
+    });
+
+    if (!response.ok) {
+      const errorMessage = await response.text();
+      throw new Error(`Error al agregar rutina: ${errorMessage}`);
+    }
+
+    const responseData = await response.json();
+    return responseData;
+  } catch (error) {
+    console.error('Error en la comunicación:', error.message);
+    throw error;
+  }
+}
+
 export async function getIncidencias() {
   try {
     const response = await fetch('http://localhost:3169/getIncidencias');
