@@ -145,8 +145,8 @@ export default {
       if (this.filtroEstado) {
         incidenciasFiltradas = incidenciasFiltradas.filter(
           (item) =>
-            (this.filtroEstado === "acabadas" && item.estado === "Acabada") ||
-            (this.filtroEstado === "sin_acabar" && item.estado !== "Acabada")
+            (this.filtroEstado === "acabadas" && item.estado === "Finalizada") ||
+            (this.filtroEstado === "sin_acabar" && item.estado !== "Finalizada")
         );
       }
 
