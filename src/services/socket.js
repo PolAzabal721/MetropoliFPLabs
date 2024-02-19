@@ -17,7 +17,7 @@ export const state = reactive({
 });
 
 //192.168.205.140
-export const socket = io('http://172.20.10.4:3169', {transports: ['websocket', 'polling'], withCredentials: true});
+export const socket = io('http://localhost:3169', {transports: ['websocket', 'polling'], withCredentials: true});
 //export const socket = io('http://172.20.10.4:3169');
 
 socket.on("connect", () => {
