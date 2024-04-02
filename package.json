@@ -39,7 +39,7 @@
     "vue-chartjs": "^5.2.0",
     "vue-router": "^4.0.0",
     "vue3-datepicker": "^0.4.0",
-    "vuetify": "^3.0.0"
+    "vuetify": "^3.4.0-beta.1"
   },
   "devDependencies": {
     "@electron-forge/cli": "^7.2.0",

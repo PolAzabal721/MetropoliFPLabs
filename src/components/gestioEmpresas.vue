@@ -5,15 +5,7 @@
       <!-- Gráfico vacío a la izquierda -->
       <v-col cols="12" md="6">
         
-        <v-card>
-          <v-card-title>Gráfico de Barras</v-card-title>
-          <v-card-text>
-            <v-bar-chart
-              :data="getChartData()"
-              :options="getChartOptions()"
-            ></v-bar-chart>
-          </v-card-text>
-        </v-card>
+       
         
       </v-col>
 
@@ -296,7 +288,7 @@
 
 <script>
 import { insertEmpresa, getEmpresa, updateEmpresa, deleteEmpresa } from "@/services/connectionManager";
-//import { BarChart } from 'vuetify/lib';
+
 
 export default {
   data() {
