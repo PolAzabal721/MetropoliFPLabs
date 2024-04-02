@@ -264,8 +264,6 @@ export async function insertIncidencia(listaItems) {
   }
 }
 
-
-
 export async function insertEmpresa(listaItems) {
   try {
     const response = await fetch('http://localhost:3169/insertarEmpresa', {
@@ -301,7 +299,7 @@ export async function updateEmpresa(listaItems) {
 
     if (!response.ok) {
       const errorMessage = await response.text();
-      throw new Error(`Error al agregar rutina: ${errorMessage}`);
+      throw new Error(`Error al actualizar empresa: ${errorMessage}`);
     }
 
     const responseData = await response.json();
@@ -311,8 +309,6 @@ export async function updateEmpresa(listaItems) {
     throw error;
   }
 }
-
-
 
 export async function deleteEmpresa(id_empresa) {
   try {
@@ -351,7 +347,6 @@ export async function getIncidencias() {
   }
 }
 
-
 export async function getEmpresa() {
   try {
     const response = await fetch('http://localhost:3169/getEmpresa');
@@ -389,7 +384,6 @@ export async function updateIncidencias(asunto, descripcio, prioridad, idInciden
   }
 }
 
-
 export async function updateArea(id, nombre, coordenadas){
   try {
     const response = await fetch('http://localhost:3169/updatearea', {
@@ -412,7 +406,3 @@ export async function updateArea(id, nombre, coordenadas){
     throw error;
   }
 }
-
-
-
-

@@ -631,8 +631,8 @@ export default {
 </script>
 
 <script setup>
-// APP BAR
-import DefaultBar from "@/components/appbar.vue";
+// APP BAR 
+import DefaultBar from "@/layouts/default/AppBar.vue";
 </script>
 
 <style scoped>

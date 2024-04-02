@@ -81,8 +81,6 @@
     </v-container>
 </template>
 
-
-
 <script>
 export default { //192.168.205.140
     data() {
@@ -112,9 +110,9 @@ export default { //192.168.205.140
 </script>
 
 <script setup>
-import DefaultBar from '@/components/appbar.vue'
-
+import DefaultBar from "@/layouts/default/AppBar.vue";
 </script>
+
 <style>
 .container {
     padding-top: 5% !important;

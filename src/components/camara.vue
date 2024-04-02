@@ -97,7 +97,7 @@ export default {
 };
 </script>
 <script setup>
-import DefaultBar from '@/components/appbar.vue'
+import DefaultBar from "@/layouts/default/AppBar.vue";
 
 </script>
 <style>
