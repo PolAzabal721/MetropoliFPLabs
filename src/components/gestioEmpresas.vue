@@ -2,11 +2,25 @@
   <default-bar />
   <v-container fluid fill-height>
     <v-row>
-      <!-- Gráfico vacío a la izquierda -->
+      <!-- Gráfico a la izquierda -->
       <v-col cols="12" md="6">
-        
-       
-        
+        <v-card style="max-width: 900px; max-height: auto; margin-top: 25px">
+          <!-- Gráfico de empresas por plan -->
+          <v-card width="900" height="450">
+            <canvas id="empresasPorPlan"></canvas>
+          </v-card>
+
+          <!-- Gráfico de empresas por ciudad -->
+          <v-card style="margin-top: 30px;" width="900" height="450">
+            <canvas ref="barChartByCity"></canvas>
+          </v-card>
+
+          <!-- Gráfico de empresas por provincia  -->
+          <v-card style="margin-top: 30px;" width="900" height="450">
+            <canvas ref="barChartByProvince"></canvas>
+          </v-card>
+
+        </v-card>
       </v-col>
 
       <!-- Lista de clientes a la derecha -->
@@ -288,7 +302,7 @@
 
 <script>
 import { insertEmpresa, getEmpresa, updateEmpresa, deleteEmpresa } from "@/services/connectionManager";
-
+import { Chart } from "chart.js/auto";
 
 export default {
   data() {
@@ -327,7 +341,10 @@ export default {
       empresasEnviar: [],
       empresaEditadaEnviar: [],
       mostrarModalCrear: false,
-      
+      empresasPorPlanChart: null,
+      barChartByCity: null,
+      barChartByProvince: null,
+
     };
   },
   computed: {
@@ -379,6 +396,9 @@ export default {
         const id_empresa = empresa.id_empresa;
         await deleteEmpresa(id_empresa);
         this.getEmpresas();
+
+        // Destruir y recrear los gráficos
+        this.destroyAndRecreateCharts();
       } else {
         // Si el usuario cancela, no se realiza ninguna acción
         return;
@@ -402,6 +422,9 @@ export default {
       await updateEmpresa(this.empresaEditadaEnviar)
       this.getEmpresas();
       this.mostrarModalEditarEmpresa = false;
+
+      // Destruir y recrear los gráficos
+      this.destroyAndRecreateCharts();
     },
 
     // CERRAR DIALOGO DE EDITAR
@@ -514,6 +537,9 @@ export default {
 
       this.getEmpresas();
       this.mostrarModalCrear = false;
+
+      // Destruir y recrear los gráficos
+      this.destroyAndRecreateCharts();
     },
 
     // Método para limpiar el formulario
@@ -537,6 +563,7 @@ export default {
     async getEmpresas() {
       this.empresas = await getEmpresa();
       //console.log(this.empresas);
+
     },
 
     // Método para mostrar los datos de una empresa específica
@@ -552,55 +579,184 @@ export default {
       this.mostrarModalCrear = true;
     },
 
-    getChartData() {
-      return {
-        labels: ['Aigües de Barcelona', 'Institut de Ciències del Mar', 'INS mi casa', 'Empresa Carlos Ramirez'],
-        datasets: [
-          {
-            label: 'Plan de la Empresa',
-            backgroundColor: ['#2196F3', '#4CAF50', '#FFC107', '#FF5722'],
-            data: [2, 3, 1, 2] // Se debe adaptar según la cantidad de planes
-          }
-        ]
+    // GRAFICO CANTIDAD DE EMPRESAS POR PLAN
+    graficoPlanes() {
+      // Obtener el contexto del lienzo
+      const ctx = document.getElementById('empresasPorPlan').getContext('2d');
+
+      // Si ya hay un gráfico asociado con el contexto, destruirlo antes de crear uno nuevo
+      if (this.empresasPorPlanChart) {
+        this.empresasPorPlanChart.destroy();
+        // También liberamos el contexto
+    this.empresasPorPlanChart = null;
+    ctx.canvas.parentNode.removeChild(ctx.canvas);
+      }
+    
+
+      // Obtener la cantidad de empresas por plan de servicio
+      const empresasPorPlan = this.empresas.reduce((acc, empresa) => {
+        acc[empresa.plan] = (acc[empresa.plan] || 0) + 1;
+        return acc;
+      }, {});
+
+      // Datos para el gráfico de barras
+      const data = {
+        labels: Object.keys(empresasPorPlan),
+        datasets: [{
+          label: 'Cantidad de empresas por plan de servicio',
+          data: Object.values(empresasPorPlan),
+          backgroundColor: [
+            'rgba(255, 99, 132, 0.5)',
+            'rgba(54, 162, 235, 0.5)',
+            'rgba(255, 206, 86, 0.5)',
+            // Puedes agregar más colores si tienes más planes
+          ],
+          borderColor: [
+            'rgba(255, 99, 132, 1)',
+            'rgba(54, 162, 235, 1)',
+            'rgba(255, 206, 86, 1)',
+            // Puedes agregar más colores si tienes más planes
+          ],
+          borderWidth: 1
+        }]
       };
-    },
-    getChartOptions() {
-      return {
-        responsive: true,
-        maintainAspectRatio: false,
-        scales: {
-          xAxes: [{
-            ticks: {
-              autoSkip: false
+
+      // Configuración del gráfico
+      const config = {
+        type: 'bar',
+        data: data,
+        options: {
+          scales: {
+            y: {
+              beginAtZero: true
             }
-          }],
-          yAxes: [{
-            ticks: {
-              beginAtZero: true,
-              stepSize: 1
-            }
-          }]
-        },
-        legend: {
-          display: true,
-          position: 'top'
+          }
         }
       };
-    }
-   
-  },
 
+      // Crear el nuevo gráfico y almacenar su instancia para futuras actualizaciones
+      this.empresasPorPlanChart = new Chart(ctx, config);
+    },
+
+
+
+    // GRAFICO DE CIUDAD
+    renderBarChartByCity() {
+      const cities = {};
+      this.empresas.forEach((empresa) => {
+        const city = empresa.ciudad;
+        if (city in cities) {
+          cities[city]++;
+        } else {
+          cities[city] = 1;
+        }
+      });
+
+      const ctx = this.$refs.barChartByCity.getContext("2d");
+      new Chart(ctx, {
+        type: "bar",
+        data: {
+          labels: Object.keys(cities),
+          datasets: [
+            {
+              label: "Cantidad de Empresas por ciudad",
+              data: Object.values(cities),
+              backgroundColor: "grey",
+              borderWidth: 1
+            }
+          ]
+        },
+        options: {
+          scales: {
+            y: {
+              beginAtZero: true
+            }
+          }
+        }
+      });
+    },
+
+    // GRAFICO POR PROVINCIAS
+    renderBarChartByProvince() {
+      const provinces = {};
+      this.empresas.forEach((empresa) => {
+        const province = empresa.provincia;
+        if (province in provinces) {
+          provinces[province]++;
+        } else {
+          provinces[province] = 1;
+        }
+      });
+
+      const ctx = this.$refs.barChartByProvince.getContext("2d");
+      new Chart(ctx, {
+        type: "bar",
+        data: {
+          labels: Object.keys(provinces),
+          datasets: [
+            {
+              label: "Cantidad de Empresas por provincia",
+              data: Object.values(provinces),
+              backgroundColor: "#007bff",
+              borderWidth: 1
+            }
+          ]
+        },
+        options: {
+          scales: {
+            y: {
+              beginAtZero: true
+            }
+          }
+        }
+      });
+    },
+
+    // Método para destruir y recrear los gráficos
+    async destroyAndRecreateCharts() {
+      // Destruir los gráficos existentes si ya se han creado antes
+      if (this.empresasPorPlanChart) {
+        this.empresasPorPlanChart.destroy();
+      }
+      if (this.barChartByCity) {
+        this.barChartByCity.destroy();
+      }
+      if (this.barChartByProvince) {
+        this.barChartByProvince.destroy();
+      }
+
+      // Esperar a que se destruyan los gráficos antes de recrearlos
+      await this.$nextTick();
+      this.getEmpresas().then(() => {
+        this.limpiarTodo();
+        // Crear los nuevos gráficos y almacenar las instancias en las variables correspondientes
+        this.empresasPorPlanChart = this.graficoPlanes();
+        this.barChartByCity = this.renderBarChartByCity();
+        this.barChartByProvince = this.renderBarChartByProvince();
+      });
+    },
+    limpiarTodo(){
+      this.empresasPorPlanChart =null;
+      this.barChartByCity = null;
+      this.barChartByProvince= null;
+
+    }
+
+
+  },
   //CONSOLA
   created() {
     console.log("CREADO");
-    this.getEmpresas();
-    //console.log(this.empresas);
+    this.getEmpresas().then(() => {
+
+      // Llamar a graficoPlanes una vez que se hayan obtenido las empresas
+      this.graficoPlanes();
+      this.renderBarChartByCity();
+      this.renderBarChartByProvince();
+    });
   },
   mounted() {
     console.log("MONTADO");
-    this.getEmpresas().then(() => {
-
-    });
   },
 
   updated() {

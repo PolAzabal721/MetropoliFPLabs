@@ -73,11 +73,7 @@ const routes = [
 
   },
 
-  // APPABAR DE TODO EL COD
-  {
-    path: '/appbar/',
-    component: () => import('@/components/appbar.vue'),
-  },
+  
 
   // GESTION EMPRESAS 
   {
