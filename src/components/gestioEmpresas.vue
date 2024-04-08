@@ -399,6 +399,7 @@ export default {
 
         // Destruir y recrear los gráficos
         this.destroyAndRecreateCharts();
+        window.location.reload();
       } else {
         // Si el usuario cancela, no se realiza ninguna acción
         return;
@@ -425,6 +426,7 @@ export default {
 
       // Destruir y recrear los gráficos
       this.destroyAndRecreateCharts();
+      window.location.reload();
     },
 
     // CERRAR DIALOGO DE EDITAR
@@ -540,6 +542,7 @@ export default {
 
       // Destruir y recrear los gráficos
       this.destroyAndRecreateCharts();
+      window.location.reload();
     },
 
     // Método para limpiar el formulario
@@ -638,8 +641,6 @@ export default {
       this.empresasPorPlanChart = new Chart(ctx, config);
     },
 
-
-
     // GRAFICO DE CIUDAD
     renderBarChartByCity() {
       const cities = {};
@@ -735,11 +736,11 @@ export default {
         this.barChartByProvince = this.renderBarChartByProvince();
       });
     },
+
     limpiarTodo(){
       this.empresasPorPlanChart =null;
       this.barChartByCity = null;
       this.barChartByProvince= null;
-
     }
 
 
