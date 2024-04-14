@@ -1,25 +1,34 @@
 <template>
-        <default-bar />
+  <default-bar />
 
   <v-layout class="rounded rounded-md">
-
-    <v-navigation-drawer width="250" class="navDrawer">
-      <!-- Contenido del Drawer -->
-      <v-toolbar height="60">
-        <v-toolbar-title>Submarinos Disponibles</v-toolbar-title>
-
-        <v-spacer></v-spacer>
-      </v-toolbar>
-      <v-col v-for="submarino in submarinosDisponibles" :key="submarino.id">
-        <v-checkbox v-model="submarino.selected" :label="submarino.nom_sub"></v-checkbox>
-      </v-col>
-      <v-btn @click="asignarSubmarinos">Añadir Submarinos</v-btn>
-    </v-navigation-drawer>
-
     <v-main>
       <v-container>
         <v-row>
-          <!-- Columna izquierda (Mapa y buscador) -->
+          <!-- Columna izquierda (submarinos) -->
+          <v-col cols="12" sm="3">
+
+            <v-card>
+              <!-- Contenido del Drawer -->
+              <v-toolbar height="60">
+                <h3 style="margin-left: 15px;">Submarinos Disponibles</h3>
+              </v-toolbar>
+              <v-container>
+                <v-row>
+                  <v-col v-for="submarino in submarinosDisponibles" :key="submarino.id" cols="12">
+                    <v-checkbox v-model="submarino.selected" :label="submarino.nom_sub"></v-checkbox>
+                  </v-col>
+                </v-row>
+              </v-container>
+              <v-card-actions>
+                <v-btn @click="asignarSubmarinos">Añadir Submarinos</v-btn>
+              </v-card-actions>
+            </v-card>
+
+          </v-col>
+
+
+          <!-- Columna medio (Mapa y buscador) -->
           <v-col cols="12" sm="5">
             <!-- CONFIG MAPA + SELECT AREA -->
             <v-select style="height: 75px; font-size: auto" v-model="nombreLugarBusqueda"
@@ -36,7 +45,7 @@
           </v-col>
 
           <!-- Columna derecha -->
-          <v-col cols="12" sm="7">
+          <v-col cols="12" sm="4">
             <v-row v-if="nombreLugarBusqueda">
               <v-col>
                 <h3>Submarinos Asignados a {{ nombreLugarBusqueda }}</h3>
@@ -115,7 +124,8 @@
               </v-form>
             </v-card-text>
             <v-card-actions>
-              <v-btn @click="actualizarTareaEditada" :disabled="!tareaEnEdicion.nombre.trim() || !selectedDate">Actualizar
+              <v-btn @click="actualizarTareaEditada"
+                :disabled="!tareaEnEdicion.nombre.trim() || !selectedDate">Actualizar
                 Rutina</v-btn>
               <v-btn @click="this.showDialogEdicion = false">Cancelar</v-btn>
             </v-card-actions>
@@ -581,11 +591,12 @@ import DefaultBar from "@/layouts/default/AppBar.vue";
 </script>
 
 <style scoped>
-.navDrawer{
-    float: left;
-    z-index: -1 !important;
-    position: relative !important;
+.navDrawer {
+  float: left;
+  z-index: -1 !important;
+  position: relative !important;
 }
+
 .dialog-content {
   border: 2px solid black;
   padding: 5px;
