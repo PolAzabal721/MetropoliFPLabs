@@ -1,0 +1,68 @@
+---------------------------------------------- TAREAS ------------------------------------------------
+----------------------------------------------- VUE --------------------------------------------------
+------------------------------------------------------------------------------------------------------
+
+----------------------------------------------- HOME-------------------------------------------
+------------------ ARREGLAR SELECCIONAR EMPRESA + LOS PERMISOS DEL ADMIN + EMPLEADOS + CLIENTES
+-----------------------------------------------------------------------------------------------
+
+
+-------------------------------------------- VUE EMPRESA ------------------------------------------------------------------
+------------------ HACER ALGO IGUAL QUE EN LO DE LAS EMPRESAS PERO PARA CREAR PLANES DE SUBCRIPCION + EDITARLOS + BORRARLOS 
+------------------ DATOS DE CADA PLAN: (NOMBRE + DESCRIPCION DE LOS PRIVILEGIOS + PRECIO + TIPO DE SUBSCRIPCION(MENSUAL O ANUAL))
+------------------ HACER TABLA EN LA BD EN LA QUE SE INSERTEN TODOS ESTOS DATOS ANTERIORES 
+------------------ MODIFICAR LO DE LAS EMPRESAS PARA QUE PILLE LOS PLANES CREADOS + MODIFICAR LA BD DE EMPREAS PARA QUE TENGA UN ID DE UN PLAN EMPAREJADO
+---------------------------------------------------------------------------------------------------------------------------------------------------------
+
+
+-------------------------------------------- VUE INCIDENCIAS --------------------------------------------------------------------------------
+------------------ SIMPLEMENTE COMPROBAR QUE ESTA TODO CORRECTO Y QUE EL SELECCIONAR EMPRESAS FUNCIONA Y FILTRA LAS INCIDENCIAS CORRECTAMENTE
+---------------------------------------------------------------------------------------------------------------------------------------------
+
+
+-------------------------------------------- VUE GESTION SUBMARINS (CONFIGURAR AREAS) --------------------------------------------------------------------
+------------------ COMPROBAR QUE ESTA TODO CORRECTO Y QUE EL SELECCIONAR EMPRESAS FUNCIONA Y FILTRA LAS AREAS CORRECTAMENTE CORRECTAMENTE
+------------------ QUE SI SE CREA UN AREA SE EMPAREJE A LA EMPRESA QUE LA HA CREADO
+------------------ SI SE CREA UN AREA SIENDO SUPER ADMIN QUE ESTA ESTE EMPAREJADA AL ADMIN SUPREMO SOLO
+----------------------------------------------------------------------------------------------------------------------------------------------------------
+
+
+-------------------------------------------- VUE GESTION SUBMARINS (SUBMARINS) --------------------------------------------------------------------------------
+------------------ QUE EL SELECCIONAR EMPRESAS FUNCIONA Y FILTRA LOS SUBMARINOS POR EMPRESA CORRECTAMENTE 
+------------------ ARREGLAR LA SECCION DE RUTINAS, QUE HAGA TODO LO QUE HA DE HACER Y QUE SE VEAN LAS RUTINAS DE CADA AREA
+------------------ AÑADIR EL APARTADO DE TAREAS (COMO EL DE RUTINAS PERO SIMPLEMENTE QUE NO SE REPETIRA NI NADA)
+------------------ HACER QUE LOS SUBMARINOS SE RIJAN POR HORARIOS Y SI EN ESE HORARIO ESTA OCUPADO NO SE PUEDA PONER A HACER UNA TAREA O RUTINA
+------------------ SI UN SUBMARINO ESTA AVERIADO NO APARECE AHI
+---------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+
+-------------------------------------------- VUE GESTION SUBMARINS (UBICACION) --------------------------------------------------------------------------------
+------------------ COMPROBAR QUE ESTA TODO CORRECTO Y QUE EL SELECCIONAR EMPRESAS FUNCIONA Y FILTRA LOS SUBMARINOS CORRECTAMENTE
+------------------ SI NO HAY EMPRESA SELECCIONADA SE VERA LA UBI DE TODOS LOS SUBMARINSO CON UN FILTRO POR AREAS PERO YA ESTA
+------------------ QUE SE REFLEJE LA UBI DE TODOS LOS SUBMARINOS Y PUEDAS FILTRAR POR AREA + POR TAREA O RUTINA + POR NOMBRE DEL SUBMARINO
+------------------ A LA IZQUIERDA DEL MAPA UNA COLUMNA DONDE SE VEAN LOS SUBMARINOS QUE NO ESTA EN EL AUGUA (AUNQUE SE ESTEN REPARANDO)
+------------------ LOS QUE SE ESTAN REPARANDO QUE SALGAN LOS VCARDS EN ROJO
+------------------ ESTA COLUMNA TENDRA UNA LEYENDA QUE INDICARA QUE SI ESTA EN ESA COLUMNA NO ESTAN EN EL AGUA Y LOS ROJOS ESTAN SIENDO REPARADOS
+------------------ COLUMNA A LA DERECHA DEL MAPA DONDE SE VEA LOS SUBMARINOS SUMERJIDOS (POR ESO SOLO SE VERA LA ULTIMA UBI HASTA QUE VUELVAN A SUBIR) 
+------------------ EL SUBMARINO AMTES DE HUNDIRSE MANDARA UNA SEÑAL DE QUE SE VA A HUNDIR Y PUES DE AHI SE SABRA SI SE PASA A LA COLUMNA DERECHA
+------------------ ESTO ULTIMO NO SE SI GUARDALO O ALGO, YA SE DISCUTIRA
+---------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+
+-------------------------------------------- VUE GESTION SUBMARINS (DADES) --------------------------------------------------------------------------------
+------------------ ARREGLAR EL APPBAR QUE SE VE COMO EL PUTO CULO JODER
+------------------ SIMPLEMENTE COMPROBAR QUE ESTA TODO CORRECTO Y QUE EL SELECCIONAR EMPRESAS FUNCIONA Y FILTRA LOS SUBMARINOS CORRECTAMENTE CORRECTAMENTE
+------------------ SI NO HAY SUBMARINO SELECCIONADO SE VERAN TODOS LOS MOVIMIENTOS
+------------------ TAMBIEN TIENEN QUE SALIR COSAS COMO QUE EL SUBMARINO TAL A ACABADO LA RUTINA TAL Y VUELVE A LA BASE DE CARGA (EJEMPLO, HACER MAS COSAS)
+------------------ MENSAJES IMPORTANTES EN OTRO COLOR, EMERJECIAS EN ROJO, LLEGAR A CASA DE UN COLOR, SALIR DE CASA DE OTRO Y HACER LEYENDA ARRIBA
+-----------------------------------------------------------------------------------------------------------------------------------------------------------
+
+
+-------------------------------------------- VUE GESTION SUBMARINS (INFORMES) --------------------------------------------------------------------------------
+------------------ DE MOMENTO LO DEJARIAMOS ASI Y YA SE HARA ALGO SI SE ACABA TODO
+--------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+
+-------------------------------------------- VUE CAMARA --------------------------------------------------------------------------------
+------------------ DE MOMENTO LO DEJARIAMOS ASI Y YA SE HARA ALGO SI SE ACABA TODO
+----------------------------------------------------------------------------------------------------------------------------------------
