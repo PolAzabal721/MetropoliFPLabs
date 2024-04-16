@@ -14,51 +14,50 @@
       ">
         <div class="header-container">
           <div class="title-container">
-            <router-link :to="'/'" class="titulo">
-              <v-toolbar-title class="mx-5 titulo">Sea Shepherd</v-toolbar-title>
+            <router-link :to="'/'" class="title">
+              <v-toolbar-title class="mx-5 title">Sea Shepherd</v-toolbar-title>
             </router-link>
           </div>
           <i v-if="userRole === 'admin'" class="mdi mdi-cog-box mdi-36px"></i>
-          <div v-if="userRole === 'admin'" class="select-container">
-            <select class="select" v-model="selectedEmpresa" @change="seleccionarEmpresa">
+          <div v-if="userRole === 'admin'" class="seleccion-container">
+            <select class="seleccion" v-model="selectedEmpresa" @change="seleccionarEmpresa">
               <option disabled value="">Selecciona una empresa</option>
               <option v-for="empresa in empresas" :value="empresa.id_empresa">{{ empresa.nom_empresa }}</option>
             </select>
           </div>
-          <span v-if="userRole === 'admin'" class="icon" @click="limpiarSeleccion"><i
-              class="mdi mdi-close mdi-36px"></i></span>
-
+          <span v-if="userRole === 'admin'" class="icono" @click="limpiarSeleccion"><i
+              class="mdi mdi-close mdi-36px "></i></span>
         </div>
 
         <!-- CLIENTE SIN INICIAR SESION -->
         <div style="width: 50%" v-if="userRole === ''">
-          <router-link :to="'/login'" class="colorBTN">Iniciar Sesión</router-link>
-          <router-link :to="'/camara'" class="colorBTN"> Càmera</router-link>
+          <router-link :to="'/login'" class="colorBoton">Iniciar Sesión</router-link>
+          <router-link :to="'/camara'" class="colorBoton"> Càmera</router-link>
         </div>
 
         <!-- CLIENTE CON SESION INICIADA -->
         <div style="width: 50%" v-if="userRole === 'cliente'">
-          <router-link :to="'/'" class="colorBTN" @click.prevent="logout">Tancar Sessió</router-link>
-          <router-link :to="'/camara'" class="colorBTN"> Càmera</router-link>
+          <router-link :to="'/'" class="colorBoton" @click.prevent="logout">Tancar Sessió</router-link>
+          <router-link :to="'/camara'" class="colorBoton"> Càmera</router-link>
         </div>
 
         <!-- TECNICO WEB -->
         <div style="width: 50%" v-if="userRole === 'tecnico_web'">
-          <router-link :to="'/'" class="colorBTN" @click.prevent="logout">Tancar Sessió</router-link>
-          <v-btn id="gestioSubmari" class="colorBTN" @mouseover="mostrarSubmari = true"
+          <router-link :to="'/'" class="colorBoton" @click.prevent="logout">Tancar Sessió</router-link>
+          <v-btn id="gestioSubmari" class="colorBoton" @mouseover="mostrarSubmari = true"
             @mouseleave="mostrarSubmari = false">Gestiò Sumbarins</v-btn>
-          <router-link :to="'/incidencias'" class="colorBTN">Gestiò Incidències</router-link>
-          <router-link :to="'/camara'" class="colorBTN"> Càmera</router-link>
+          <router-link :to="'/incidencias'" class="colorBoton">Gestiò Incidències</router-link>
+          <router-link :to="'/camara'" class="colorBoton"> Càmera</router-link>
         </div>
 
         <!-- ADMIN DE TODO -->
         <div style="width: 50%" v-if="userRole === 'admin'">
-          <router-link :to="'/'" class="colorBTN" @click.prevent="logout">Tancar Sessió</router-link>
-          <v-btn id="gestioSubmari" class="colorBTN" @mouseover="mostrarSubmari = true"
+          <router-link :to="'/'" class="colorBoton" @click.prevent="logout">Tancar Sessió</router-link>
+          <v-btn id="gestioSubmari" class="colorBoton" @mouseover="mostrarSubmari = true"
             @mouseleave="mostrarSubmari = false">Gestiò Sumbarins</v-btn>
-          <router-link :to="'/incidencias'" class="colorBTN">Gestiò Incidències</router-link>
-          <router-link :to="'/camara'" class="colorBTN"> Càmera</router-link>
-          <router-link :to="'/gestioEmpresas'" class="colorBTN"> Empresas</router-link>
+          <router-link :to="'/incidencias'" class="colorBoton">Gestiò Incidències</router-link>
+          <router-link :to="'/camara'" class="colorBoton"> Càmera</router-link>
+          <router-link :to="'/gestioEmpresas'" class="colorBoton"> Empresas</router-link>
 
 
         </div>
@@ -69,8 +68,8 @@
       <!-- Your collapsed view for smaller screens -->
 
 
-      <router-link style="width: 80%; !important" :to="'/'" class="titulo">
-        <v-toolbar-title class="mx-5 titulo">Sea Shepherd</v-toolbar-title>
+      <router-link style="width: 80%; !important" :to="'/'" class="title">
+        <v-toolbar-title class="mx-5 title">Sea Shepherd</v-toolbar-title>
       </router-link>
       <v-btn icon @click="toggleCollapsedView">
         <v-icon>mdi-menu</v-icon>
@@ -84,13 +83,13 @@
     <div v-if="mostrarSubmari" class="dropdown-submari" @mouseover="mostrarSubmari = true"
       @mouseleave="mostrarSubmari = false">
 
-      <router-link :to="'/datos'" class="colorBTN"> Dades</router-link>
-      <router-link :to="'/ubicacion'" class="colorBTN"> Ubicació</router-link>
-      <router-link :to="'/areas'" class="colorBTN">
+      <router-link :to="'/datos'" class="colorBoton"> Dades</router-link>
+      <router-link :to="'/ubicacion'" class="colorBoton"> Ubicació</router-link>
+      <router-link :to="'/areas'" class="colorBoton">
         Configurar àrees</router-link>
-      <router-link :to="'/submarinos'" class="colorBTN">
+      <router-link :to="'/submarinos'" class="colorBoton">
         Submarins</router-link>
-      <router-link :to="'/informes'" class="colorBTN"> Informes</router-link>
+      <router-link :to="'/informes'" class="colorBoton"> Informes</router-link>
     </div>
 
   </transition>
@@ -114,6 +113,12 @@
   opacity: 0;
 }
 
+.icono {
+  cursor: pointer;
+  margin-left: 10px;
+  /* Ajusta este valor según tus necesidades */
+}
+
 .dropdown-submari {
   color: #8ecae6 !important;
   background-color: rgba(127, 217, 233, 0.95) !important;
@@ -131,14 +136,14 @@
   display: none;
 }
 
-.titulo {
+.title {
   font-size: 24px !important;
   font-weight: bold !important;
   color: white;
   text-decoration: none;
 }
 
-.colorBTN {
+.colorBoton {
   font-weight: bold;
   color: white;
   padding: 5px;
@@ -151,7 +156,7 @@
   float: right;
 }
 
-.colorBTN:hover {
+.colorBoton:hover {
   font-weight: bold;
   color: #152636;
   transition: 0.2s;
@@ -167,12 +172,16 @@
   /* Esto empujará el select hacia la derecha */
 }
 
-.select-container {
-  flex-grow: 1;
-  /* Esto permite que el select ocupe todo el espacio restante disponible */
-}
 
-.select {
+
+.seleccion-container {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+} 
+
+.seleccion {
   /* Estilos del select según tus preferencias */
   padding: 5px;
   border-radius: 5px;
