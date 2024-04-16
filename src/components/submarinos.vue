@@ -88,13 +88,9 @@
                       <div class="d-flex justify-space-between align-center p-2">
                         <h3 style="margin: 20px;">{{ rutina.nombre }}</h3>
                         <div>
-
                           <v-icon @click="editarTarea(index)">mdi-pencil</v-icon>
-
-
                           <v-icon @click="confirmarEliminar(index)"
                             style="margin-left: 10px; margin-right: 10px;">mdi-delete</v-icon>
-
                         </div>
                       </div>
                     </v-card>
@@ -154,7 +150,8 @@ import {
   deleteSubMongo,
   addRutina,
   selectRutinas,
-  eliminartRutinas
+  eliminartRutinas,
+  updateRutinas
 } from "@/services/connectionManager.js";
 import { useAppStore } from "@/store/app";
 import { ref } from "vue";
@@ -344,58 +341,34 @@ export default {
 
     // EDITAR RUTINA
     editarTarea(index) {
-      // Verificar si el índice es válido
       if (index >= 0 && index < this.rutinas.rutinas.length) {
-        // Acceder a los datos dentro de la rutina en lugar de directamente en this.tareas, this.descripciones, etc.
         const rutina = this.rutinas.rutinas[index];
-        this.tareaEnEdicion.nombre = rutina.tareas !== undefined ? rutina.tareas.trim() : "";
-        this.tareaEnEdicion.descripcion = rutina.descripciones || "";
-        this.tareaEnEdicion.hora = rutina.horas || null;
-
-        // Establecer el índice de tarea en edición
+        this.tareaEnEdicion.nombre = rutina.nombre;
+        this.tareaEnEdicion.descripcion = rutina.descripcion || "";
+        this.tareaEnEdicion.hora = rutina.hora || null;
         this.editingTaskIndex = index;
-
-        // Abrir la ventana emergente de edición
         this.showDialogEdicion = true;
       } else {
-        console.error("Índice de tarea no válido:", index);
+        console.error("Índice de rutina no válido:", index);
       }
-
-      this.selectRutinas();
     },
 
 
     actualizarTareaEditada() {
-      // Verificar si el índice de edición es válido
-      if (
-        this.editingTaskIndex !== null &&
-        this.editingTaskIndex >= 0 &&
-        this.editingTaskIndex < this.tareas.length
-      ) {
+      if (this.editingTaskIndex !== null && this.editingTaskIndex >= 0 && this.editingTaskIndex < this.rutinas.rutinas.length) {
         if (this.tareaEnEdicion.nombre.trim() !== "") {
-          // Asignar los nuevos valores directamente
-          this.tareas[this.editingTaskIndex] = this.tareaEnEdicion.nombre;
-          this.descripciones[this.editingTaskIndex] =
-            this.tareaEnEdicion.descripcion || "";
-          this.horas[this.editingTaskIndex] = this.tareaEnEdicion.hora || null;
-
-          // Restablecer valores después de la edición
+          const rutina = this.rutinas.rutinas[this.editingTaskIndex];
+          rutina.nombre = this.tareaEnEdicion.nombre.trim();
+          rutina.descripcion = this.tareaEnEdicion.descripcion || "";
+          rutina.hora = this.tareaEnEdicion.hora || null;
           this.editingTaskIndex = null;
           this.tareaEnEdicion = { nombre: "", descripcion: "", hora: null };
-
-          // Cerrar la ventana emergente de edición
           this.showDialogEdicion = false;
         } else {
-          console.error(
-            "Nombre de tarea no válido:",
-            this.tareaEnEdicion.nombre
-          );
+          console.error("Nombre de rutina no válido:", this.tareaEnEdicion.nombre);
         }
       } else {
-        console.error(
-          "Índice de tarea en edición no válido:",
-          this.editingTaskIndex
-        );
+        console.error("Índice de rutina en edición no válido:", this.editingTaskIndex);
       }
     },
 
@@ -403,7 +376,7 @@ export default {
     async confirmarEliminar(index) {
       if (confirm("¿Estás seguro de que deseas eliminar esta rutina?")) {
         try {
-          const id_area = this.rutinas.rutinas[index].id_area;
+          const id_area = this.areaEncontradaID;
           const id_rutina = this.rutinas.rutinas[index].id;
           await eliminartRutinas(id_area, id_rutina);
 
@@ -413,7 +386,6 @@ export default {
         }
       }
     },
-
 
     // SELECT PARA PILLAR COODS + NOMBRE DEL AREA + ID
     async getAreas() {

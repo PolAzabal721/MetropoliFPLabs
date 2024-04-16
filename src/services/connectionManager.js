@@ -259,6 +259,30 @@ export async function eliminartRutinas(id_area, id) {
   }
 }
 
+// UPDATE RUTINAS
+export async function updateRutinas(nombre, descripcion, hora, id) {
+  try {
+    const response = await fetch('http://localhost:3169/updateRutinas', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({ nombre: nombre, descripcion: descripcion, hora: hora, id: id })
+    });
+
+    if (!response.ok) {
+      const errorMessage = await response.text();
+      throw new Error(`Error al agregar rutina: ${errorMessage}`);
+    }
+
+    const responseData = await response.json();
+    return responseData;
+  } catch (error) {
+    console.error('Error en la comunicación:', error.message);
+    throw error;
+  }
+}
+
 export async function insertIncidencia(listaItems) {
   try {
     const response = await fetch('http://localhost:3169/insertarIncidencia', {
