@@ -206,6 +206,7 @@ export async function deleteSubMongo(id_area, id_sub) {
   }
 }
 
+// INSERT RUTINAS
 export async function addRutina(areaId, rutinaData) {
   try {
     const response = await fetch('http://localhost:3169/addrutina', {
@@ -229,6 +230,7 @@ export async function addRutina(areaId, rutinaData) {
   }
 }
 
+// HACER SELECT RUTINAS 
 export async function selectRutinas(areaId) {
   const url = `http://localhost:3169/selectRutinas/${areaId}`;
 
@@ -239,6 +241,21 @@ export async function selectRutinas(areaId) {
   } catch (error) {
     console.error('Error selecting rutinas:', error);
     throw new Error('Error selecting rutinas');
+  }
+}
+
+// ELIMINAR RUTINAS
+export async function eliminartRutinas(id_area, id) {
+  try {
+    const response = await fetch("http://localhost:3169/deleteRutinasMongo", {
+      method: "POST",
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({ areaId: id_area, rutinaId: id }) 
+    })
+  } catch (error) {
+    console.log(error);
   }
 }
 
@@ -295,7 +312,7 @@ export async function updateEmpresa(listaItems) {
       headers: {
         'Content-Type': 'application/json'
       },
-      body: JSON.stringify({listaItems: listaItems })
+      body: JSON.stringify({ listaItems: listaItems })
     });
 
     if (!response.ok) {
@@ -318,7 +335,7 @@ export async function deleteEmpresa(id_empresa) {
       headers: {
         'Content-Type': 'application/json'
       },
-      body: JSON.stringify({id_empresa: id_empresa })
+      body: JSON.stringify({ id_empresa: id_empresa })
     });
 
     if (!response.ok) {
@@ -385,14 +402,14 @@ export async function updateIncidencias(asunto, descripcio, prioridad, idInciden
   }
 }
 
-export async function updateArea(id, nombre, coordenadas){
+export async function updateArea(id, nombre, coordenadas) {
   try {
     const response = await fetch('http://localhost:3169/updatearea', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json'
       },
-      body: JSON.stringify({ id: id, nombre: nombre, coordenadas: coordenadas,  })
+      body: JSON.stringify({ id: id, nombre: nombre, coordenadas: coordenadas, })
     });
 
     if (!response.ok) {

@@ -85,14 +85,18 @@
                 <v-row>
                   <v-col v-for="(rutina, index) in rutinas.rutinas" :key="index" cols="12">
                     <v-card>
-                      <v-card-title>{{ rutina.nombre }}
-                        <v-btn icon @click="editarTarea(index)">
-                          <v-icon>mdi-pencil</v-icon>
-                        </v-btn>
-                        <v-btn icon @click="eliminarTarea(index)">
-                          <v-icon>mdi-delete</v-icon>
-                        </v-btn>
-                      </v-card-title>
+                      <div class="d-flex justify-space-between align-center p-2">
+                        <h3 style="margin: 20px;">{{ rutina.nombre }}</h3>
+                        <div>
+
+                          <v-icon @click="editarTarea(index)">mdi-pencil</v-icon>
+
+
+                          <v-icon @click="confirmarEliminar(index)"
+                            style="margin-left: 10px; margin-right: 10px;">mdi-delete</v-icon>
+
+                        </div>
+                      </div>
                     </v-card>
                   </v-col>
                 </v-row>
@@ -149,7 +153,8 @@ import {
   deleteAreaSub,
   deleteSubMongo,
   addRutina,
-  selectRutinas
+  selectRutinas,
+  eliminartRutinas
 } from "@/services/connectionManager.js";
 import { useAppStore } from "@/store/app";
 import { ref } from "vue";
@@ -395,12 +400,20 @@ export default {
     },
 
     // ELIMINAR RUTINA
-    eliminarTarea(index) {
-      // Elimina la tarea en el índice especificado
+    async confirmarEliminar(index) {
       if (confirm("¿Estás seguro de que deseas eliminar esta rutina?")) {
-        this.tareas.splice(index, 1);
+        try {
+          const id_area = this.rutinas.rutinas[index].id_area;
+          const id_rutina = this.rutinas.rutinas[index].id;
+          await eliminartRutinas(id_area, id_rutina);
+
+          this.selectRutinas();
+        } catch (error) {
+          console.error("Error al eliminar la rutina:", error);
+        }
       }
     },
+
 
     // SELECT PARA PILLAR COODS + NOMBRE DEL AREA + ID
     async getAreas() {
@@ -451,10 +464,10 @@ export default {
     },
 
     // HACER SELECT A RUTINAS
-    async selectRutinas(areaID) {
+    async selectRutinas() {
       try {
         // Llamar al servicio connectionManager.js para obtener las rutinas del área específica
-        const rutinas = await selectRutinas(areaID);
+        const rutinas = await selectRutinas(this.areaEncontradaID);
         //console.log("Rutinas obtenidas de selectRutinas: ", rutinas);
 
         // Asignar las rutinas al estado rutinas
@@ -602,6 +615,12 @@ import DefaultBar from "@/layouts/default/AppBar.vue";
 </script>
 
 <style scoped>
+.hidden-btn {
+  background-color: transparent !important;
+  border: none !important;
+  padding: 0 !important;
+}
+
 .navDrawer {
   float: left;
   z-index: -1 !important;
