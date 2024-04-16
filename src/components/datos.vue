@@ -17,7 +17,7 @@
                   </option>
                 </select>
                 <span class="icon" @click="limpiarSeleccion">
-                  <i class="mdi mdi-close mdi-24px"></i>
+                  <i class="mdi mdi-close mdi-24px miEstiloIcon"></i>
                 </span>
               </v-card-text>
             </v-card>
