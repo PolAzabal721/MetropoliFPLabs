@@ -1,137 +1,131 @@
 <template>
   <default-bar />
-
   <v-layout class="rounded rounded-md">
     <v-main>
-      <v-container>
-        <v-row>
-          <!-- Columna izquierda (submarinos) -->
-          <v-col cols="12" sm="3">
 
-            <v-card>
-              <!-- Contenido del Drawer -->
-              <v-toolbar height="60">
-                <h3 style="margin-left: 15px;">Submarinos Disponibles</h3>
-              </v-toolbar>
-              <v-container>
-                <v-row>
-                  <v-col v-for="submarino in submarinosDisponibles" :key="submarino.id" cols="12">
-                    <v-checkbox v-model="submarino.selected" :label="submarino.nom_sub"></v-checkbox>
-                  </v-col>
-                </v-row>
-              </v-container>
-              <v-card-actions>
-                <v-btn @click="asignarSubmarinos">Añadir Submarinos</v-btn>
-              </v-card-actions>
-            </v-card>
-
-          </v-col>
-
-
-          <!-- Columna medio (Mapa y buscador) -->
-          <v-col cols="12" sm="5">
-            <!-- CONFIG MAPA + SELECT AREA -->
-            <v-select style="height: 75px; font-size: auto" v-model="nombreLugarBusqueda"
-              :items="areas.map((area) => area.nombreArea)" label="Seleccionar Área"
-              @change="actualizarSubmarinos"></v-select>
-            <v-btn class="small-select" @click="buscarArea" :disabled="nombreLugarBusqueda === ''"
-              style="margin-bottom: 30px">
-              Buscar
-            </v-btn>
-            <!-- MAPA -->
-            <v-card class="mx-auto slidecontainer" height="400" width="450">
-              <div id="mapaSelect" style="height: 400px; width: 450px"></div>
-            </v-card>
-          </v-col>
-
-          <!-- Columna derecha -->
-          <v-col cols="12" sm="4">
-            <v-row v-if="nombreLugarBusqueda">
-              <v-col>
-                <h3>Submarinos Asignados a {{ nombreLugarBusqueda }}</h3>
-                <v-col v-for="submarino in submarinosAsignadosFiltrados" :key="submarino.id">
-                  {{ submarino.nom_sub }} - {{ submarino.estado_sub }}<br />
-                  Ubicación: {{ submarino.ruta }}
-                  <v-btn @click="desvincularSubmarino(submarino)">Desvincular</v-btn>
-                </v-col>
-                <v-col>
-                  <v-btn @click="crearRutina">Rutinas de los submarinos</v-btn>
-                </v-col>
-              </v-col>
-            </v-row>
-          </v-col>
-        </v-row>
-
-        <!-- Diálogo para rutinas -->
-        <v-dialog v-model="dialogRutina" max-height="800" max-width="800">
-          <v-card height="800" width="800">
-            <v-card-title>Rutinas del submarino</v-card-title>
-            <v-card-text>
+      <v-row style="margin: 25px;">
+        <!-- Columna izquierda (submarinos) -->
+        <v-col cols="12" sm="3">
+          <v-card>
+            <!-- Contenido submarinos -->
+            <v-toolbar height="60">
+              <h3 style="margin-left: 15px;">Submarinos Disponibles</h3>
+            </v-toolbar>
+            <v-container>
               <v-row>
-                <!-- Columna izquierda -->
-                <v-col cols="6">
-                  <!-- Formulario para añadir tareas -->
-                  <v-form ref="taskForm" @submit.prevent="agregarTarea">
-                    <v-text-field v-model="nuevaTarea" label="* Nombre la rutina"></v-text-field>
-                    <v-text-field style="height: 500px; margin-bottom: -210px" v-model="nuevaDescripcion"
-                      label="Descripción"></v-text-field>
-                    *
-                    <datepicker class="dialog-content" v-model="selectedDate" @dayclick="dayClickHandler" />
-
-                    <br />
-                    <v-btn type="submit" :disabled="!nuevaTarea.trim() || !selectedDate">Agregar Rutina</v-btn>
-                  </v-form>
-                </v-col>
-
-                <!-- Columna derecha -->
-                <v-col cols="6">
-                  <!-- Lista de tareas -->
-                  <v-row>
-                    <v-col v-for="(rutina, index) in rutinas.rutinas" :key="index" cols="12">
-                      <v-card>
-                        <v-card-title>{{ rutina.nombre }}
-                          <v-btn icon @click="editarTarea(index)">
-                            <v-icon>mdi-pencil</v-icon>
-                          </v-btn>
-                          <v-btn icon @click="eliminarTarea(index)">
-                            <v-icon>mdi-delete</v-icon>
-                          </v-btn>
-                        </v-card-title>
-                      </v-card>
-                    </v-col>
-                  </v-row>
+                <v-col v-for="submarino in submarinosDisponibles" :key="submarino.id" cols="12">
+                  <v-checkbox v-model="submarino.selected" :label="submarino.nom_sub"></v-checkbox>
                 </v-col>
               </v-row>
-            </v-card-text>
+            </v-container>
             <v-card-actions>
-              <v-btn @click="cerrarDialogRutina">Cerrar</v-btn>
+              <v-btn @click="asignarSubmarinos">Añadir Submarinos</v-btn>
             </v-card-actions>
           </v-card>
-        </v-dialog>
+        </v-col>
 
-        <!-- Diálogo para editar rutina -->
-        <v-dialog v-model="showDialogEdicion" position="center" max-width="800">
-          <v-card height="800" width="800">
-            <v-card-title>Editar Rutina</v-card-title>
-            <v-card-text>
-              <v-form @submit.prevent="actualizarTareaEditada">
-                <v-text-field v-model="tareaEnEdicion.nombre" label="* Nombre de la rutina" required></v-text-field>
-                <v-text-field style="height: 500px; margin-bottom: -210px" v-model="tareaEnEdicion.descripcion"
-                  label="Descripción"></v-text-field>
-                *
-                <datepicker class="dialog-content" v-model="selectedDate" @dayclick="dayClickHandler" required />
-
-              </v-form>
-            </v-card-text>
-            <v-card-actions>
-              <v-btn @click="actualizarTareaEditada"
-                :disabled="!tareaEnEdicion.nombre.trim() || !selectedDate">Actualizar
-                Rutina</v-btn>
-              <v-btn @click="this.showDialogEdicion = false">Cancelar</v-btn>
-            </v-card-actions>
+        <!-- Columna medio (Mapa y buscador) -->
+        <v-col cols="12" sm="5">
+          <!-- CONFIG MAPA + SELECT AREA -->
+          <v-select style="height: 75px; font-size: auto" v-model="nombreLugarBusqueda"
+            :items="areas.map((area) => area.nombreArea)" label="Seleccionar Área"
+            @change="actualizarSubmarinos"></v-select>
+          <v-btn class="small-select" @click="buscarArea" :disabled="nombreLugarBusqueda === ''"
+            style="margin-bottom: 30px">
+            Buscar
+          </v-btn>
+          <!-- MAPA -->
+          <v-card class="mx-auto slidecontainer" height="400" width="450">
+            <div id="mapaSelect" style="height: 400px; width: 450px"></div>
           </v-card>
-        </v-dialog>
-      </v-container>
+        </v-col>
+
+        <!-- Columna derecha -->
+        <v-col cols="12" sm="4">
+          <v-row v-if="nombreLugarBusqueda">
+            <v-col>
+              <h3>Submarinos Asignados a {{ nombreLugarBusqueda }}</h3>
+              <v-col v-for="submarino in submarinosAsignadosFiltrados" :key="submarino.id">
+                {{ submarino.nom_sub }} - {{ submarino.estado_sub }}<br />
+                Ubicación: {{ submarino.ruta }}
+                <v-btn @click="desvincularSubmarino(submarino)">Desvincular</v-btn>
+              </v-col>
+              <v-col>
+                <v-btn @click="crearRutina">Rutinas de los submarinos</v-btn>
+              </v-col>
+            </v-col>
+          </v-row>
+        </v-col>
+      </v-row>
+
+      <!-- Diálogo para rutinas -->
+      <v-dialog v-model="dialogRutina" max-height="800" max-width="800">
+        <v-card height="800" width="800">
+          <v-card-title>Rutinas del submarino</v-card-title>
+          <v-card-text>
+            <v-row>
+              <!-- Columna izquierda -->
+              <v-col cols="6">
+                <!-- Formulario para añadir tareas -->
+                <v-form ref="taskForm" @submit.prevent="agregarTarea">
+                  <v-text-field v-model="nuevaTarea" label="* Nombre la rutina"></v-text-field>
+                  <v-text-field style="height: 500px; margin-bottom: -210px" v-model="nuevaDescripcion"
+                    label="Descripción"></v-text-field>
+                  *
+                  <datepicker class="dialog-content" v-model="selectedDate" @dayclick="dayClickHandler" />
+
+                  <br />
+                  <v-btn type="submit" :disabled="!nuevaTarea.trim() || !selectedDate">Agregar Rutina</v-btn>
+                </v-form>
+              </v-col>
+
+              <!-- Columna derecha -->
+              <v-col cols="6">
+                <!-- Lista de tareas -->
+                <v-row>
+                  <v-col v-for="(rutina, index) in rutinas.rutinas" :key="index" cols="12">
+                    <v-card>
+                      <v-card-title>{{ rutina.nombre }}
+                        <v-btn icon @click="editarTarea(index)">
+                          <v-icon>mdi-pencil</v-icon>
+                        </v-btn>
+                        <v-btn icon @click="eliminarTarea(index)">
+                          <v-icon>mdi-delete</v-icon>
+                        </v-btn>
+                      </v-card-title>
+                    </v-card>
+                  </v-col>
+                </v-row>
+              </v-col>
+            </v-row>
+          </v-card-text>
+          <v-card-actions>
+            <v-btn @click="cerrarDialogRutina">Cerrar</v-btn>
+          </v-card-actions>
+        </v-card>
+      </v-dialog>
+
+      <!-- Diálogo para editar rutina -->
+      <v-dialog v-model="showDialogEdicion" position="center" max-width="800">
+        <v-card height="800" width="800">
+          <v-card-title>Editar Rutina</v-card-title>
+          <v-card-text>
+            <v-form @submit.prevent="actualizarTareaEditada">
+              <v-text-field v-model="tareaEnEdicion.nombre" label="* Nombre de la rutina" required></v-text-field>
+              <v-text-field style="height: 500px; margin-bottom: -210px" v-model="tareaEnEdicion.descripcion"
+                label="Descripción"></v-text-field>
+              *
+              <datepicker class="dialog-content" v-model="selectedDate" @dayclick="dayClickHandler" required />
+
+            </v-form>
+          </v-card-text>
+          <v-card-actions>
+            <v-btn @click="actualizarTareaEditada" :disabled="!tareaEnEdicion.nombre.trim() || !selectedDate">Actualizar
+              Rutina</v-btn>
+            <v-btn @click="this.showDialogEdicion = false">Cancelar</v-btn>
+          </v-card-actions>
+        </v-card>
+      </v-dialog>
     </v-main>
   </v-layout>
 </template>
@@ -425,6 +419,9 @@ export default {
       );
 
       if (areaEncontrada && areaEncontrada.coordenadas) {
+        // Restablecer las rutinas para evitar mostrar las rutinas del área anterior
+        this.rutinas = [];
+
         // Cargar coordenadas en mapaSelect
         this.cargarCoordenadasEnMapaSelect(areaEncontrada.coordenadas);
         this.areaEncontrada = areaEncontrada;
@@ -440,16 +437,31 @@ export default {
         this.submarinosDisponibles = this.submarinosDisponibles.filter(
           submarino => submarino.id_area !== this.areaEncontradaID
         );
+
+        // Llamar al método selectRutinas para cargar las rutinas del área encontrada
+        await this.selectRutinas(this.areaEncontradaID);
+      } else {
+        // Si el área no se encuentra, limpiar las rutinas
+        this.rutinas = [];
       }
 
       this.actualizarSubmarinos();
-      this.selectRutinas();
+
       this.getSubmarino();
     },
 
     // HACER SELECT A RUTINAS
-    async selectRutinas() {
-      this.rutinas = await selectRutinas(this.areaEncontradaID);
+    async selectRutinas(areaID) {
+      try {
+        // Llamar al servicio connectionManager.js para obtener las rutinas del área específica
+        const rutinas = await selectRutinas(areaID);
+        //console.log("Rutinas obtenidas de selectRutinas: ", rutinas);
+
+        // Asignar las rutinas al estado rutinas
+        this.rutinas = rutinas;
+      } catch (error) {
+        console.error("Error fetching rutinas:", error);
+      }
     },
 
     // SELECT A TODOS LOS SUBMARINOS
@@ -570,7 +582,6 @@ export default {
   //CONSOLA
   created() {
     console.log("CREADO");
-
   },
 
   mounted() {

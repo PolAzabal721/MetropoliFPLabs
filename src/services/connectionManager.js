@@ -4,6 +4,7 @@ export async function getDades() {
   const result = await response.json();
   return result;
 }
+
 export async function insertarArea(coordenadas, nombreArea, idSubmarino) {
   try {
     const response = await fetch('http://localhost:3169/areas', {
