@@ -60,7 +60,7 @@ const routes = [
         path: '/submarinos/',
         component: () =>
             import ('@/components/submarinos.vue'),
-        meta: { title: 'Sea Shepherd - submarinos' }
+        meta: { title: 'Sea Shepherd - Submarinos' }
 
     },
 
@@ -69,7 +69,7 @@ const routes = [
         path: '/incidencias/',
         component: () =>
             import ('@/components/incidencias.vue'),
-        meta: { title: 'Sea Shepherd - submarinos' }
+        meta: { title: 'Sea Shepherd - Incidencies' }
 
     },
 
@@ -89,7 +89,7 @@ const routes = [
         path: '/gestioEmpresas',
         component: () =>
             import ('@/components/gestioEmpresas.vue'),
-        meta: { title: 'Sea Shepherd - Login' }
+        meta: { title: 'Sea Shepherd - Gestio Empreses' }
 
     },
 ]
