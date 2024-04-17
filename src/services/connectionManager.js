@@ -252,7 +252,7 @@ export async function eliminartRutinas(id_area, id) {
       headers: {
         'Content-Type': 'application/json'
       },
-      body: JSON.stringify({ areaId: id_area, rutinaId: id }) 
+      body: JSON.stringify({ areaId: id_area, rutinaId: id })
     })
   } catch (error) {
     console.log(error);
@@ -260,19 +260,25 @@ export async function eliminartRutinas(id_area, id) {
 }
 
 // UPDATE RUTINAS
-export async function updateRutinas(nombre, descripcion, hora, id) {
+export async function updateRutinasMongo(nombre, descripcion, hora, areaId, rutinaId) {
   try {
-    const response = await fetch('http://localhost:3169/updateRutinas', {
+    const response = await fetch('http://localhost:3169/updateRutinasMongo', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json'
       },
-      body: JSON.stringify({ nombre: nombre, descripcion: descripcion, hora: hora, id: id })
+      body: JSON.stringify({
+        areaId: areaId,
+        rutinaId: rutinaId,
+        nombre: nombre,
+        descripcion: descripcion,
+        hora: hora
+      })
     });
 
     if (!response.ok) {
       const errorMessage = await response.text();
-      throw new Error(`Error al agregar rutina: ${errorMessage}`);
+      throw new Error(`Error al actualizar rutina: ${errorMessage}`);
     }
 
     const responseData = await response.json();

@@ -110,7 +110,7 @@
         <v-card height="800" width="800">
           <v-card-title>Editar Rutina</v-card-title>
           <v-card-text>
-            <v-form @submit.prevent="actualizarTareaEditada">
+            <v-form @submit.prevent="actualizarTareaEditada(editingTaskIndex)"> <!-- Pasar el índice -->
               <v-text-field v-model="tareaEnEdicion.nombre" label="* Nombre de la rutina" required></v-text-field>
               <v-text-field style="height: 500px; margin-bottom: -210px" v-model="tareaEnEdicion.descripcion"
                 label="Descripción"></v-text-field>
@@ -120,12 +120,14 @@
             </v-form>
           </v-card-text>
           <v-card-actions>
-            <v-btn @click="actualizarTareaEditada" :disabled="!tareaEnEdicion.nombre.trim() || !selectedDate">Actualizar
+            <v-btn @click="actualizarTareaEditada(editingTaskIndex)"
+              :disabled="!tareaEnEdicion.nombre.trim() || !selectedDate">Actualizar
               Rutina</v-btn>
             <v-btn @click="this.showDialogEdicion = false">Cancelar</v-btn>
           </v-card-actions>
         </v-card>
       </v-dialog>
+
     </v-main>
   </v-layout>
 </template>
@@ -151,7 +153,7 @@ import {
   addRutina,
   selectRutinas,
   eliminartRutinas,
-  updateRutinas
+  updateRutinasMongo
 } from "@/services/connectionManager.js";
 import { useAppStore } from "@/store/app";
 import { ref } from "vue";
@@ -180,6 +182,7 @@ export default {
       newRutina: [],
       editingTaskIndex: null,
       tareaEnEdicion: {
+        id: null,
         nombre: "",
         descripcion: "",
         hora: null,
@@ -343,6 +346,7 @@ export default {
     editarTarea(index) {
       if (index >= 0 && index < this.rutinas.rutinas.length) {
         const rutina = this.rutinas.rutinas[index];
+        this.tareaEnEdicion.id = rutina.id;
         this.tareaEnEdicion.nombre = rutina.nombre;
         this.tareaEnEdicion.descripcion = rutina.descripcion || "";
         this.tareaEnEdicion.hora = rutina.hora || null;
@@ -353,24 +357,27 @@ export default {
       }
     },
 
+    // UPDATE EN EL MONGO RUTINAS
+    async actualizarTareaEditada(index) {
+      console.log(this.areaEncontradaID);
+      try {
+        const rutina = this.rutinas.rutinas[index];
+        const idArea = this.areaEncontradaID;
+        const idRutina = rutina.id;
 
-    actualizarTareaEditada() {
-      if (this.editingTaskIndex !== null && this.editingTaskIndex >= 0 && this.editingTaskIndex < this.rutinas.rutinas.length) {
-        if (this.tareaEnEdicion.nombre.trim() !== "") {
-          const rutina = this.rutinas.rutinas[this.editingTaskIndex];
-          rutina.nombre = this.tareaEnEdicion.nombre.trim();
-          rutina.descripcion = this.tareaEnEdicion.descripcion || "";
-          rutina.hora = this.tareaEnEdicion.hora || null;
-          this.editingTaskIndex = null;
-          this.tareaEnEdicion = { nombre: "", descripcion: "", hora: null };
-          this.showDialogEdicion = false;
-        } else {
-          console.error("Nombre de rutina no válido:", this.tareaEnEdicion.nombre);
-        }
-      } else {
-        console.error("Índice de rutina en edición no válido:", this.editingTaskIndex);
+        await updateRutinasMongo(this.tareaEnEdicion.nombre.trim(), this.tareaEnEdicion.descripcion || "", this.tareaEnEdicion.hora, idArea, idRutina);
+
+        console.log('Rutina actualizada correctamente');
+        this.editingTaskIndex = null;
+        this.tareaEnEdicion = { nombre: "", descripcion: "", hora: null };
+        this.selectRutinas();
+        this.showDialogEdicion = false;
+      } catch (error) {
+        console.error("Error al actualizar la rutina:", error);
       }
+
     },
+
 
     // ELIMINAR RUTINA
     async confirmarEliminar(index) {
