@@ -260,7 +260,7 @@ export async function eliminartRutinas(id_area, id) {
 }
 
 // UPDATE RUTINAS
-export async function updateRutinasMongo(nombre, descripcion, hora, areaId, rutinaId) {
+export async function updateRutinasMongo(nombre, descripcion, fechaHoraInicio, repetir, areaId, rutinaId) {
   try {
     const response = await fetch('http://localhost:3169/updateRutinasMongo', {
       method: 'POST',
@@ -272,7 +272,8 @@ export async function updateRutinasMongo(nombre, descripcion, hora, areaId, ruti
         rutinaId: rutinaId,
         nombre: nombre,
         descripcion: descripcion,
-        hora: hora
+        repetir: repetir,
+        fechaHoraInicio: fechaHoraInicio
       })
     });
 
