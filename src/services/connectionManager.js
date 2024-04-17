@@ -290,6 +290,97 @@ export async function updateRutinasMongo(nombre, descripcion, fechaHoraInicio, r
     }
 }
 
+
+
+
+// 
+
+
+
+// INSERT TAREAS
+export async function addTareaMongo(areaId, tareaData) {
+  try {
+      const response = await fetch('http://localhost:3169/addTareaMongo', {
+          method: 'POST',
+          headers: {
+              'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({ areaId, tarea: tareaData })
+      });
+
+      if (!response.ok) {
+          const errorMessage = await response.text();
+          throw new Error(`Error al agregar tarea: ${errorMessage}`);
+      }
+
+      const responseData = await response.json();
+      return responseData;
+  } catch (error) {
+      console.error('Error en la comunicación:', error.message);
+      throw error;
+  }
+}
+
+// HACER SELECT TAREAS 
+export async function selectTareasMongo(areaId) {
+  const url = `http://localhost:3169/selectTareasMongo/${areaId}`;
+
+  try {
+      const response = await fetch(url);
+      const data = await response.json();
+      return data;
+  } catch (error) {
+      console.error('Error selecting tareas:', error);
+      throw new Error('Error selecting tareas');
+  }
+}
+
+// ELIMINAR TAREAS
+export async function deleteTareasMongo(id_area, id) {
+try {
+  const response = await fetch("http://localhost:3169/deleteTareasMongo", {
+    method: "POST",
+    headers: {
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify({ areaId: id_area, tareaId: id })
+  })
+} catch (error) {
+  console.log(error);
+}
+}
+
+// UPDATE TAREAS
+export async function updateTareasMongo(nombre, descripcion, fechaHoraInicio, fechaHoraFin, areaId, rutinaId) {
+try {
+  const response = await fetch('http://localhost:3169/updateRutinasMongo', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify({
+      areaId: areaId,
+      rutinaId: rutinaId,
+      nombre: nombre,
+      descripcion: descripcion,
+      fechaHoraInicio: fechaHoraInicio,
+      fechaHoraFin: fechaHoraFin
+    })
+  });
+
+  if (!response.ok) {
+    const errorMessage = await response.text();
+    throw new Error(`Error al actualizar tarea: ${errorMessage}`);
+  }
+
+      const responseData = await response.json();
+      return responseData;
+  } catch (error) {
+      console.error('Error en la comunicación:', error.message);
+      throw error;
+  }
+}
+
 export async function insertIncidencia(listaItems) {
     try {
         const response = await fetch('http://localhost:3169/insertarIncidencia', {

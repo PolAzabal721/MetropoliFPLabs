@@ -42,7 +42,8 @@
 
         <!-- Columna derecha -->
         <v-col cols="12" sm="4">
-          <v-row v-if="nombreLugarBusqueda">
+          <!-- Mostrar solo si 'mostrarColumnaDerecha' es verdadero -->
+          <v-row v-if="mostrarColumnaDerecha">
             <v-col>
               <h3>Submarinos Asignados a {{ nombreLugarBusqueda }}</h3>
               <v-col v-for="submarino in submarinosAsignadosFiltrados" :key="submarino.id">
@@ -84,7 +85,7 @@
                     required></v-select>
 
                   <br />
-                  <v-btn  @click="agregarTarea">Agregar Rutina</v-btn>
+                  <v-btn @click="agregarTarea">Agregar Rutina</v-btn>
                 </v-form>
               </v-col>
 
@@ -133,13 +134,13 @@
               <!-- Fin de la selección de dia -->
 
               <!-- Campo de selección de repetición -->
-              <v-select ref="repetirRutinaEditada" v-model="tareaEnEdicion.repetir" :items="repetirOpciones" label="Repetir"
-                required></v-select>
+              <v-select ref="repetirRutinaEditada" v-model="tareaEnEdicion.repetir" :items="repetirOpciones"
+                label="Repetir" required></v-select>
               <!-- Fin de la selección de repetición -->
             </v-form>
           </v-card-text>
           <v-card-actions>
-            <v-btn @click="actualizarTareaEditada(editingTaskIndex)" >Actualizar Rutina</v-btn>
+            <v-btn @click="actualizarTareaEditada(editingTaskIndex)">Actualizar Rutina</v-btn>
             <v-btn @click="this.showDialogEdicion = false">Cancelar</v-btn>
           </v-card-actions>
         </v-card>
@@ -169,7 +170,11 @@ import {
   addRutina,
   selectRutinas,
   eliminartRutinas,
-  updateRutinasMongo
+  updateRutinasMongo, 
+  addTareaMongo, 
+  selectTareasMongo, 
+  deleteTareasMongo,
+  updateTareasMongo
 } from "@/services/connectionManager.js";
 import { useAppStore } from "@/store/app";
 import { ref } from "vue";
@@ -220,6 +225,7 @@ export default {
       ],
       nuevaHoraInicio: '',
       nuevaRepetir: null,
+      mostrarColumnaDerecha: false
     };
   },
   methods: {
@@ -462,6 +468,9 @@ export default {
       );
 
       if (areaEncontrada && areaEncontrada.coordenadas) {
+        //mostrar la colum derecha
+        this.mostrarColumnaDerecha = true;
+
         // Restablecer las rutinas para evitar mostrar las rutinas del área anterior
         this.rutinas = [];
 
@@ -639,7 +648,7 @@ export default {
 
       if (!camposCompletos) {
         window.alert('Por favor, rellene todos los campos obligatorios.');
-        
+
       }
 
       return camposCompletos;
@@ -671,7 +680,7 @@ export default {
 
       if (!camposCompletos) {
         window.alert('Por favor, rellene todos los campos obligatorios.');
-        
+
       }
 
       return camposCompletos;
