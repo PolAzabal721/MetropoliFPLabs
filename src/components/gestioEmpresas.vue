@@ -560,6 +560,13 @@ export default {
 
       // Ocultamos el modal
       this.mostrarModalCrear = false;
+      this.getEmpresas().then(() => {
+
+        // Llamar a graficoPlanes una vez que se hayan obtenido las empresas
+        this.graficoPlanes();
+        this.renderBarChartByCity();
+        this.renderBarChartByProvince();
+      });
     },
 
     // SELECT EMPRESAS
@@ -591,10 +598,10 @@ export default {
       if (this.empresasPorPlanChart) {
         this.empresasPorPlanChart.destroy();
         // También liberamos el contexto
-    this.empresasPorPlanChart = null;
-    ctx.canvas.parentNode.removeChild(ctx.canvas);
+        this.empresasPorPlanChart = null;
+        ctx.canvas.parentNode.removeChild(ctx.canvas);
       }
-    
+
 
       // Obtener la cantidad de empresas por plan de servicio
       const empresasPorPlan = this.empresas.reduce((acc, empresa) => {
@@ -737,10 +744,10 @@ export default {
       });
     },
 
-    limpiarTodo(){
-      this.empresasPorPlanChart =null;
+    limpiarTodo() {
+      this.empresasPorPlanChart = null;
       this.barChartByCity = null;
-      this.barChartByProvince= null;
+      this.barChartByProvince = null;
     }
 
 
