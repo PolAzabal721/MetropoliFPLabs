@@ -47,17 +47,30 @@
             <!-- Opciones para submarinos -->
             <v-col>
               <v-btn @click="crearRutina">Rutinas de los submarinos</v-btn>
-              <v-btn style="margin-top: 20px;" @click="crearTarea">Tareas de los submarinos</v-btn>
-            </v-col>
+              <v-btn style="margin-left: 20px;" @click="crearTarea">Tareas de los submarinos</v-btn>
 
-            <!-- Lista submarinos -->
-            <v-col>
-              <h3>Submarinos Asignados a {{ nombreLugarBusqueda }}</h3>
-              <v-col v-for="submarino in submarinosAsignadosFiltrados" :key="submarino.id">
-                {{ submarino.nom_sub }} - {{ submarino.estado_sub }}<br />
-                Ubicación: {{ submarino.ruta }}
-                <v-btn @click="desvincularSubmarino(submarino)">Desvincular</v-btn>
-              </v-col>
+              <!-- Lista submarinos -->
+              <h3 style="margin-top: 25px;" class="text-center">Submarinos Asignados a {{ nombreLugarBusqueda }}</h3>
+              <v-row style="margin-top: 10px;">
+                <v-col cols="12" v-for="submarino in submarinosAsignadosFiltrados" :key="submarino.id">
+                  <v-card
+                    :class="{ 'estado-desactivado': submarino.estado_sub.trim().toLowerCase() === 'desactivado', 'estado-activo': submarino.estado_sub.trim().toLowerCase() !== 'desactivado' }">
+                    <v-card-title class="text-center">
+                      {{ submarino.nom_sub }}
+                    </v-card-title>
+                    <v-card-text>
+                      <p>Estado: {{ submarino.estado_sub }}</p>
+                      <p>Ubicación: {{ submarino.ruta }}</p>
+                    </v-card-text>
+                    <v-card-actions class="justify-center" style="margin-top: -30px;">
+                      <v-btn @click="abrirDialogoSubmarino(submarino)">Ver Tareas y Rutinas</v-btn>
+                      <v-btn color="red" icon @click="desvincularSubmarino(submarino)">
+                        <v-icon>mdi-delete</v-icon>
+                      </v-btn>
+                    </v-card-actions>
+                  </v-card>
+                </v-col>
+              </v-row>
             </v-col>
           </v-row>
         </v-col>
@@ -264,6 +277,34 @@
         </v-card>
       </v-dialog>
 
+      <!-- ASIGNAR RUTINAS Y TAREAS A SUBMARINOS -->
+      <v-dialog v-model="dialogoSubmarinoVisible" max-width="1000px">
+        <v-card>
+          <v-card-title>{{ submarinoSeleccionado.nom_sub }}</v-card-title>
+          <v-card-text>
+            <v-row>
+              <v-col cols="6">
+                <h3>Tareas</h3>
+                <v-checkbox v-for="tarea in tareas.tareas" :key="tarea.id" :label="tarea.nombre"
+                  :value="tarea.submarinos && tarea.submarinos.includes(submarinoSeleccionado.id)"
+                  @change="toggleAsignacionTarea(tarea, submarinoSeleccionado)">
+                </v-checkbox>
+              </v-col>
+              <v-col cols="6">
+                <h3>Rutinas</h3>
+                <v-checkbox v-for="rutina in rutinas.rutinas" :key="rutina.id" :label="rutina.nombre"
+                  :value="rutina.submarinos && rutina.submarinos.includes(submarinoSeleccionado.id)"
+                  @change="toggleAsignacionRutina(rutina, submarinoSeleccionado)">
+                </v-checkbox>
+              </v-col>
+            </v-row>
+          </v-card-text>
+          <v-card-actions>
+            <v-btn color="red" @click="dialogoSubmarinoVisible = false">Cerrar</v-btn>
+          </v-card-actions>
+        </v-card>
+      </v-dialog>
+
     </v-main>
   </v-layout>
 </template>
@@ -278,7 +319,6 @@ import "leaflet-draw/dist/leaflet.draw";
 import "leaflet-draw/dist/leaflet.draw-src";
 import "leaflet-draw/dist/leaflet.draw-src.js";
 
-import Datepicker from "vue3-datepicker";
 import {
   fetchAreas,
   getSubmarinos,
@@ -299,13 +339,10 @@ import { useAppStore } from "@/store/app";
 import { ref } from "vue";
 
 export default {
-  components: {
-    Datepicker,
-  },
-
   data() {
     return {
       drawer: false,
+      dialogoSubmarinoVisible: false,
       showAlert: false,
       errorMessage: '',
       selectedArea: null,
@@ -322,7 +359,8 @@ export default {
         diaInicio: null,
         horaInicio: null,
         diaFin: null,
-        horaFin: null
+        horaFin: null,
+        submarinos: []
       },
       hacerRutinas: [],
       tareas: [],
@@ -349,6 +387,7 @@ export default {
         diaFin: null,
         horaFin: null
       },
+      submarinos: [],
       editingTaskIndex: null,
       showDialogEdicion: false,
       mapa: null,
@@ -371,6 +410,78 @@ export default {
     };
   },
   methods: {
+    // ASIGNAR Y QUITAR TAREA
+    toggleAsignacionTarea(tarea, submarino) {
+      const index = tarea.submarinos.indexOf(submarino.id);
+      if (index === -1) {
+        // Validar solapamientos solo si se va a añadir la tarea
+        if (this.validarSolapamientos(tarea, submarino.id)) {
+          tarea.submarinos.push(submarino.id);
+          // Llamar a la API para actualizar la base de datos
+        } else {
+          alert("La asignación de la tarea se solapa con otras actividades o no respeta el intervalo de descanso requerido.");
+        }
+      } else {
+        tarea.submarinos.splice(index, 1);
+        // Actualizar la base de datos
+      }
+    },
+
+    // ASIGNAR Y QUITAR RUTINA
+    toggleAsignacionRutina(rutina, submarino) {
+      const index = rutina.submarinos.indexOf(submarino.id);
+      if (index === -1) {
+        if (this.validarSolapamientos(rutina, submarino.id)) {
+          rutina.submarinos.push(submarino.id);
+          // Actualizar la base de datos
+        } else {
+          alert("La asignación de la rutina se solapa con otras actividades o no respeta el intervalo de descanso requerido.");
+        }
+      } else {
+        rutina.submarinos.splice(index, 1);
+        // Actualizar la base de datos
+      }
+    },
+
+    // VALIDAR QUE NO SE SOLAPEN LAS RUTAS NI LAS TAREAS
+    validarSolapamientos(nuevaActividad, submarinoId) {
+      let actividadesAsignadas = [
+        ...this.rutinas.rutinas.filter(r => r.submarinos.includes(submarinoId)),
+        ...this.tareas.tareas.filter(t => t.submarinos.includes(submarinoId))
+      ];
+
+      if (actividadesAsignadas.length > 0) {
+        const inicioNuevo = new Date(`${nuevaActividad.diaInicio}T${nuevaActividad.horaInicio}`);
+        const finNuevo = new Date(`${nuevaActividad.diaFin}T${nuevaActividad.horaFin}`);
+
+        return actividadesAsignadas.every(act => {
+          const inicioExistente = new Date(`${act.diaInicio}T${act.horaInicio}`);
+          const finExistente = new Date(`${act.diaFin}T${act.horaFin}`);
+
+          // Comprueba si el nuevo evento se solapa con eventos existentes
+          const solapa = finNuevo > inicioExistente && inicioNuevo < finExistente;
+
+          // Comprueba si hay suficiente descanso entre eventos
+          const suficienteDescansoAntes = (inicioNuevo - finExistente >= 9000000); // 150 minutos en milisegundos
+          const suficienteDescansoDespués = (inicioExistente - finNuevo >= 9000000); // 150 minutos en milisegundos
+
+          return !solapa && (suficienteDescansoAntes || suficienteDescansoDespués);
+        });
+      }
+      return true; // No hay actividades asignadas, no puede haber solapamientos
+    },
+
+
+
+
+
+
+
+
+
+
+
+
     // VER SI HAY SUBMARINOS EN ESE AREA
     actualizarSubmarinos() {
       // Verificar si hay un área seleccionada
@@ -446,11 +557,6 @@ export default {
       }
     },
 
-    dayClickHandler(date) {
-      // Manejar el clic en un día del calendario
-      this.selectedDate = date;
-    },
-
     cerrarDialogRutina() {
       // Cerrar la ventana emergente de rutinas
       this.dialogRutina = false;
@@ -509,7 +615,8 @@ export default {
             nombre: this.nuevaRutina,
             descripcion: this.nuevaDescripcion,
             fechaHoraInicio: fechaHoraInicio,
-            repetir: this.nuevaRepetir
+            repetir: this.nuevaRepetir,
+            submarinos: this.submarinos,
           }
 
           await addRutina(this.areaEncontradaID, this.newRutina);
@@ -634,6 +741,7 @@ export default {
 
         // Llamar al método selectRutinas para cargar las rutinas del área encontrada
         await this.selectRutinas(this.areaEncontradaID);
+        await this.selectTareas(this.areaEncontradaID);
       } else {
         // Si el área no se encuentra, limpiar las rutinas
         this.rutinas = [];
@@ -692,7 +800,7 @@ export default {
       if (this.validarCamposTareas() &&
         this.validarFechaHoraActual(this.nuevaTarea.diaInicio, this.nuevaTarea.horaInicio) &&
         this.validarFechaHoraFin(this.nuevaTarea.diaInicio, this.nuevaTarea.horaInicio, this.nuevaTarea.diaFin, this.nuevaTarea.horaFin)) {
-         if (this.nuevaTarea.nombre.trim() !== "") {
+        if (this.nuevaTarea.nombre.trim() !== "") {
           const fechaInicioCompleta = new Date(this.nuevaTarea.diaInicio + 'T' + this.nuevaTarea.horaInicio);
           const fechaFinCompleta = new Date(this.nuevaTarea.diaFin + 'T' + this.nuevaTarea.horaFin);
 
@@ -700,9 +808,11 @@ export default {
             nombre: this.nuevaTarea.nombre,
             descripcion: this.nuevaTarea.descripcion,
             fechaInicio: fechaInicioCompleta,
-            fechaFin: fechaFinCompleta
+            fechaFin: fechaFinCompleta,
+            submarinos: this.submarinos
           };
 
+          this.nuevaTarea.submarinos = [];
           await addTareaMongo(this.areaEncontradaID, newTarea);
           this.limpiarCamposTarea();
         }
@@ -1111,7 +1221,15 @@ export default {
     mostrarAlerta(mensaje) {
       this.errorMessage = mensaje;
       this.showAlert = true;
-    }
+    },
+
+    abrirDialogoSubmarino(submarino) {
+      this.submarinoSeleccionado = submarino;
+      // cargar datos
+      //this.selectTareas();
+      //this.selectRutinas();
+      this.dialogoSubmarinoVisible = true;
+    },
 
   },
   //
@@ -1146,6 +1264,14 @@ import DefaultBar from "@/layouts/default/AppBar.vue";
 </script>
 
 <style scoped>
+.estado-desactivado {
+  box-shadow: 0 0 8px red;
+}
+
+.estado-activo {
+  box-shadow: 0 0 8px green;
+}
+
 .hidden-btn {
   background-color: transparent !important;
   border: none !important;
