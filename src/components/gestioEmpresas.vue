@@ -785,16 +785,16 @@ export default {
       }
 
       // Agregar la nueva empresa a la lista de empresas
-      // this.empresas.push({
-      //   nom_empresa: this.nuevaEmpresa.nombre,
-      //   nombre_calle: this.nuevaEmpresa.nombre_calle,
-      //   numero_teléfono: this.nuevaEmpresa.telefono,
-      //   correo: this.nuevaEmpresa.correo,
-      //   plan: this.nuevaEmpresa.plan,
-      //   sitio_web: this.nuevaEmpresa.sitioWeb,
-      //   provincia: this.nuevaEmpresa.provincia,
-      //   ciudad: this.nuevaEmpresa.ciudad
-      // });
+       this.empresas.push({
+         nom_empresa: this.nuevaEmpresa.nombre,
+         nombre_calle: this.nuevaEmpresa.nombre_calle,
+         numero_teléfono: this.nuevaEmpresa.telefono,
+        correo: this.nuevaEmpresa.correo,
+        plan: this.nuevaEmpresa.plan,
+        sitio_web: this.nuevaEmpresa.sitioWeb,
+         provincia: this.nuevaEmpresa.provincia,
+         ciudad: this.nuevaEmpresa.ciudad
+       });
 
       this.empresasEnviar.push(
         this.nuevaEmpresa.nombre,
@@ -808,19 +808,16 @@ export default {
       );
 
       const id = await insertEmpresa(this.empresasEnviar);
-      console.log(id);
+      console.log(id.result);
       this.mostrarModalCrear = false;
-      //await insertEmpresaSub(id, this.nuevaEmpresa.plan, this.nuevaEmpresa.autorenovable)
+      await insertEmpresaSub(id.result, this.nuevaEmpresa.plan, this.nuevaEmpresa.autorenovable)
 
       // console.log("Después de agregar a empresas:", this.empresas);
 
       // Limpiar el formulario y ocultar el modal
-      this.limpiarFormularioEmpresa();
 
       this.empresasEnviar = [];
-
       this.getEmpresas();
-
       // Destruir y recrear los gráficos
       this.destroyAndRecreateCharts();
       window.location.reload();
