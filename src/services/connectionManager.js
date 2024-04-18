@@ -345,7 +345,7 @@ try {
 }
 
 // UPDATE TAREAS
-export async function updateTareasMongo(nombre, descripcion, fechaHoraInicio, fechaHoraFin, areaId, rutinaId) {
+export async function updateTareasMongo(nombre, descripcion, fechaHoraInicio, fechaHoraFin, areaId, tareaId) {
 try {
   const response = await fetch('http://localhost:3169/updateTareasMongo', {
     method: 'POST',

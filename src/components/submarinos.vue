@@ -768,7 +768,7 @@ export default {
           const fechaInicio = new Date(this.tareaEnEdicion.diaInicio + 'T' + this.tareaEnEdicion.horaInicio);
           // Fusionar fecha y hora de fin
           const fechaFin = new Date(this.tareaEnEdicion.diaFin + 'T' + this.tareaEnEdicion.horaFin);
-
+          (nombre, descripcion, fechaHoraInicio, fechaHoraFin, areaId, tareaId
           await updateTareasMongo(this.tareaEnEdicion.nombre.trim(), this.tareaEnEdicion.descripcion || "", fechaInicio, fechaFin, idArea, idTarea);
 
           //console.log('Tarea actualizada correctamente');
