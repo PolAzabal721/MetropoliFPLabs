@@ -53,6 +53,7 @@
               </v-col>
               <v-col>
                 <v-btn @click="crearRutina">Rutinas de los submarinos</v-btn>
+                <v-btn @click="crearTarea">Tareas de los submarinos</v-btn>
               </v-col>
             </v-col>
           </v-row>
@@ -67,9 +68,9 @@
             <v-row>
               <!-- Columna izquierda -->
               <v-col cols="6">
-                <!-- Formulario para añadir tareas -->
-                <v-form ref="taskForm" @submit.prevent="agregarTarea">
-                  <v-text-field ref="nombreRutina" v-model="nuevaTarea" label="* Nombre la rutina"></v-text-field>
+                <!-- Formulario para añadir hacerRutinas -->
+                <v-form ref="taskForm" @submit.prevent="agregarRutina">
+                  <v-text-field ref="nombreRutina" v-model="nuevaRutina" label="* Nombre la rutina"></v-text-field>
                   <v-text-field style="height: 500px; margin-bottom: -210px" v-model="nuevaDescripcion"
                     label="Descripción"></v-text-field>
                   <div class="dialog-content d-inline-block">
@@ -85,20 +86,20 @@
                     required></v-select>
 
                   <br />
-                  <v-btn @click="agregarTarea">Agregar Rutina</v-btn>
+                  <v-btn @click="agregarRutina">Agregar Rutina</v-btn>
                 </v-form>
               </v-col>
 
               <!-- Columna derecha -->
               <v-col cols="6">
-                <!-- Lista de tareas -->
+                <!-- Lista de hacerRutinas -->
                 <v-row>
                   <v-col v-for="(rutina, index) in rutinas.rutinas" :key="index" cols="12">
                     <v-card>
                       <div class="d-flex justify-space-between align-center p-2">
                         <h3 style="margin: 20px;">{{ rutina.nombre }}</h3>
                         <div>
-                          <v-icon @click="editarTarea(index)">mdi-pencil</v-icon>
+                          <v-icon @click="editarRutina(index)">mdi-pencil</v-icon>
                           <v-icon @click="confirmarEliminar(index)"
                             style="margin-left: 10px; margin-right: 10px;">mdi-delete</v-icon>
                         </div>
@@ -121,20 +122,20 @@
           <v-card-title>Editar Rutina</v-card-title>
           <v-card-text>
             <v-form @submit.prevent="actualizarTareaEditada(editingTaskIndex)"> <!-- Pasar el índice -->
-              <v-text-field ref="nombreRutinaEditada" v-model="tareaEnEdicion.nombre" label="* Nombre de la rutina"
+              <v-text-field ref="nombreRutinaEditada" v-model="rutinaEnEdicion.nombre" label="* Nombre de la rutina"
                 required></v-text-field>
-              <v-text-field style="height: 500px; margin-bottom: -210px" v-model="tareaEnEdicion.descripcion"
+              <v-text-field style="height: 500px; margin-bottom: -210px" v-model="rutinaEnEdicion.descripcion"
                 label="Descripción"></v-text-field>
               <div class="dialog-content d-inline-block">
                 <datepicker ref="fechaRutinaEditada" v-model="selectedDate" @dayclick="dayClickHandler" required />
               </div>
               <!-- Campo de selección de dia -->
-              <v-text-field ref="horaInicioRutinaEditada" style="margin-top: 20px;" v-model="tareaEnEdicion.horaInicio"
+              <v-text-field ref="horaInicioRutinaEditada" style="margin-top: 20px;" v-model="rutinaEnEdicion.horaInicio"
                 label="dia de inicio" type="time" required></v-text-field>
               <!-- Fin de la selección de dia -->
 
               <!-- Campo de selección de repetición -->
-              <v-select ref="repetirRutinaEditada" v-model="tareaEnEdicion.repetir" :items="repetirOpciones"
+              <v-select ref="repetirRutinaEditada" v-model="rutinaEnEdicion.repetir" :items="repetirOpciones"
                 label="Repetir" required></v-select>
               <!-- Fin de la selección de repetición -->
             </v-form>
@@ -145,6 +146,111 @@
           </v-card-actions>
         </v-card>
       </v-dialog>
+
+      <!-- DIALOGO PARA TAREAS -->
+      <v-dialog v-model="dialogTarea" max-height="900" max-width="800">
+        <v-card height="900" width="800">
+          <v-card-title>Tareas del Submarino</v-card-title>
+          <v-card-text>
+            <v-row>
+              <!-- Columna izquierda -->
+              <v-col cols="6">
+                <!-- Formulario para añadir tareas -->
+                <v-form ref="taskForm">
+                  <v-text-field v-model="nuevaTarea.nombre" label="* Nombre de la tarea"></v-text-field>
+                  <v-text-field v-model="nuevaTarea.descripcion" label="Descripción"
+                    style="height: 500px; margin-bottom: -210px"></v-text-field>
+
+                  <!-- Campos para la fecha y hora de inicio -->
+                  <v-text-field v-model="nuevaTarea.diaInicio" label="Dia de inicio" type="date"
+                    required></v-text-field>
+                  <v-text-field v-model="nuevaTarea.horaInicio" label="Hora de inicio" type="time"
+                    required></v-text-field>
+
+                  <!-- Campos para la fecha y hora de fin -->
+                  <v-text-field v-model="nuevaTarea.diaFin" label="Dia de fin" type="date" required></v-text-field>
+                  <v-text-field v-model="nuevaTarea.horaFin" label="Hora de fin" type="time" required></v-text-field>
+
+                  <v-btn @click="agregarTarea">Agregar Tarea</v-btn>
+                </v-form>
+              </v-col>
+
+              <!-- Columna derecha -->
+              <v-col cols="6">
+                <!-- Lista de tareas -->
+                <v-row>
+                  <v-col v-for="(tarea, index) in tareas.tareas" :key="tarea.id" cols="12">
+                    <v-card>
+                      <div class="d-flex justify-space-between align-center p-2">
+                        <h3 style="margin: 20px;">{{ tarea.nombre }}</h3>
+                        <div>
+                          <v-icon @click="editarTarea(index)">mdi-pencil</v-icon>
+                          <v-icon @click="confirmarEliminarTarea(index)"
+                            style="margin-left: 10px; margin-right: 10px;">mdi-delete</v-icon>
+                        </div>
+                      </div>
+                    </v-card>
+                  </v-col>
+                </v-row>
+              </v-col>
+            </v-row>
+          </v-card-text>
+          <v-card-actions>
+            <v-btn @click="cerrarDialogTarea">Cerrar</v-btn>
+          </v-card-actions>
+        </v-card>
+      </v-dialog>
+
+
+
+
+
+
+
+
+      <v-dialog v-model="showDialogEdicionTarea" position="center" max-width="800">
+        <v-card height="800" width="800">
+          <v-card-title>Editar Tarea</v-card-title>
+          <v-card-text>
+            <v-form @submit.prevent="actualizarTareaEditada(editingTaskIndex)">
+              <v-text-field v-model="tareaEnEdicion.nombre" label="* Nombre de la tarea" required></v-text-field>
+              <v-text-field v-model="tareaEnEdicion.descripcion" label="Descripción"
+                style="height: 500px; margin-bottom: -210px"></v-text-field>
+
+              <!-- Campos de fecha y hora de inicio -->
+              <v-text-field v-model="tareaEnEdicion.diaInicio" label="Dia de inicio" type="date"
+                required></v-text-field>
+              <v-text-field v-model="tareaEnEdicion.horaInicio" label="Hora de inicio" type="time"
+                required></v-text-field>
+
+              <!-- Campos de fecha y hora de fin -->
+              <v-text-field v-model="tareaEnEdicion.diaFin" label="Dia de fin" type="date" required></v-text-field>
+              <v-text-field v-model="tareaEnEdicion.horaFin" label="Hora de fin" type="time" required></v-text-field>
+
+            </v-form>
+          </v-card-text>
+          <v-card-actions>
+            <v-btn @click="actualizarTareaEditada(editingTaskIndex)">Actualizar Tarea</v-btn>
+            <v-btn @click="this.showDialogEdicionTarea = false">Cancelar</v-btn>
+          </v-card-actions>
+        </v-card>
+      </v-dialog>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
     </v-main>
   </v-layout>
 </template>
@@ -170,9 +276,9 @@ import {
   addRutina,
   selectRutinas,
   eliminartRutinas,
-  updateRutinasMongo, 
-  addTareaMongo, 
-  selectTareasMongo, 
+  updateRutinasMongo,
+  addTareaMongo,
+  selectTareasMongo,
   deleteTareasMongo,
   updateTareasMongo
 } from "@/services/connectionManager.js";
@@ -194,7 +300,16 @@ export default {
       dialogRutina: false,
       selectedRutina: null,
       selectedDate: null,
-      nuevaTarea: "",
+      nuevaRutina: "",
+      nuevaTarea: {
+        nombre: '',
+        descripcion: '',
+        diaInicio: null,
+        horaInicio: null,
+        diaFin: null,
+        horaFin: null
+      },
+      hacerRutinas: [],
       tareas: [],
       descripciones: [],
       dias: [],
@@ -202,7 +317,7 @@ export default {
       rutinas: "",
       newRutina: [],
       editingTaskIndex: null,
-      tareaEnEdicion: {
+      rutinaEnEdicion: {
         id: null,
         nombre: "",
         descripcion: "",
@@ -225,7 +340,9 @@ export default {
       ],
       nuevaHoraInicio: '',
       nuevaRepetir: null,
-      mostrarColumnaDerecha: false
+      mostrarColumnaDerecha: false,
+      dialogTarea: false,
+      showDialogEdicionTarea: false
     };
   },
   methods: {
@@ -347,13 +464,13 @@ export default {
       this.dialogRutina = true;
     },
 
-    // Método agregarTarea
-    async agregarTarea() {
+    // Método agregarRutina
+    async agregarRutina() {
       if (this.validarCampos()) {
         if (this.editingTaskIndex !== null) {
           this.actualizarTareaEditada();
-        } else if (this.nuevaTarea.trim() !== "") {
-          this.tareas.push(this.nuevaTarea);
+        } else if (this.nuevaRutina.trim() !== "") {
+          this.hacerRutinas.push(this.nuevaRutina);
           this.descripciones.push(this.nuevaDescripcion);
 
           // Fusionar fecha y hora seleccionadas
@@ -364,7 +481,7 @@ export default {
 
           // Agregar los valores a newRutina
           this.newRutina = {
-            nombre: this.nuevaTarea,
+            nombre: this.nuevaRutina,
             descripcion: this.nuevaDescripcion,
             fechaHoraInicio: fechaHoraInicio,
             repetir: this.nuevaRepetir
@@ -373,7 +490,7 @@ export default {
           await addRutina(this.areaEncontradaID, this.newRutina);
 
           // Limpiar los campos después de agregar la tarea
-          this.nuevaTarea = "";
+          this.nuevaRutina = "";
           this.nuevaDescripcion = "";
           this.nuevaHoraInicio = "";
           this.nuevaRepetir = null;
@@ -385,12 +502,12 @@ export default {
     },
 
     // EDITAR RUTINA
-    editarTarea(index) {
+    editarRutina(index) {
       if (index >= 0 && index < this.rutinas.rutinas.length) {
         const rutina = this.rutinas.rutinas[index];
-        this.tareaEnEdicion.id = rutina.id;
-        this.tareaEnEdicion.nombre = rutina.nombre;
-        this.tareaEnEdicion.descripcion = rutina.descripcion || "";
+        this.rutinaEnEdicion.id = rutina.id;
+        this.rutinaEnEdicion.nombre = rutina.nombre;
+        this.rutinaEnEdicion.descripcion = rutina.descripcion || "";
 
         // Descomponer la fecha y la hora
         const fecha = new Date(rutina.fechaHoraInicio);
@@ -398,10 +515,10 @@ export default {
         const minutos = fecha.getMinutes();
 
         // Asignar la fecha y la hora a las variables correspondientes
-        this.tareaEnEdicion.selectedDate = new Date(fecha.getFullYear(), fecha.getMonth(), fecha.getDate());
-        this.tareaEnEdicion.horaInicio = `${hora.toString().padStart(2, '0')}:${minutos.toString().padStart(2, '0')}`;
+        this.rutinaEnEdicion.selectedDate = new Date(fecha.getFullYear(), fecha.getMonth(), fecha.getDate());
+        this.rutinaEnEdicion.horaInicio = `${hora.toString().padStart(2, '0')}:${minutos.toString().padStart(2, '0')}`;
 
-        this.tareaEnEdicion.repetir = rutina.repetir || null;
+        this.rutinaEnEdicion.repetir = rutina.repetir || null;
         this.editingTaskIndex = index;
         this.showDialogEdicion = true;
       } else {
@@ -419,15 +536,15 @@ export default {
 
           // Fusionar fecha y hora seleccionadas
           const fechaHoraInicio = new Date(this.selectedDate);
-          const horaInicioSplit = this.tareaEnEdicion.horaInicio.split(':');
+          const horaInicioSplit = this.rutinaEnEdicion.horaInicio.split(':');
           fechaHoraInicio.setHours(parseInt(horaInicioSplit[0]));
           fechaHoraInicio.setMinutes(parseInt(horaInicioSplit[1]));
 
-          await updateRutinasMongo(this.tareaEnEdicion.nombre.trim(), this.tareaEnEdicion.descripcion || "", fechaHoraInicio, this.tareaEnEdicion.repetir, idArea, idRutina);
+          await updateRutinasMongo(this.rutinaEnEdicion.nombre.trim(), this.rutinaEnEdicion.descripcion || "", fechaHoraInicio, this.rutinaEnEdicion.repetir, idArea, idRutina);
 
           //console.log('Rutina actualizada correctamente');
           this.editingTaskIndex = null;
-          this.tareaEnEdicion = { nombre: "", descripcion: "", fechaHoraInicio: null, horaInicio: "", repetir: null };
+          this.rutinaEnEdicion = { nombre: "", descripcion: "", fechaHoraInicio: null, horaInicio: "", repetir: null };
           this.selectRutinas();
           this.showDialogEdicion = false;
         } catch (error) {
@@ -515,6 +632,89 @@ export default {
         console.error("Error fetching rutinas:", error);
       }
     },
+
+
+
+
+
+    crearTarea() {
+      this.selectTareas();
+
+      // Abrir la ventana emergente para seleccionar la tarea
+      this.dialogTarea = true;
+    },
+    
+    cerrarDialogTareaEditar() {
+      // Cerrar la ventana emergente de tareas
+      this.showDialogEdicionTarea = false;
+
+      // Restablecer la selección de la tarea
+      this.selectTareas();
+    },
+
+    // SELECT TAREAS 
+    async selectTareas() {
+      try {
+        // Llamar al servicio connectionManager.js para obtener las tareas del área específica
+        const tareas = await selectTareasMongo(this.areaEncontradaID);
+        //console.log("Tareas obtenidas de selectTareas: ", tareas);
+
+        // Asignar las tareas al estado tareas
+        this.tareas = tareas;
+      } catch (error) {
+        console.error("Error fetching tareas:", error);
+      }
+    },
+
+    // AGREGAR TAREA
+    async agregarTarea() {
+      // if (this.validarCamposTarea()) {
+      if (this.editingTaskIndex !== null) {
+        this.actualizarTareaEditada();
+      } else if (this.nuevaTarea.nombre.trim() !== "") {
+        // Fusionar fecha y hora de inicio
+        const fechaInicioCompleta = new Date(this.nuevaTarea.diaInicio + 'T' + this.nuevaTarea.horaInicio);
+        // Fusionar fecha y hora de fin
+        const fechaFinCompleta = new Date(this.nuevaTarea.diaFin + 'T' + this.nuevaTarea.horaFin);
+
+        // Construir el objeto tarea con los datos nuevos
+        const newTarea = {
+          nombre: this.nuevaTarea.nombre,
+          descripcion: this.nuevaTarea.descripcion,
+          fechaInicio: fechaInicioCompleta,
+          fechaFin: fechaFinCompleta
+        };
+
+        await addTareaMongo(this.areaEncontradaID, newTarea);
+
+        // Limpiar los campos después de agregar la tarea
+        this.limpiarCamposTarea();
+      }
+      // Recargar las tareas (ajusta según sea necesario)
+      this.selectTareas();
+      //}
+    },
+
+    // ELIMINAR TAREAS
+    async confirmarEliminarTarea(index) {
+      if (confirm("¿Estás seguro de que deseas eliminar esta tarea?")) {
+        try {
+          const id_area = this.areaEncontradaID;
+          const id_tarea = this.tareas.tareas[index].id;
+          await deleteTareasMongo(id_area, id_tarea);
+
+          // Actualizar la lista de tareas después de eliminar
+          this.selectTareas();
+        } catch (error) {
+          console.error("Error al eliminar la tarea:", error);
+        }
+      }
+    },
+
+
+
+
+
 
     // SELECT A TODOS LOS SUBMARINOS
     async getSubmarino() {
@@ -622,11 +822,23 @@ export default {
       }
     },
 
+    // Método para limpiar los campos después de agregar/editar una tarea
+    limpiarCamposTarea() {
+      this.nuevaTarea = {
+        nombre: "",
+        descripcion: "",
+        diaInicio: null,
+        horaInicio: null,
+        diaFin: null,
+        horaFin: null
+      };
+    },
+
     // VALIDAR CAMPOS AL AGREGAR 
     validarCampos() {
       let camposCompletos = true;
       const camposRequeridos = [
-        { modelo: this.nuevaTarea, ref: 'nombreRutina' },
+        { modelo: this.nuevaRutina, ref: 'nombreRutina' },
         { modelo: this.selectedDate, ref: 'fechaRutina' },
         { modelo: this.nuevaHoraInicio, ref: 'horaInicioRutina' },
         { modelo: this.nuevaRepetir, ref: 'repetirRutina' },
@@ -658,10 +870,10 @@ export default {
     validarCamposEditar() {
       let camposCompletos = true;
       const camposRequeridos = [
-        { modelo: this.tareaEnEdicion.nombre, ref: 'nombreRutinaEditada' },
+        { modelo: this.rutinaEnEdicion.nombre, ref: 'nombreRutinaEditada' },
         { modelo: this.selectedDate, ref: 'fechaRutinaEditada' },
-        { modelo: this.tareaEnEdicion.horaInicio, ref: 'horaInicioRutinaEditada' },
-        { modelo: this.tareaEnEdicion.repetir, ref: 'repetirRutinaEditada' },
+        { modelo: this.rutinaEnEdicion.horaInicio, ref: 'horaInicioRutinaEditada' },
+        { modelo: this.rutinaEnEdicion.repetir, ref: 'repetirRutinaEditada' },
       ];
 
       camposRequeridos.forEach(campo => {
