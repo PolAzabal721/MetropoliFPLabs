@@ -290,13 +290,7 @@ export async function updateRutinasMongo(nombre, descripcion, fechaHoraInicio, r
     }
 }
 
-
-
-
 // 
-
-
-
 // INSERT TAREAS
 export async function addTareaMongo(areaId, tareaData) {
   try {
