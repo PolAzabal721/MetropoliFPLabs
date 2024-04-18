@@ -140,12 +140,8 @@
                           style="height: auto; width: 220px" type="email" />
                       </div>
                       <div style="width: 48%">
-                        <label>Plan de Suscripción: </label>
-                        <select v-model="empresaEditada.plan" class="bordered-input" style="height: auto; width: 173px">
-                          <option value="Standard">Standard</option>
-                          <option value="Premium">Premium</option>
-                          <option value="Premium Plus">Premium Plus</option>
-                        </select>
+                        <label>Auto-renovable: </label>
+                        <input type="checkbox" v-model="empresaEditada.autorenovable" />
                       </div>
                     </div>
 
@@ -235,6 +231,10 @@
                           style="height: auto; width: 173px">
                           <option v-for="plan in planes" :value="plan.id">{{ plan.nombre }}</option>
                         </select>
+                      </div>
+                      <div style="width: 48%">
+                        <label>Auto-renovable: </label>
+                        <input type="checkbox" v-model="nuevaEmpresa.autorenovable" />
                       </div>
                     </div>
 
@@ -472,7 +472,8 @@ import {
   insertEmpresa, getEmpresa, updateEmpresa, deleteEmpresa, insertSuscripcion,
   updateSuscripcion,
   deleteSuscripcion,
-  getSuscripciones
+  getSuscripciones,
+  insertEmpresaSub
 } from "@/services/connectionManager";
 import { Chart } from "chart.js/auto";
 
@@ -494,7 +495,8 @@ export default {
         sitioWeb: "",
         provincia: "",
         ciudad: "",
-        id: ""
+        id: "",
+        autorenovable: false
       },
       planEditado: {
         nombre: "",
@@ -783,16 +785,16 @@ export default {
       }
 
       // Agregar la nueva empresa a la lista de empresas
-      this.empresas.push({
-        nom_empresa: this.nuevaEmpresa.nombre,
-        nombre_calle: this.nuevaEmpresa.nombre_calle,
-        numero_teléfono: this.nuevaEmpresa.telefono,
-        correo: this.nuevaEmpresa.correo,
-        plan: this.nuevaEmpresa.plan,
-        sitio_web: this.nuevaEmpresa.sitioWeb,
-        provincia: this.nuevaEmpresa.provincia,
-        ciudad: this.nuevaEmpresa.ciudad
-      });
+      // this.empresas.push({
+      //   nom_empresa: this.nuevaEmpresa.nombre,
+      //   nombre_calle: this.nuevaEmpresa.nombre_calle,
+      //   numero_teléfono: this.nuevaEmpresa.telefono,
+      //   correo: this.nuevaEmpresa.correo,
+      //   plan: this.nuevaEmpresa.plan,
+      //   sitio_web: this.nuevaEmpresa.sitioWeb,
+      //   provincia: this.nuevaEmpresa.provincia,
+      //   ciudad: this.nuevaEmpresa.ciudad
+      // });
 
       this.empresasEnviar.push(
         this.nuevaEmpresa.nombre,
@@ -805,26 +807,19 @@ export default {
         this.nuevaEmpresa.ciudad
       );
 
-      await insertEmpresa(this.empresasEnviar);
+      const id = await insertEmpresa(this.empresasEnviar);
+      console.log(id);
+      this.mostrarModalCrear = false;
+      //await insertEmpresaSub(id, this.nuevaEmpresa.plan, this.nuevaEmpresa.autorenovable)
 
       // console.log("Después de agregar a empresas:", this.empresas);
 
       // Limpiar el formulario y ocultar el modal
-      this.nuevaEmpresa = {
-        nombre: "",
-        nombre_calle: "",
-        telefono: "",
-        correo: "",
-        plan: "Standard",
-        sitioWeb: "",
-        provincia: "",
-        ciudad: ""
-      };
+      this.limpiarFormularioEmpresa();
 
       this.empresasEnviar = [];
 
       this.getEmpresas();
-      this.mostrarModalCrear = false;
 
       // Destruir y recrear los gráficos
       this.destroyAndRecreateCharts();
