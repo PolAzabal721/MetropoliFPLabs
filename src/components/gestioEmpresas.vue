@@ -473,7 +473,8 @@ import {
   updateSuscripcion,
   deleteSuscripcion,
   getSuscripciones,
-  insertEmpresaSub
+  insertEmpresaSub,
+  editSubEmpresa
 } from "@/services/connectionManager";
 import { Chart } from "chart.js/auto";
 
@@ -660,6 +661,10 @@ export default {
       );
       // console.log(this.empresaEditadaEnviar);
       await updateEmpresa(this.empresaEditadaEnviar)
+      console.log(this.empresaEditada.id);
+      console.log(this.empresaEditada.plan);
+      console.log(this.empresaEditada.autorenovable);
+      await editSubEmpresa(this.empresaEditada.id, this.empresaEditada.plan, this.empresaEditada.autorenovable)
       this.getEmpresas();
       this.mostrarModalEditarEmpresa = false;
 
