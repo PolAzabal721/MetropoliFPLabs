@@ -345,20 +345,20 @@ export async function deleteTareasMongo(id_area, id) {
 }
 
 // UPDATE TAREAS
-export async function updateTareasMongo(nombre, descripcion, fechaHoraInicio, fechaHoraFin, areaId, rutinaId) {
+export async function updateTareasMongo(nombre, descripcion, fechaInicio, fechaFin, areaId, tareaId) {
     try {
-        const response = await fetch('http://localhost:3169/updateRutinasMongo', {
+        const response = await fetch('http://localhost:3169/updateTareasMongo', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'
             },
             body: JSON.stringify({
                 areaId: areaId,
-                rutinaId: rutinaId,
+                tareaId: tareaId,
                 nombre: nombre,
                 descripcion: descripcion,
-                fechaHoraInicio: fechaHoraInicio,
-                fechaHoraFin: fechaHoraFin
+                fechaInicio: fechaInicio,
+                fechaFin: fechaFin
             })
         });
 

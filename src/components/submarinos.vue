@@ -83,7 +83,8 @@
 
                   <!-- Campo para la hora de inicio -->
                   <v-text-field ref="horaInicioRutina" style="margin-top: 20px;" v-model="nuevaHoraInicio"
-                    label="Hora de inicio" type="time" :rules="[validarHora]" required></v-text-field>
+                    label="Hora de inicio" type="time" :rules="[() => validarHora(nuevaHoraInicio) || 'Hora inválida']"
+                    required></v-text-field>
                   <!-- Campo para la repetición -->
                   <v-select ref="repetirRutina" v-model="nuevaRepetir" :items="repetirOpciones" label="Repetir"
                     required></v-select>
@@ -131,12 +132,15 @@
                 label="Descripción"></v-text-field>
 
               <!-- Campo de selección de día, cambiado a v-text-field -->
-              <v-text-field ref="fechaRutinaEditada" v-model="rutinaEnEdicion.selectedDate" label="Día de inicio"
-                type="date" required></v-text-field>
+              <v-text-field ref="diaRutinaEditada" v-model="rutinaEnEdicion.selectedDate" label="Día de inicio"
+                type="date" :rules="[() => validarFecha(rutinaEnEdicion.selectedDate) || 'Fecha inválida']"
+                required></v-text-field>
 
               <!-- Campo de selección de dia -->
               <v-text-field ref="horaInicioRutinaEditada" style="margin-top: 20px;" v-model="rutinaEnEdicion.horaInicio"
-                label="dia de inicio" type="time" required></v-text-field>
+                label="dia de inicio" type="time"
+                :rules="[() => validarHoraEditar(rutinaEnEdicion.selectedDate, rutinaEnEdicion.horaInicio) || 'Hora inválida']"
+                required></v-text-field>
               <!-- Fin de la selección de dia -->
 
               <!-- Campo de selección de repetición -->
@@ -169,14 +173,18 @@
 
                   <!-- Campos para la fecha y hora de inicio -->
                   <v-text-field ref="diaInicio" v-model="nuevaTarea.diaInicio" label="Dia de inicio" type="date"
+                    :rules="[() => validarFechaHoraActual(nuevaTarea.diaInicio, nuevaTarea.horaInicio) || 'Fecha/hora de inicio inválida']"
                     required></v-text-field>
                   <v-text-field ref="horaInicio" v-model="nuevaTarea.horaInicio" label="Hora de inicio" type="time"
+                    :rules="[() => validarFechaHoraActual(nuevaTarea.diaInicio, nuevaTarea.horaInicio) || 'Hora de inicio inválida']"
                     required></v-text-field>
 
                   <!-- Campos para la fecha y hora de fin -->
                   <v-text-field ref="diaFin" v-model="nuevaTarea.diaFin" label="Dia de fin" type="date"
+                    :rules="[() => validarFechaHoraFin(nuevaTarea.diaInicio, nuevaTarea.horaInicio, nuevaTarea.diaFin, nuevaTarea.horaFin) || 'Fecha/hora de fin inválida']"
                     required></v-text-field>
                   <v-text-field ref="horaFin" v-model="nuevaTarea.horaFin" label="Hora de fin" type="time"
+                    :rules="[() => validarFechaHoraFin(nuevaTarea.diaInicio, nuevaTarea.horaInicio, nuevaTarea.diaFin, nuevaTarea.horaFin) || 'Hora de fin inválida']"
                     required></v-text-field>
 
                   <v-btn @click="agregarTarea">Agregar Tarea</v-btn>
@@ -222,14 +230,18 @@
 
               <!-- Campos de fecha y hora de inicio -->
               <v-text-field ref="diaInicioEdit" v-model="tareaEnEdicion.diaInicio" label="Dia de inicio" type="date"
+                :rules="[() => validarFechaHoraActual(tareaEnEdicion.diaInicio, tareaEnEdicion.horaInicio) || 'Fecha/hora de inicio inválida']"
                 required></v-text-field>
               <v-text-field ref="horaInicioEdit" v-model="tareaEnEdicion.horaInicio" label="Hora de inicio" type="time"
+                :rules="[() => validarFechaHoraActual(tareaEnEdicion.diaInicio, tareaEnEdicion.horaInicio) || 'Hora de inicio inválida']"
                 required></v-text-field>
 
               <!-- Campos de fecha y hora de fin -->
               <v-text-field ref="diaFinEdit" v-model="tareaEnEdicion.diaFin" label="Dia de fin" type="date"
+                :rules="[() => validarFechaHoraFin(tareaEnEdicion.diaInicio, tareaEnEdicion.horaInicio, tareaEnEdicion.diaFin, tareaEnEdicion.horaFin) || 'Fecha/hora de fin inválida']"
                 required></v-text-field>
               <v-text-field ref="horaFinEdit" v-model="tareaEnEdicion.horaFin" label="Hora de fin" type="time"
+                :rules="[() => validarFechaHoraFin(tareaEnEdicion.diaInicio, tareaEnEdicion.horaInicio, tareaEnEdicion.diaFin, tareaEnEdicion.horaFin) || 'Hora de fin inválida']"
                 required></v-text-field>
 
             </v-form>
@@ -479,7 +491,7 @@ export default {
 
     // Método agregarRutina
     async agregarRutina() {
-      if (this.validarCampos()) {
+      if (this.validarFecha(this.selectedDate) && this.validarHora(this.nuevaHoraInicio)) {
         if (this.editingTaskIndex !== null) {
           this.actualizarRutinaEditada();
         } else if (this.nuevaRutina.trim() !== "") {
@@ -541,7 +553,7 @@ export default {
 
     // UPDATE EN EL MONGO RUTINAS
     async actualizarRutinaEditada() {
-      if (this.validarCamposEditar()) {
+      if (this.validarFecha(this.rutinaEnEdicion.selectedDate) && this.validarHoraEditar(this.rutinaEnEdicion.selectedDate, this.rutinaEnEdicion.horaInicio)) {
         try {
           const rutina = this.rutinas.rutinas[this.editingTaskIndex];
           const idArea = this.areaEncontradaID;
@@ -677,16 +689,13 @@ export default {
 
     // AGREGAR TAREA
     async agregarTarea() {
-      if (this.validarCamposTareas()) {
-        if (this.editingTaskIndex !== null) {
-          this.actualizarTareaEditada();
-        } else if (this.nuevaTarea.nombre.trim() !== "") {
-          // Fusionar fecha y hora de inicio
+      if (this.validarCamposTareas() &&
+        this.validarFechaHoraActual(this.nuevaTarea.diaInicio, this.nuevaTarea.horaInicio) &&
+        this.validarFechaHoraFin(this.nuevaTarea.diaInicio, this.nuevaTarea.horaInicio, this.nuevaTarea.diaFin, this.nuevaTarea.horaFin)) {
+         if (this.nuevaTarea.nombre.trim() !== "") {
           const fechaInicioCompleta = new Date(this.nuevaTarea.diaInicio + 'T' + this.nuevaTarea.horaInicio);
-          // Fusionar fecha y hora de fin
           const fechaFinCompleta = new Date(this.nuevaTarea.diaFin + 'T' + this.nuevaTarea.horaFin);
 
-          // Construir el objeto tarea con los datos nuevos
           const newTarea = {
             nombre: this.nuevaTarea.nombre,
             descripcion: this.nuevaTarea.descripcion,
@@ -695,11 +704,8 @@ export default {
           };
 
           await addTareaMongo(this.areaEncontradaID, newTarea);
-
-          // Limpiar los campos después de agregar la tarea
           this.limpiarCamposTarea();
         }
-        // Recargar las tareas (ajusta según sea necesario)
         this.selectTareas();
       }
     },
@@ -755,20 +761,18 @@ export default {
 
     // ACTUALIZAR TAREA EDITADA
     async actualizarTareaEditada(index) {
-      if (this.validarCamposTareasEditar()) {
+      if (this.validarCamposTareasEditar() &&
+        this.validarFechaHoraActual(this.tareaEnEdicion.diaInicio, this.tareaEnEdicion.horaInicio) &&
+        this.validarFechaHoraFin(this.tareaEnEdicion.diaInicio, this.tareaEnEdicion.horaInicio, this.tareaEnEdicion.diaFin, this.tareaEnEdicion.horaFin)) {
         try {
           const tarea = this.tareas.tareas[index];
           const areaId = this.areaEncontradaID;
           const tareaId = tarea.id;
 
-          // Fusionar fecha y hora de inicio
-          const fechaHoraInicio = new Date(this.tareaEnEdicion.diaInicio + 'T' + this.tareaEnEdicion.horaInicio);
-          // Fusionar fecha y hora de fin
-          const fechaHoraFin = new Date(this.tareaEnEdicion.diaFin + 'T' + this.tareaEnEdicion.horaFin);
+          const fechaInicio = new Date(this.tareaEnEdicion.diaInicio + 'T' + this.tareaEnEdicion.horaInicio);
+          const fechaFin = new Date(this.tareaEnEdicion.diaFin + 'T' + this.tareaEnEdicion.horaFin);
+          await updateTareasMongo(this.tareaEnEdicion.nombre.trim(), this.tareaEnEdicion.descripcion || "", fechaInicio, fechaFin, areaId, tareaId);
 
-          await updateTareasMongo(this.tareaEnEdicion.nombre.trim(), this.tareaEnEdicion.descripcion || "", fechaHoraInicio, fechaHoraFin, areaId, tareaId);
-
-          //console.log('Tarea actualizada correctamente');
           this.editingTaskIndex = null;
           this.tareaEnEdicion = { nombre: "", descripcion: "", diaInicio: "", horaInicio: "", diaFin: "", horaFin: "" };
           this.selectTareas();
@@ -940,18 +944,22 @@ export default {
       ];
 
       camposRequeridos.forEach(campo => {
-        // Chequea si el modelo es string y si está vacío tras quitar espacios en blanco
+        if (!this.$refs[campo.ref]) {
+          console.error(`Ref ${campo.ref} not found`);
+          return;
+        }
+
         if (typeof campo.modelo === 'string' && !campo.modelo.trim()) {
           this.$refs[campo.ref].$el.style.border = '1px solid red';
           camposCompletos = false;
         } else if (campo.modelo == null || campo.modelo === '') {
-          // Para datos no string, verifica si es nulo o vacío
           this.$refs[campo.ref].$el.style.border = '1px solid red';
           camposCompletos = false;
         } else {
           this.$refs[campo.ref].$el.style.border = '';
         }
       });
+
 
       if (!camposCompletos) {
         window.alert('Por favor, rellene todos los campos obligatorios.');
@@ -1056,6 +1064,46 @@ export default {
           this.mostrarAlerta('La hora debe ser en el futuro');
           return false;
         }
+      }
+      return true;
+    },
+
+    // VALIDAR HORA AL EDITAR
+    validarHoraEditar(fecha, hora) {
+      const hoy = new Date();
+      const fechaSeleccionada = new Date(fecha);
+      if (fechaSeleccionada.toDateString() === hoy.toDateString()) {
+        const horaActual = `${hoy.getHours()}:${hoy.getMinutes() < 10 ? '0' + hoy.getMinutes() : hoy.getMinutes()}`;
+        if (hora < horaActual) {
+          this.mostrarAlerta('La hora debe ser en el futuro');
+          return false;
+        }
+      }
+      return true;
+    },
+
+    // Validar que la fecha y hora no sean anteriores al momento actual
+    validarFechaHoraActual(fecha, hora) {
+      const ahora = new Date();
+      const fechaHoraSeleccionada = new Date(fecha + 'T' + hora);
+      if (fechaHoraSeleccionada < ahora) {
+        this.mostrarAlerta('La fecha y hora deben ser en el futuro.');
+        return false;
+      }
+      return true;
+    },
+
+    // Validar que la fecha y hora de fin no sean anteriores a la de inicio y la hora de fin sea al menos una hora después
+    validarFechaHoraFin(fechaInicio, horaInicio, fechaFin, horaFin) {
+      const inicio = new Date(fechaInicio + 'T' + horaInicio);
+      const fin = new Date(fechaFin + 'T' + horaFin);
+      if (fin <= inicio) {
+        this.mostrarAlerta('La fecha y hora de fin deben ser posteriores a la de inicio.');
+        return false;
+      }
+      if (fin.getTime() - inicio.getTime() < 3600000) { // 3600000 ms = 1 hora
+        this.mostrarAlerta('La hora de fin debe ser al menos una hora después de la hora de inicio.');
+        return false;
       }
       return true;
     },
