@@ -60,7 +60,7 @@
         </v-col>
       </v-row>
 
-      <!-- Diálogo para rutinas -->
+      <!-- Diálogo para rutinas (CREAR) -->
       <v-dialog v-model="dialogRutina" max-height="800" max-width="800">
         <v-card height="800" width="800">
           <v-card-title>Rutinas del submarino</v-card-title>
@@ -121,7 +121,7 @@
         <v-card height="800" width="800">
           <v-card-title>Editar Rutina</v-card-title>
           <v-card-text>
-            <v-form @submit.prevent="actualizarTareaEditada(editingTaskIndex)"> <!-- Pasar el índice -->
+            <v-form @submit.prevent="actualizarRutinaEditada(editingTaskIndex)"> <!-- Pasar el índice -->
               <v-text-field ref="nombreRutinaEditada" v-model="rutinaEnEdicion.nombre" label="* Nombre de la rutina"
                 required></v-text-field>
               <v-text-field style="height: 500px; margin-bottom: -210px" v-model="rutinaEnEdicion.descripcion"
@@ -141,13 +141,13 @@
             </v-form>
           </v-card-text>
           <v-card-actions>
-            <v-btn @click="actualizarTareaEditada(editingTaskIndex)">Actualizar Rutina</v-btn>
+            <v-btn @click="actualizarRutinaEditada(editingTaskIndex)">Actualizar Rutina</v-btn>
             <v-btn @click="this.showDialogEdicion = false">Cancelar</v-btn>
           </v-card-actions>
         </v-card>
       </v-dialog>
 
-      <!-- DIALOGO PARA TAREAS -->
+      <!-- DIALOGO PARA TAREAS (CREAR)-->
       <v-dialog v-model="dialogTarea" max-height="900" max-width="800">
         <v-card height="900" width="800">
           <v-card-title>Tareas del Submarino</v-card-title>
@@ -201,13 +201,7 @@
         </v-card>
       </v-dialog>
 
-
-
-
-
-
-
-
+      <!-- Diálogo para editar TAREA -->
       <v-dialog v-model="showDialogEdicionTarea" position="center" max-width="800">
         <v-card height="900" width="800">
           <v-card-title>Editar Tarea</v-card-title>
@@ -235,22 +229,6 @@
           </v-card-actions>
         </v-card>
       </v-dialog>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
     </v-main>
   </v-layout>
 </template>
@@ -477,7 +455,7 @@ export default {
     async agregarRutina() {
       if (this.validarCampos()) {
         if (this.editingTaskIndex !== null) {
-          this.actualizarTareaEditada();
+          this.actualizarRutinaEditada();
         } else if (this.nuevaRutina.trim() !== "") {
           this.hacerRutinas.push(this.nuevaRutina);
           this.descripciones.push(this.nuevaDescripcion);
@@ -536,7 +514,7 @@ export default {
     },
 
     // UPDATE EN EL MONGO RUTINAS
-    async actualizarTareaEditada() {
+    async actualizarRutinaEditada() {
       if (this.validarCamposEditar()) {
         try {
           const rutina = this.rutinas.rutinas[this.editingTaskIndex];
@@ -641,13 +619,6 @@ export default {
         console.error("Error fetching rutinas:", error);
       }
     },
-
-
-
-
-
-
-
 
     crearTarea() {
       this.selectTareas();
@@ -758,40 +729,29 @@ export default {
 
     // ACTUALIZAR TAREA EDITADA
     async actualizarTareaEditada(index) {
-      if (this.validarCamposEditar()) {
-        try {
-          const tarea = this.tareas.tareas[index];
-          const idArea = this.areaEncontradaID;
-          const tareaId = tarea.id;
+      //if (this.validarCamposEditar()) {
+      try {
+        const tarea = this.tareas.tareas[index];
+        const areaId = this.areaEncontradaID;
+        const tareaId = tarea.id;
 
-          // Fusionar fecha y hora de inicio
-          const fechaInicio = new Date(this.tareaEnEdicion.diaInicio + 'T' + this.tareaEnEdicion.horaInicio);
-          // Fusionar fecha y hora de fin
-          const fechaFin = new Date(this.tareaEnEdicion.diaFin + 'T' + this.tareaEnEdicion.horaFin);
-          (nombre, descripcion, fechaHoraInicio, fechaHoraFin, areaId, 
-          await updateTareasMongo(this.tareaEnEdicion.nombre.trim(), this.tareaEnEdicion.descripcion || "", fechaInicio, fechaFin, idArea, tareaId);
+        // Fusionar fecha y hora de inicio
+        const fechaHoraInicio = new Date(this.tareaEnEdicion.diaInicio + 'T' + this.tareaEnEdicion.horaInicio);
+        // Fusionar fecha y hora de fin
+        const fechaHoraFin = new Date(this.tareaEnEdicion.diaFin + 'T' + this.tareaEnEdicion.horaFin);
 
-          //console.log('Tarea actualizada correctamente');
-          this.editingTaskIndex = null;
-          this.tareaEnEdicion = { nombre: "", descripcion: "", diaInicio: "", horaInicio: "", diaFin: "", horaFin: "" };
-          this.selectTareas();
-          this.showDialogEdicionTarea = false;
-        } catch (error) {
-          console.error("Error al actualizar la tarea:", error);
-        }
+        await updateTareasMongo(this.tareaEnEdicion.nombre.trim(), this.tareaEnEdicion.descripcion || "", fechaHoraInicio, fechaHoraFin, areaId, tareaId);
+
+        //console.log('Tarea actualizada correctamente');
+        this.editingTaskIndex = null;
+        this.tareaEnEdicion = { nombre: "", descripcion: "", diaInicio: "", horaInicio: "", diaFin: "", horaFin: "" };
+        this.selectTareas();
+        this.showDialogEdicionTarea = false;
+      } catch (error) {
+        console.error("Error al actualizar la tarea:", error);
       }
+      //}
     },
-
-
-
-
-
-
-
-
-
-
-
 
     // SELECT A TODOS LOS SUBMARINOS
     async getSubmarino() {
