@@ -354,7 +354,7 @@ try {
     },
     body: JSON.stringify({
       areaId: areaId,
-      rutinaId: rutinaId,
+      tareaId: tareaId,
       nombre: nombre,
       descripcion: descripcion,
       fechaHoraInicio: fechaHoraInicio,

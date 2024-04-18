@@ -762,14 +762,14 @@ export default {
         try {
           const tarea = this.tareas.tareas[index];
           const idArea = this.areaEncontradaID;
-          const idTarea = tarea.id;
+          const tareaId = tarea.id;
 
           // Fusionar fecha y hora de inicio
           const fechaInicio = new Date(this.tareaEnEdicion.diaInicio + 'T' + this.tareaEnEdicion.horaInicio);
           // Fusionar fecha y hora de fin
           const fechaFin = new Date(this.tareaEnEdicion.diaFin + 'T' + this.tareaEnEdicion.horaFin);
-          (nombre, descripcion, fechaHoraInicio, fechaHoraFin, areaId, tareaId
-          await updateTareasMongo(this.tareaEnEdicion.nombre.trim(), this.tareaEnEdicion.descripcion || "", fechaInicio, fechaFin, idArea, idTarea);
+          (nombre, descripcion, fechaHoraInicio, fechaHoraFin, areaId, 
+          await updateTareasMongo(this.tareaEnEdicion.nombre.trim(), this.tareaEnEdicion.descripcion || "", fechaInicio, fechaFin, idArea, tareaId);
 
           //console.log('Tarea actualizada correctamente');
           this.editingTaskIndex = null;
