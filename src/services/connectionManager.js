@@ -361,306 +361,290 @@ export async function updateTareasMongo(nombre, descripcion, fechaHoraInicio, fe
                 fechaHoraFin: fechaHoraFin
             })
         });
-        export async function updateTareasMongo(nombre, descripcion, fechaHoraInicio, fechaHoraFin, areaId, tareaId) {
-            try {
-                const response = await fetch('http://localhost:3169/updateTareasMongo', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify({
-                        areaId: areaId,
-                        tareaId: tareaId,
-                        nombre: nombre,
-                        descripcion: descripcion,
-                        fechaHoraInicio: fechaHoraInicio,
-                        fechaHoraFin: fechaHoraFin
-                    })
-                });
 
-                if (!response.ok) {
-                    const errorMessage = await response.text();
-                    throw new Error(`Error al actualizar tarea: ${errorMessage}`);
-                }
-
-                const responseData = await response.json();
-                return responseData;
-            } catch (error) {
-                console.error('Error en la comunicación:', error.message);
-                throw error;
-            }
+        if (!response.ok) {
+            const errorMessage = await response.text();
+            throw new Error(`Error al actualizar tarea: ${errorMessage}`);
         }
 
-        export async function insertIncidencia(listaItems) {
-            try {
-                const response = await fetch('http://localhost:3169/insertarIncidencia', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify({ listaItems: listaItems })
-                });
+        const responseData = await response.json();
+        return responseData;
+    } catch (error) {
+        console.error('Error en la comunicación:', error.message);
+        throw error;
+    }
+}
 
-                if (!response.ok) {
-                    const errorMessage = await response.text();
-                    throw new Error(`Error al agregar rutina: ${errorMessage}`);
-                }
+export async function insertIncidencia(listaItems) {
+    try {
+        const response = await fetch('http://localhost:3169/insertarIncidencia', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ listaItems: listaItems })
+        });
 
-                const responseData = await response.json();
-                return responseData;
-            } catch (error) {
-                console.error('Error en la comunicación:', error.message);
-                throw error;
-            }
+        if (!response.ok) {
+            const errorMessage = await response.text();
+            throw new Error(`Error al agregar rutina: ${errorMessage}`);
         }
 
-        export async function insertEmpresa(listaItems) {
-            try {
-                const response = await fetch('http://localhost:3169/insertarEmpresa', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify({ listaItems: listaItems })
-                });
+        const responseData = await response.json();
+        return responseData;
+    } catch (error) {
+        console.error('Error en la comunicación:', error.message);
+        throw error;
+    }
+}
 
-                if (!response.ok) {
-                    const errorMessage = await response.text();
-                    throw new Error(`Error al agregar empresa: ${errorMessage}`);
-                }
+export async function insertEmpresa(listaItems) {
+    try {
+        const response = await fetch('http://localhost:3169/insertarEmpresa', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ listaItems: listaItems })
+        });
 
-                const responseData = await response.json();
-                return responseData; // Esto incluirá la respuesta JSON con el mensaje y el resultado
-            } catch (error) {
-                console.error('Error en la comunicación:', error.message);
-                throw error;
-            }
+        if (!response.ok) {
+            const errorMessage = await response.text();
+            throw new Error(`Error al agregar empresa: ${errorMessage}`);
         }
 
-        export async function insertSuscripcion(listaItems) {
-            try {
-                const response = await fetch('http://localhost:3169/insertarSuscripcion', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify({ listaItems: listaItems })
-                });
+        const responseData = await response.json();
+        return responseData; // Esto incluirá la respuesta JSON con el mensaje y el resultado
+    } catch (error) {
+        console.error('Error en la comunicación:', error.message);
+        throw error;
+    }
+}
 
-                if (!response.ok) {
-                    const errorMessage = await response.text();
-                    throw new Error(`Error al agregar sub: ${errorMessage}`);
-                }
+export async function insertSuscripcion(listaItems) {
+    try {
+        const response = await fetch('http://localhost:3169/insertarSuscripcion', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ listaItems: listaItems })
+        });
 
-                const responseData = await response.json();
-                return responseData;
-            } catch (error) {
-                console.error('Error en la comunicación:', error.message);
-                throw error;
-            }
+        if (!response.ok) {
+            const errorMessage = await response.text();
+            throw new Error(`Error al agregar sub: ${errorMessage}`);
         }
 
-        export async function updateEmpresa(listaItems) {
-            try {
-                const response = await fetch('http://localhost:3169/updateEmpresa', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify({ listaItems: listaItems })
-                });
+        const responseData = await response.json();
+        return responseData;
+    } catch (error) {
+        console.error('Error en la comunicación:', error.message);
+        throw error;
+    }
+}
 
-                if (!response.ok) {
-                    const errorMessage = await response.text();
-                    throw new Error(`Error al actualizar empresa: ${errorMessage}`);
-                }
+export async function updateEmpresa(listaItems) {
+    try {
+        const response = await fetch('http://localhost:3169/updateEmpresa', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ listaItems: listaItems })
+        });
 
-                const responseData = await response.json();
-                return responseData;
-            } catch (error) {
-                console.error('Error en la comunicación:', error.message);
-                throw error;
-            }
+        if (!response.ok) {
+            const errorMessage = await response.text();
+            throw new Error(`Error al actualizar empresa: ${errorMessage}`);
         }
 
-        export async function updateSuscripcion(listaItems) {
-            try {
-                const response = await fetch('http://localhost:3169/updateSuscripcion', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify({ listaItems: listaItems })
-                });
+        const responseData = await response.json();
+        return responseData;
+    } catch (error) {
+        console.error('Error en la comunicación:', error.message);
+        throw error;
+    }
+}
 
-                if (!response.ok) {
-                    const errorMessage = await response.text();
-                    throw new Error(`Error al actualizar sub: ${errorMessage}`);
-                }
+export async function updateSuscripcion(listaItems) {
+    try {
+        const response = await fetch('http://localhost:3169/updateSuscripcion', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ listaItems: listaItems })
+        });
 
-                const responseData = await response.json();
-                return responseData;
-            } catch (error) {
-                console.error('Error en la comunicación:', error.message);
-                throw error;
-            }
+        if (!response.ok) {
+            const errorMessage = await response.text();
+            throw new Error(`Error al actualizar sub: ${errorMessage}`);
         }
 
-        export async function deleteEmpresa(id_empresa) {
-            try {
-                const response = await fetch('http://localhost:3169/deleteEmpresa', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify({ id_empresa: id_empresa })
-                });
+        const responseData = await response.json();
+        return responseData;
+    } catch (error) {
+        console.error('Error en la comunicación:', error.message);
+        throw error;
+    }
+}
 
-                if (!response.ok) {
-                    const errorMessage = await response.text();
-                    throw new Error(`Error al agregar rutina: ${errorMessage}`);
-                }
+export async function deleteEmpresa(id_empresa) {
+    try {
+        const response = await fetch('http://localhost:3169/deleteEmpresa', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ id_empresa: id_empresa })
+        });
 
-                const responseData = await response.json();
-                return responseData;
-            } catch (error) {
-                console.error('Error en la comunicación:', error.message);
-                throw error;
-            }
+        if (!response.ok) {
+            const errorMessage = await response.text();
+            throw new Error(`Error al agregar rutina: ${errorMessage}`);
         }
 
-        export async function deleteSuscripcion(id_sub) {
-            try {
-                const response = await fetch('http://localhost:3169/deleteSuscripcion', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify({ id_sub: id_sub })
-                });
+        const responseData = await response.json();
+        return responseData;
+    } catch (error) {
+        console.error('Error en la comunicación:', error.message);
+        throw error;
+    }
+}
 
-                if (!response.ok) {
-                    const errorMessage = await response.text();
-                    throw new Error(`Error al eliminar sub: ${errorMessage}`);
-                }
+export async function deleteSuscripcion(id_sub) {
+    try {
+        const response = await fetch('http://localhost:3169/deleteSuscripcion', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ id_sub: id_sub })
+        });
 
-                const responseData = await response.json();
-                return responseData;
-            } catch (error) {
-                console.error('Error en la comunicación:', error.message);
-                throw error;
-            }
+        if (!response.ok) {
+            const errorMessage = await response.text();
+            throw new Error(`Error al eliminar sub: ${errorMessage}`);
         }
 
-        export async function getIncidencias() {
-            try {
-                const response = await fetch('http://localhost:3169/getIncidencias');
-                if (!response.ok) {
-                    throw new Error('Error al obtener las incidencias');
-                }
-                const data = await response.json();
-                return data;
-            } catch (error) {
-                console.error('Error en la solicitud:', error.message);
-                throw error;
-            }
+        const responseData = await response.json();
+        return responseData;
+    } catch (error) {
+        console.error('Error en la comunicación:', error.message);
+        throw error;
+    }
+}
+
+export async function getIncidencias() {
+    try {
+        const response = await fetch('http://localhost:3169/getIncidencias');
+        if (!response.ok) {
+            throw new Error('Error al obtener las incidencias');
+        }
+        const data = await response.json();
+        return data;
+    } catch (error) {
+        console.error('Error en la solicitud:', error.message);
+        throw error;
+    }
+}
+
+export async function getEmpresa() {
+    try {
+        const response = await fetch('http://localhost:3169/getEmpresa');
+        if (!response.ok) {
+            throw new Error('Error al obtener las empresas');
+        }
+        const data = await response.json();
+        return data;
+    } catch (error) {
+        console.error('Error en la solicitud:', error.message);
+        throw error;
+    }
+}
+
+export async function getSuscripciones() {
+    try {
+        const response = await fetch('http://localhost:3169/getSuscripcion');
+        if (!response.ok) {
+            throw new Error('Error al obtener las subs');
+        }
+        const data = await response.json();
+        return data;
+    } catch (error) {
+        console.error('Error en la solicitud:', error.message);
+        throw error;
+    }
+}
+
+export async function updateIncidencias(asunto, descripcio, prioridad, idIncidencia) {
+    try {
+        const response = await fetch('http://localhost:3169/updateIncidencia', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ asunto: asunto, descripcio: descripcio, prioridad: prioridad, idIncidencia: idIncidencia })
+        });
+
+        if (!response.ok) {
+            const errorMessage = await response.text();
+            throw new Error(`Error al agregar rutina: ${errorMessage}`);
         }
 
-        export async function getEmpresa() {
-            try {
-                const response = await fetch('http://localhost:3169/getEmpresa');
-                if (!response.ok) {
-                    throw new Error('Error al obtener las empresas');
-                }
-                const data = await response.json();
-                return data;
-            } catch (error) {
-                console.error('Error en la solicitud:', error.message);
-                throw error;
-            }
+        const responseData = await response.json();
+        return responseData;
+    } catch (error) {
+        console.error('Error en la comunicación:', error.message);
+        throw error;
+    }
+}
+
+export async function updateArea(id, nombre, coordenadas) {
+    try {
+        const response = await fetch('http://localhost:3169/updatearea', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ id: id, nombre: nombre, coordenadas: coordenadas, })
+        });
+
+        if (!response.ok) {
+            const errorMessage = await response.text();
+            throw new Error(`Error al agregar rutina: ${errorMessage}`);
         }
 
-        export async function getSuscripciones() {
-            try {
-                const response = await fetch('http://localhost:3169/getSuscripcion');
-                if (!response.ok) {
-                    throw new Error('Error al obtener las subs');
-                }
-                const data = await response.json();
-                return data;
-            } catch (error) {
-                console.error('Error en la solicitud:', error.message);
-                throw error;
-            }
+        const responseData = await response.json();
+        return responseData;
+    } catch (error) {
+        console.error('Error en la comunicación:', error.message);
+        throw error;
+    }
+}
+
+
+
+export async function insertEmpresaSub(id_empresa, id_sub, autorenovable) {
+    try {
+        const response = await fetch('http://localhost:3169/insertEmpresaSub', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ id_empresa: id_empresa, id_sub: id_sub, autorenovable: autorenovable })
+        });
+
+        if (!response.ok) {
+            const errorMessage = await response.text();
+            throw new Error(`Error al agregar sub a empresa: ${errorMessage}`);
         }
 
-        export async function updateIncidencias(asunto, descripcio, prioridad, idIncidencia) {
-            try {
-                const response = await fetch('http://localhost:3169/updateIncidencia', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify({ asunto: asunto, descripcio: descripcio, prioridad: prioridad, idIncidencia: idIncidencia })
-                });
-
-                if (!response.ok) {
-                    const errorMessage = await response.text();
-                    throw new Error(`Error al agregar rutina: ${errorMessage}`);
-                }
-
-                const responseData = await response.json();
-                return responseData;
-            } catch (error) {
-                console.error('Error en la comunicación:', error.message);
-                throw error;
-            }
-        }
-
-        export async function updateArea(id, nombre, coordenadas) {
-            try {
-                const response = await fetch('http://localhost:3169/updatearea', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify({ id: id, nombre: nombre, coordenadas: coordenadas, })
-                });
-
-                if (!response.ok) {
-                    const errorMessage = await response.text();
-                    throw new Error(`Error al agregar rutina: ${errorMessage}`);
-                }
-
-                const responseData = await response.json();
-                return responseData;
-            } catch (error) {
-                console.error('Error en la comunicación:', error.message);
-                throw error;
-            }
-        }
-
-
-
-        export async function insertEmpresaSub(id_empresa, id_sub, autorenovable) {
-            try {
-                const response = await fetch('http://localhost:3169/insertEmpresaSub', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify({ id_empresa: id_empresa, id_sub: id_sub, autorenovable: autorenovable })
-                });
-
-                if (!response.ok) {
-                    const errorMessage = await response.text();
-                    throw new Error(`Error al agregar sub a empresa: ${errorMessage}`);
-                }
-
-                const responseData = await response.json();
-                return responseData;
-            } catch (error) {
-                console.error('Error en la comunicación:', error.message);
-                throw error;
-            }
-        }
+        const responseData = await response.json();
+        return responseData;
+    } catch (error) {
+        console.error('Error en la comunicación:', error.message);
+        throw error;
+    }
+}
