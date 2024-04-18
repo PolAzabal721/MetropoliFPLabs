@@ -209,7 +209,7 @@
 
 
       <v-dialog v-model="showDialogEdicionTarea" position="center" max-width="800">
-        <v-card height="800" width="800">
+        <v-card height="900" width="800">
           <v-card-title>Editar Tarea</v-card-title>
           <v-card-text>
             <v-form @submit.prevent="actualizarTareaEditada(editingTaskIndex)">
@@ -324,6 +324,15 @@ export default {
         dia: null,
         horaInicio: null,
         repetir: ""
+      },
+      tareaEnEdicion: {
+        id: null,
+        nombre: "",
+        descripcion: '',
+        diaInicio: null,
+        horaInicio: null,
+        diaFin: null,
+        horaFin: null
       },
       editingTaskIndex: null,
       showDialogEdicion: false,
@@ -637,16 +646,19 @@ export default {
 
 
 
+
+
+
     crearTarea() {
       this.selectTareas();
 
       // Abrir la ventana emergente para seleccionar la tarea
       this.dialogTarea = true;
     },
-    
-    cerrarDialogTareaEditar() {
+
+    cerrarDialogTarea() {
       // Cerrar la ventana emergente de tareas
-      this.showDialogEdicionTarea = false;
+      this.dialogTarea = false;
 
       // Restablecer la selección de la tarea
       this.selectTareas();
@@ -710,6 +722,71 @@ export default {
         }
       }
     },
+
+    // EDITAR TAREA
+    editarTarea(index) {
+      if (index >= 0 && index < this.tareas.tareas.length) {
+        const tarea = this.tareas.tareas[index];
+        this.tareaEnEdicion.id = tarea.id;
+        this.tareaEnEdicion.nombre = tarea.nombre;
+        this.tareaEnEdicion.descripcion = tarea.descripcion || "";
+
+        // Descomponer la fecha y la hora de inicio
+        const fechaInicio = new Date(tarea.fechaInicio);
+        const horaInicio = fechaInicio.getHours();
+        const minutosInicio = fechaInicio.getMinutes();
+
+        // Descomponer la fecha y la hora de fin
+        const fechaFin = new Date(tarea.fechaFin);
+        const horaFin = fechaFin.getHours();
+        const minutosFin = fechaFin.getMinutes();
+
+        // Asignar la fecha y la hora de inicio a las variables correspondientes
+        this.tareaEnEdicion.diaInicio = fechaInicio.toISOString().split('T')[0];
+        this.tareaEnEdicion.horaInicio = `${horaInicio.toString().padStart(2, '0')}:${minutosInicio.toString().padStart(2, '0')}`;
+
+        // Asignar la fecha y la hora de fin a las variables correspondientes
+        this.tareaEnEdicion.diaFin = fechaFin.toISOString().split('T')[0];
+        this.tareaEnEdicion.horaFin = `${horaFin.toString().padStart(2, '0')}:${minutosFin.toString().padStart(2, '0')}`;
+
+        this.editingTaskIndex = index;
+        this.showDialogEdicionTarea = true;
+      } else {
+        console.error("Índice de tarea no válido:", index);
+      }
+    },
+
+    // ACTUALIZAR TAREA EDITADA
+    async actualizarTareaEditada(index) {
+      if (this.validarCamposEditar()) {
+        try {
+          const tarea = this.tareas.tareas[index];
+          const idArea = this.areaEncontradaID;
+          const idTarea = tarea.id;
+
+          // Fusionar fecha y hora de inicio
+          const fechaInicio = new Date(this.tareaEnEdicion.diaInicio + 'T' + this.tareaEnEdicion.horaInicio);
+          // Fusionar fecha y hora de fin
+          const fechaFin = new Date(this.tareaEnEdicion.diaFin + 'T' + this.tareaEnEdicion.horaFin);
+
+          await updateTareasMongo(this.tareaEnEdicion.nombre.trim(), this.tareaEnEdicion.descripcion || "", fechaInicio, fechaFin, idArea, idTarea);
+
+          //console.log('Tarea actualizada correctamente');
+          this.editingTaskIndex = null;
+          this.tareaEnEdicion = { nombre: "", descripcion: "", diaInicio: "", horaInicio: "", diaFin: "", horaFin: "" };
+          this.selectTareas();
+          this.showDialogEdicionTarea = false;
+        } catch (error) {
+          console.error("Error al actualizar la tarea:", error);
+        }
+      }
+    },
+
+
+
+
+
+
 
 
 
