@@ -969,7 +969,7 @@ export default {
 
       // Obtener la cantidad de empresas por plan de servicio
       const empresasPorPlan = this.empresas.reduce((acc, empresa) => {
-        acc[empresa.plan] = (acc[empresa.plan] || 0) + 1;
+        acc[empresa.nombre_sub] = (acc[empresa.nombre_sub] || 0) + 1;
         return acc;
       }, {});
 
