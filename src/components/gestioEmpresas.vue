@@ -140,9 +140,18 @@
                           style="height: auto; width: 220px" type="email" />
                       </div>
                       <div style="width: 48%">
+                        <label>Plan de Suscripción: </label>
+                        <select v-model="empresaEditada.plan" required class="bordered-input"
+                          style="height: auto; width: 173px">
+                          <option v-for="plan in planes" :value="plan.id">{{ plan.nombre }}</option>
+                        </select>
+                      </div>
+                      <div style="width: 48%">
                         <label>Auto-renovable: </label>
                         <input type="checkbox" v-model="empresaEditada.autorenovable" />
+                        <!-- Muestra el valor de autorenovable para verificar -->
                       </div>
+
                     </div>
 
                     <!-- SITIO WEB -->
@@ -474,7 +483,8 @@ import {
   deleteSuscripcion,
   getSuscripciones,
   insertEmpresaSub,
-  editSubEmpresa
+  editSubEmpresa,
+  deleteSubEmpresa
 } from "@/services/connectionManager";
 import { Chart } from "chart.js/auto";
 
@@ -492,12 +502,12 @@ export default {
         nombre_calle: "",
         telefono: "",
         correo: "",
-        plan: "Standard",
+        plan: "",
         sitioWeb: "",
         provincia: "",
         ciudad: "",
         id: "",
-        autorenovable: false
+        autorenovable: 0
       },
       planEditado: {
         nombre: "",
@@ -517,11 +527,11 @@ export default {
         nombre_calle: "",
         telefono: "",
         correo: "",
-        plan: "Standard",
+        plan: 2,
         sitioWeb: "",
         provincia: "",
         ciudad: "",
-        autorenovable: false
+        autorenovable: 0
       },
       prefijoTelefonoEditar: "+1",
       clienteEditado: null,
@@ -586,13 +596,15 @@ export default {
 
       this.empresaEditada.nombre = empresa.nom_empresa;
       this.empresaEditada.nombre_calle = empresa.nombre_calle;
-      this.empresaEditada.telefono = empresa.numero_teléfono;
+      this.empresaEditada.telefono = empresa.numero_telefono;
       this.empresaEditada.correo = empresa.correo;
       this.empresaEditada.sitioWeb = empresa.sitio_web;
       this.empresaEditada.plan = empresa.plan;
       this.empresaEditada.provincia = empresa.provincia;
       this.empresaEditada.ciudad = empresa.ciudad;
       this.empresaEditada.id = empresa.id_empresa;
+      this.empresaEditada.autorenovable = empresa.autorenovable;
+      this.empresaEditada.plan = empresa.plan;
 
       // Abre el modal de edición de empresa
       this.mostrarModalEditarEmpresa = true;
@@ -617,6 +629,7 @@ export default {
       const confirmacion = confirm("¿Estás seguro que quieres eliminar la empresa " + empresa.nom_empresa + "?");
       if (confirmacion) {
         const id_empresa = empresa.id_empresa;
+        await deleteSubEmpresa(id_empresa);
         await deleteEmpresa(id_empresa);
         this.getEmpresas();
 
@@ -661,9 +674,9 @@ export default {
       );
       // console.log(this.empresaEditadaEnviar);
       await updateEmpresa(this.empresaEditadaEnviar)
-      console.log(this.empresaEditada.id);
-      console.log(this.empresaEditada.plan);
-      console.log(this.empresaEditada.autorenovable);
+       console.log(this.empresaEditada.id);
+       console.log(this.empresaEditada.plan);
+       console.log(this.empresaEditada.autorenovable);
       await editSubEmpresa(this.empresaEditada.id, this.empresaEditada.plan, this.empresaEditada.autorenovable)
       this.getEmpresas();
       this.mostrarModalEditarEmpresa = false;
@@ -790,16 +803,16 @@ export default {
       }
 
       // Agregar la nueva empresa a la lista de empresas
-       this.empresas.push({
-         nom_empresa: this.nuevaEmpresa.nombre,
-         nombre_calle: this.nuevaEmpresa.nombre_calle,
-         numero_teléfono: this.nuevaEmpresa.telefono,
+      this.empresas.push({
+        nom_empresa: this.nuevaEmpresa.nombre,
+        nombre_calle: this.nuevaEmpresa.nombre_calle,
+        numero_teléfono: this.nuevaEmpresa.telefono,
         correo: this.nuevaEmpresa.correo,
         plan: this.nuevaEmpresa.plan,
         sitio_web: this.nuevaEmpresa.sitioWeb,
-         provincia: this.nuevaEmpresa.provincia,
-         ciudad: this.nuevaEmpresa.ciudad
-       });
+        provincia: this.nuevaEmpresa.provincia,
+        ciudad: this.nuevaEmpresa.ciudad
+      });
 
       this.empresasEnviar.push(
         this.nuevaEmpresa.nombre,
@@ -814,6 +827,8 @@ export default {
 
       const id = await insertEmpresa(this.empresasEnviar);
       console.log(id.result);
+      console.log(this.nuevaEmpresa.plan);
+      console.log(this.nuevaEmpresa.autorenovable);
       this.mostrarModalCrear = false;
       await insertEmpresaSub(id.result, this.nuevaEmpresa.plan, this.nuevaEmpresa.autorenovable)
 

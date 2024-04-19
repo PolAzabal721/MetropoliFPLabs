@@ -650,6 +650,29 @@ export async function insertEmpresaSub(id_empresa, id_sub, autorenovable) {
 }
 
 
+export async function deleteSubEmpresa(id_empresa) {
+    try {
+        const response = await fetch('http://localhost:3169/deleteSubEmpresa', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ id_empresa: id_empresa })
+        });
+
+        if (!response.ok) {
+            const errorMessage = await response.text();
+            throw new Error(`Error al eliminar sub a empresa: ${errorMessage}`);
+        }
+
+        const responseData = await response.json();
+        return responseData;
+    } catch (error) {
+        console.error('Error en la comunicación:', error.message);
+        throw error;
+    }
+}
+
 
 export async function editSubEmpresa(id_empresa, id_sub, autorenovable) {
     try {
