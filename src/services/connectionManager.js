@@ -199,7 +199,7 @@ export async function deleteSubMongo(id_area, id_sub) {
             headers: {
                 'Content-Type': 'application/json'
             },
-            body: JSON.stringify({ areaId: id_area, submarinoId: id_sub }) // Ajusta los nombres de las propiedades del objeto
+            body: JSON.stringify({ areaId: id_area, submarinoId: id_sub }) 
         })
     } catch (error) {
         console.log(error);
@@ -260,7 +260,7 @@ export async function eliminartRutinas(id_area, id) {
 }
 
 // UPDATE RUTINAS
-export async function updateRutinasMongo(nombre, descripcion, fechaHoraInicio, repetir, areaId, rutinaId) {
+export async function updateRutinasMongo(nombre, descripcion, fechaHoraInicio, horaFinFormatted, repetir, areaId, rutinaId) {
     try {
         const response = await fetch('http://localhost:3169/updateRutinasMongo', {
             method: 'POST',
@@ -273,7 +273,8 @@ export async function updateRutinasMongo(nombre, descripcion, fechaHoraInicio, r
                 nombre: nombre,
                 descripcion: descripcion,
                 repetir: repetir,
-                fechaHoraInicio: fechaHoraInicio
+                fechaHoraInicio: fechaHoraInicio,
+                fechaHoraFin: horaFinFormatted
             })
         });
 

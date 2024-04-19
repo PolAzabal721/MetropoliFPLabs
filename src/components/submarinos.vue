@@ -77,8 +77,8 @@
       </v-row>
 
       <!-- Diálogo para rutinas (CREAR) -->
-      <v-dialog v-model="dialogRutina" max-height="825" max-width="800">
-        <v-card height="825" width="800">
+      <v-dialog v-model="dialogRutina" max-height="870" max-width="800">
+        <v-card height="870" width="800">
           <v-card-title>Rutinas del submarino</v-card-title>
           <v-card-text>
             <v-row>
@@ -95,9 +95,15 @@
                     :rules="[() => validarFecha(selectedDate) || 'Fecha inválida']" required></v-text-field>
 
                   <!-- Campo para la hora de inicio -->
-                  <v-text-field ref="horaInicioRutina" style="margin-top: 20px;" v-model="nuevaHoraInicio"
-                    label="Hora de inicio" type="time" :rules="[() => validarHora(nuevaHoraInicio) || 'Hora inválida']"
+                  <v-text-field ref="horaInicioRutina" v-model="nuevaHoraInicio" label="Hora de inicio" type="time"
+                    :rules="[() => validarHora(nuevaHoraInicio) || 'Hora inválida']" required></v-text-field>
+
+                  <!-- Campo de selección de hora de fin para agregar nuevas rutinas -->
+                  <v-text-field ref="horaFinNuevaRutina" v-model="nuevaHoraFin" label="Hora de fin" type="time"
+                    :rules="[() => validarHoraFin(selectedDate, nuevaHoraInicio, nuevaHoraFin) || 'Hora inválida']"
                     required></v-text-field>
+                  <!-- Fin de la selección de hora de fin -->
+
                   <!-- Campo para la repetición -->
                   <v-select ref="repetirRutina" v-model="nuevaRepetir" :items="repetirOpciones" label="Repetir"
                     required></v-select>
@@ -135,7 +141,7 @@
 
       <!-- Diálogo para editar rutina -->
       <v-dialog v-model="showDialogEdicion" position="center" max-width="800">
-        <v-card height="825" width="800">
+        <v-card height="835" width="800">
           <v-card-title>Editar Rutina</v-card-title>
           <v-card-text>
             <v-form @submit.prevent="actualizarRutinaEditada(editingTaskIndex)"> <!-- Pasar el índice -->
@@ -150,11 +156,17 @@
                 required></v-text-field>
 
               <!-- Campo de selección de dia -->
-              <v-text-field ref="horaInicioRutinaEditada" style="margin-top: 20px;" v-model="rutinaEnEdicion.horaInicio"
-                label="dia de inicio" type="time"
+              <v-text-field ref="horaInicioRutinaEditada" v-model="rutinaEnEdicion.horaInicio" label="dia de inicio"
+                type="time"
                 :rules="[() => validarHoraEditar(rutinaEnEdicion.selectedDate, rutinaEnEdicion.horaInicio) || 'Hora inválida']"
                 required></v-text-field>
               <!-- Fin de la selección de dia -->
+
+              <!-- Campo de selección de hora de fin -->
+              <v-text-field ref="horaFinRutinaEditada" v-model="rutinaEnEdicion.horaFin" label="Hora de fin" type="time"
+                :rules="[() => validarHoraFin(rutinaEnEdicion.selectedDate, rutinaEnEdicion.horaInicio, rutinaEnEdicion.horaFin) || 'Hora inválida']"
+                required></v-text-field>
+              <!-- Fin de la selección de hora de fin -->
 
               <!-- Campo de selección de repetición -->
               <v-select ref="repetirRutinaEditada" v-model="rutinaEnEdicion.repetir" :items="repetirOpciones"
@@ -286,15 +298,15 @@
               <v-col cols="6">
                 <h3>Tareas</h3>
                 <v-checkbox v-for="tarea in tareas.tareas" :key="tarea.id" :label="tarea.nombre"
-                  :value="tarea.submarinos && tarea.submarinos.includes(submarinoSeleccionado.id)"
-                  @change="toggleAsignacionTarea(tarea, submarinoSeleccionado)">
+                  :checked="tarea.submarinos.includes(submarinoSeleccionado.id)"
+                  @change="() => toggleAsignacionTarea(tarea, submarinoSeleccionado)" :disabled="!tarea.disponible">
                 </v-checkbox>
               </v-col>
               <v-col cols="6">
                 <h3>Rutinas</h3>
                 <v-checkbox v-for="rutina in rutinas.rutinas" :key="rutina.id" :label="rutina.nombre"
-                  :value="rutina.submarinos && rutina.submarinos.includes(submarinoSeleccionado.id)"
-                  @change="toggleAsignacionRutina(rutina, submarinoSeleccionado)">
+                  :checked="rutina.submarinos.includes(submarinoSeleccionado.id)"
+                  @change="() => toggleAsignacionRutina(rutina, submarinoSeleccionado)" :disabled="!rutina.disponible">
                 </v-checkbox>
               </v-col>
             </v-row>
@@ -362,6 +374,7 @@ export default {
         horaFin: null,
         submarinos: []
       },
+      nuevaHoraFin: null,
       hacerRutinas: [],
       tareas: [],
       descripciones: [],
@@ -376,6 +389,7 @@ export default {
         descripcion: "",
         selectedDate: null,
         horaInicio: null,
+        horaFin: null,
         repetir: ""
       },
       tareaEnEdicion: {
@@ -410,66 +424,167 @@ export default {
     };
   },
   methods: {
-    // ASIGNAR Y QUITAR TAREA
-    toggleAsignacionTarea(tarea, submarino) {
-      const index = tarea.submarinos.indexOf(submarino.id);
-      if (index === -1) {
-        // Validar solapamientos solo si se va a añadir la tarea
-        if (this.validarSolapamientos(tarea, submarino.id)) {
-          tarea.submarinos.push(submarino.id);
-          // Llamar a la API para actualizar la base de datos
-        } else {
-          alert("La asignación de la tarea se solapa con otras actividades o no respeta el intervalo de descanso requerido.");
-        }
-      } else {
-        tarea.submarinos.splice(index, 1);
-        // Actualizar la base de datos
+
+    validarSolapamientos(nuevaActividad, submarinoId) {
+      let actividadesAsignadas = [
+        ...this.rutinas.rutinas.filter(r => r.submarinos.includes(submarinoId) && r.id !== nuevaActividad.id),
+        ...this.tareas.tareas.filter(t => t.submarinos.includes(submarinoId) && t.id !== nuevaActividad.id)
+      ];
+
+      // Para actividades que no tienen 'repetir' definido, se asume que no se repiten.
+      const repeticionesNuevaActividad = this.generarRepeticiones(nuevaActividad, nuevaActividad.repetir || 'No repetir');
+
+      return repeticionesNuevaActividad.every(nuevaRep => {
+        const inicioNuevo = new Date(nuevaRep.fechaHoraInicio);
+        const finNuevo = new Date(nuevaRep.fechaHoraFin);
+
+        return actividadesAsignadas.every(act => {
+          const repeticionesExistente = this.generarRepeticiones(act, act.repetir || 'No repetir');
+          return repeticionesExistente.every(existenteRep => {
+            const inicioExistente = new Date(existenteRep.fechaHoraInicio);
+            const finExistente = new Date(existenteRep.fechaHoraFin);
+
+            // Verificar que no haya solapamientos directos
+            let noSolapan = finNuevo <= inicioExistente || inicioNuevo >= finExistente;
+
+            // Asegurarse de que hay un descanso adecuado entre actividades
+            let suficienteDescansoAntes = (inicioNuevo - finExistente) >= 9000000; // 2.5 horas
+            let suficienteDescansoDespués = (inicioExistente - finNuevo) >= 9000000; // 2.5 horas
+
+            return noSolapan && (suficienteDescansoAntes || suficienteDescansoDespués);
+          });
+        });
+      });
+    },
+
+    // CALCULAR LAS REPETICIONES 
+    generarRepeticiones(actividad, repetir) {
+      let fechas = [];
+      const fechaInicio = new Date(actividad.fechaHoraInicio);
+      const fechaFin = new Date(actividad.fechaHoraFin);
+      const duracion = fechaFin - fechaInicio;
+
+      switch (repetir) {
+        case 'Diariamente':
+          for (let i = 0; i < 365; i++) {  // Generar repeticiones diarias por un año
+            let nuevaFechaInicio = new Date(fechaInicio.getTime() + i * 86400000); // 86400000 ms = 1 día
+            let nuevaFechaFin = new Date(nuevaFechaInicio.getTime() + duracion);
+            fechas.push({ fechaHoraInicio: nuevaFechaInicio, fechaHoraFin: nuevaFechaFin });
+          }
+          break;
+        case 'Semanalmente':
+          for (let i = 0; i < 52; i++) {  // Generar repeticiones semanales por un año
+            let nuevaFechaInicio = new Date(fechaInicio.getTime() + i * 604800000); // 604800000 ms = 1 semana
+            let nuevaFechaFin = new Date(nuevaFechaInicio.getTime() + duracion);
+            fechas.push({ fechaHoraInicio: nuevaFechaInicio, fechaHoraFin: nuevaFechaFin });
+          }
+          break;
+        case 'Mensualmente':
+          let mes = fechaInicio.getMonth(); // Obtener el mes inicial
+          for (let i = 0; i < 12; i++) {  // Generar repeticiones mensuales por un año
+            let nuevaFechaInicio = new Date(fechaInicio.getFullYear(), mes + i, fechaInicio.getDate(), fechaInicio.getHours(), fechaInicio.getMinutes(), fechaInicio.getSeconds());
+            let nuevaFechaFin = new Date(nuevaFechaInicio.getTime() + duracion);
+            if (nuevaFechaInicio.getDate() !== fechaInicio.getDate()) { // Corrige el desbordamiento de meses (ejemplo: 31 de enero + 1 mes = 3 de marzo)
+              nuevaFechaInicio = new Date(nuevaFechaInicio.getFullYear(), nuevaFechaInicio.getMonth(), 0, fechaInicio.getHours(), fechaInicio.getMinutes(), fechaInicio.getSeconds());
+              nuevaFechaFin = new Date(nuevaFechaInicio.getTime() + duracion);
+            }
+            fechas.push({ fechaHoraInicio: nuevaFechaInicio, fechaHoraFin: nuevaFechaFin });
+          }
+          break;
       }
+      return fechas;
     },
 
     // ASIGNAR Y QUITAR RUTINA
     toggleAsignacionRutina(rutina, submarino) {
       const index = rutina.submarinos.indexOf(submarino.id);
       if (index === -1) {
-        if (this.validarSolapamientos(rutina, submarino.id)) {
-          rutina.submarinos.push(submarino.id);
-          // Actualizar la base de datos
-        } else {
-          alert("La asignación de la rutina se solapa con otras actividades o no respeta el intervalo de descanso requerido.");
+        if (confirm("¿Deseas asignar esta rutina al submarino?")) {
+          if (this.validarSolapamientos(rutina, submarino.id)) {
+            rutina.submarinos.push(submarino.id);
+            this.actualizarBaseDeDatosRutina(rutina);
+          } else {
+            alert("La asignación de la rutina se solapa con otras actividades o no respeta el intervalo de descanso requerido.");
+          }
         }
       } else {
-        rutina.submarinos.splice(index, 1);
-        // Actualizar la base de datos
+        if (confirm("¿Deseas desvincular esta rutina del submarino?")) {
+          rutina.submarinos.splice(index, 1);
+          this.actualizarBaseDeDatosRutina(rutina);
+        }
       }
+      this.actualizarDisponibilidad(submarino.id);
     },
 
-    // VALIDAR QUE NO SE SOLAPEN LAS RUTAS NI LAS TAREAS
-    validarSolapamientos(nuevaActividad, submarinoId) {
-      let actividadesAsignadas = [
-        ...this.rutinas.rutinas.filter(r => r.submarinos.includes(submarinoId)),
-        ...this.tareas.tareas.filter(t => t.submarinos.includes(submarinoId))
-      ];
-
-      if (actividadesAsignadas.length > 0) {
-        const inicioNuevo = new Date(`${nuevaActividad.diaInicio}T${nuevaActividad.horaInicio}`);
-        const finNuevo = new Date(`${nuevaActividad.diaFin}T${nuevaActividad.horaFin}`);
-
-        return actividadesAsignadas.every(act => {
-          const inicioExistente = new Date(`${act.diaInicio}T${act.horaInicio}`);
-          const finExistente = new Date(`${act.diaFin}T${act.horaFin}`);
-
-          // Comprueba si el nuevo evento se solapa con eventos existentes
-          const solapa = finNuevo > inicioExistente && inicioNuevo < finExistente;
-
-          // Comprueba si hay suficiente descanso entre eventos
-          const suficienteDescansoAntes = (inicioNuevo - finExistente >= 9000000); // 150 minutos en milisegundos
-          const suficienteDescansoDespués = (inicioExistente - finNuevo >= 9000000); // 150 minutos en milisegundos
-
-          return !solapa && (suficienteDescansoAntes || suficienteDescansoDespués);
-        });
+    // ASIGNAR Y QUITAR TAREA
+    toggleAsignacionTarea(tarea, submarino) {
+      const index = tarea.submarinos.indexOf(submarino.id);
+      if (index === -1) {
+        if (confirm("¿Deseas asignar esta tarea al submarino?")) {
+          if (this.validarSolapamientos(tarea, submarino.id)) {
+            tarea.submarinos.push(submarino.id);
+            this.actualizarBaseDeDatos(tarea);
+          } else {
+            alert("La asignación de la tarea se solapa con otras actividades o no respeta el intervalo de descanso requerido.");
+          }
+        }
+      } else {
+        if (confirm("¿Deseas desvincular esta tarea del submarino?")) {
+          tarea.submarinos.splice(index, 1);
+          this.actualizarBaseDeDatos(tarea);
+        }
       }
-      return true; // No hay actividades asignadas, no puede haber solapamientos
+      this.actualizarDisponibilidad(submarino.id);
     },
+
+    actualizarBaseDeDatosRutina(rutina) {
+      console.log("Actualizando base de datos para la rutina", rutina);
+      // Implementa la lógica de actualización real aquí
+    },
+
+    actualizarBaseDeDatos(tarea) {
+      console.log("Actualizando base de datos para la tarea", tarea);
+      // Implementa la lógica de actualización real aquí
+    },
+
+
+    actualizarDisponibilidad(submarinoId) {
+  // Recupera solo las tareas y rutinas asignadas al submarino para comparar.
+  const tareasAsignadas = this.tareas.tareas.filter(tarea => tarea.submarinos.includes(submarinoId));
+  const rutinasAsignadas = this.rutinas.rutinas.filter(rutina => rutina.submarinos.includes(submarinoId));
+
+  this.tareas.tareas.forEach(tarea => {
+    tarea.disponible = true; // Asume que todas están disponibles inicialmente.
+    for (let tAsignada of tareasAsignadas) {
+      if (tarea.id !== tAsignada.id && this.validarSolapamientos(tarea, tAsignada)) {
+        tarea.disponible = false; // Marca como no disponible si se solapa.
+        break;
+      }
+    }
+  });
+
+  this.rutinas.rutinas.forEach(rutina => {
+    rutina.disponible = true; // Asume que todas están disponibles inicialmente.
+    for (let rAsignada of rutinasAsignadas) {
+      if (rutina.id !== rAsignada.id && this.validarSolapamientos(rutina, rAsignada)) {
+        rutina.disponible = false; // Marca como no disponible si se solapa.
+        break;
+      }
+    }
+  });
+},
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -597,39 +712,65 @@ export default {
 
     // Método agregarRutina
     async agregarRutina() {
-      if (this.validarFecha(this.selectedDate) && this.validarHora(this.nuevaHoraInicio)) {
+      // Realizar validaciones previas antes de proceder
+      const esFechaValida = this.validarFecha(this.selectedDate);
+      const esHoraInicioValida = this.validarHora(this.nuevaHoraInicio);
+      const esHoraFinValida = this.validarHoraFin(this.selectedDate, this.nuevaHoraInicio, this.nuevaHoraFin);
+
+      if (esFechaValida && esHoraInicioValida && esHoraFinValida === true) {
         if (this.editingTaskIndex !== null) {
           this.actualizarRutinaEditada();
         } else if (this.nuevaRutina.trim() !== "") {
-          this.hacerRutinas.push(this.nuevaRutina);
-          this.descripciones.push(this.nuevaDescripcion);
+          try {
+            this.hacerRutinas.push(this.nuevaRutina);
+            this.descripciones.push(this.nuevaDescripcion);
 
-          // Fusionar fecha y hora seleccionadas
-          const fechaHoraInicio = new Date(this.selectedDate);
-          const horaInicioSplit = this.nuevaHoraInicio.split(':');
-          fechaHoraInicio.setHours(parseInt(horaInicioSplit[0]));
-          fechaHoraInicio.setMinutes(parseInt(horaInicioSplit[1]));
+            // Fusionar fecha y hora seleccionadas para el inicio
+            const fechaHoraInicio = new Date(this.selectedDate);
+            const horaInicioSplit = this.nuevaHoraInicio.split(':');
+            fechaHoraInicio.setHours(parseInt(horaInicioSplit[0]));
+            fechaHoraInicio.setMinutes(parseInt(horaInicioSplit[1]));
 
-          // Agregar los valores a newRutina
-          this.newRutina = {
-            nombre: this.nuevaRutina,
-            descripcion: this.nuevaDescripcion,
-            fechaHoraInicio: fechaHoraInicio,
-            repetir: this.nuevaRepetir,
-            submarinos: this.submarinos,
+            // Establecer la hora de fin utilizando la misma fecha para consistencia
+            const fechaHoraFin = new Date(fechaHoraInicio);
+            const horaFinSplit = this.nuevaHoraFin.split(':');
+            fechaHoraFin.setHours(parseInt(horaFinSplit[0]));
+            fechaHoraFin.setMinutes(parseInt(horaFinSplit[1]));
+            fechaHoraFin.setSeconds(0);
+            fechaHoraFin.setMilliseconds(0);
+
+            const horaFinFormatted = fechaHoraFin.toISOString().split('T')[1];
+
+            // Agregar los valores a newRutina
+            this.newRutina = {
+              nombre: this.nuevaRutina,
+              descripcion: this.nuevaDescripcion,
+              fechaHoraInicio: fechaHoraInicio,
+              repetir: this.nuevaRepetir,
+              submarinos: this.submarinos,
+              fechaHoraFin: horaFinFormatted
+            }
+
+            await addRutina(this.areaEncontradaID, this.newRutina);
+
+            // Limpiar los campos después de agregar la tarea
+            this.nuevaRutina = "";
+            this.nuevaDescripcion = "";
+            this.nuevaHoraInicio = "";
+            this.nuevaHoraFin = "";
+            this.nuevaRepetir = null;
+            this.newRutina = {};
+            this.selectedDate = null;
+          } catch (error) {
+            console.error("Error al agregar la rutina:", error);
+            alert("No se pudo agregar la rutina debido a un error interno.");
           }
-
-          await addRutina(this.areaEncontradaID, this.newRutina);
-
-          // Limpiar los campos después de agregar la tarea
-          this.nuevaRutina = "";
-          this.nuevaDescripcion = "";
-          this.nuevaHoraInicio = "";
-          this.nuevaRepetir = null;
-          this.newRutina = {};
-          this.selectedDate = null;
         }
         this.selectRutinas();
+      } else {
+        // Manejar el caso donde las validaciones fallan
+        console.error("Error en la validación: No se puede agregar la rutina debido a datos inválidos.");
+        alert("Error en la validación: No se puede agregar la rutina debido a datos inválidos.");
       }
     },
 
@@ -650,6 +791,24 @@ export default {
         this.rutinaEnEdicion.selectedDate = fecha.toISOString().split('T')[0];
         this.rutinaEnEdicion.horaInicio = `${hora.toString().padStart(2, '0')}:${minutos.toString().padStart(2, '0')}`;
 
+        // Asegurar que fechaHoraFin está en un formato correcto antes de procesar
+        if (rutina.fechaHoraFin && rutina.fechaHoraFin.includes(':')) {
+          const horaFinSplit = rutina.fechaHoraFin.split(':');
+          if (horaFinSplit.length >= 2) {
+            const horaFin = parseInt(horaFinSplit[0], 10);
+            const minutosFin = parseInt(horaFinSplit[1], 10);
+            if (!isNaN(horaFin) && !isNaN(minutosFin)) {
+              this.rutinaEnEdicion.horaFin = `${horaFin.toString().padStart(2, '0')}:${minutosFin.toString().padStart(2, '0')}`;
+            } else {
+              this.rutinaEnEdicion.horaFin = "";
+            }
+          } else {
+            this.rutinaEnEdicion.horaFin = "";
+          }
+        } else {
+          this.rutinaEnEdicion.horaFin = "";
+        }
+
         this.rutinaEnEdicion.repetir = rutina.repetir || null;
         this.editingTaskIndex = index;
         this.showDialogEdicion = true;
@@ -660,7 +819,12 @@ export default {
 
     // UPDATE EN EL MONGO RUTINAS
     async actualizarRutinaEditada() {
-      if (this.validarFecha(this.rutinaEnEdicion.selectedDate) && this.validarHoraEditar(this.rutinaEnEdicion.selectedDate, this.rutinaEnEdicion.horaInicio)) {
+      // Validar todas las condiciones necesarias antes de proceder
+      const esFechaValida = this.validarFecha(this.rutinaEnEdicion.selectedDate);
+      const esHoraInicioValida = this.validarHoraEditar(this.rutinaEnEdicion.selectedDate, this.rutinaEnEdicion.horaInicio);
+      const esHoraFinValida = this.validarHoraFin(this.rutinaEnEdicion.selectedDate, this.rutinaEnEdicion.horaInicio, this.rutinaEnEdicion.horaFin);
+
+      if (esFechaValida && esHoraInicioValida && esHoraFinValida === true) { // Asegurar que todas las validaciones son verdaderamente válidas
         try {
           const rutina = this.rutinas.rutinas[this.editingTaskIndex];
           const idArea = this.areaEncontradaID;
@@ -672,11 +836,27 @@ export default {
           fechaHoraInicio.setHours(parseInt(horaInicioSplit[0]));
           fechaHoraInicio.setMinutes(parseInt(horaInicioSplit[1]));
 
-          await updateRutinasMongo(this.rutinaEnEdicion.nombre.trim(), this.rutinaEnEdicion.descripcion || "", fechaHoraInicio, this.rutinaEnEdicion.repetir, idArea, idRutina);
+          // Establecer la hora de fin usando toLocaleTimeString para mantener la zona horaria local
+          const fechaHoraFin = new Date(this.rutinaEnEdicion.selectedDate);
+          const horaFinSplit = this.rutinaEnEdicion.horaFin.split(':');
+          fechaHoraFin.setHours(parseInt(horaFinSplit[0]));
+          fechaHoraFin.setMinutes(parseInt(horaFinSplit[1]));
+          fechaHoraFin.setSeconds(0);
+          fechaHoraFin.setMilliseconds(0);
+
+          // Usar toLocaleTimeString para obtener solo la hora y minutos en formato local
+          const horaFinFormatted = fechaHoraFin.toLocaleTimeString('en-GB', {
+            hour: '2-digit',
+            minute: '2-digit',
+            second: '2-digit',
+            hour12: false
+          });
+
+          await updateRutinasMongo(this.rutinaEnEdicion.nombre.trim(), this.rutinaEnEdicion.descripcion || "", fechaHoraInicio, horaFinFormatted, this.rutinaEnEdicion.repetir, idArea, idRutina);
 
           //console.log('Rutina actualizada correctamente');
           this.editingTaskIndex = null;
-          this.rutinaEnEdicion = { nombre: "", descripcion: "", fechaHoraInicio: null, horaInicio: "", repetir: null };
+          this.rutinaEnEdicion = { nombre: "", descripcion: "", fechaHoraInicio: null, horaInicio: "", horaFin: "", repetir: null };
           this.selectRutinas();
           this.showDialogEdicion = false;
         } catch (error) {
@@ -1225,11 +1405,47 @@ export default {
 
     abrirDialogoSubmarino(submarino) {
       this.submarinoSeleccionado = submarino;
-      // cargar datos
-      //this.selectTareas();
-      //this.selectRutinas();
+      this.actualizarDisponibilidad(submarino.id);
       this.dialogoSubmarinoVisible = true;
     },
+
+    validarHoraFin(selectedDate, horaInicio, horaFin) {
+      // Primero, verifica que ninguna de las horas sea undefined
+      if (!horaInicio || !horaFin) {
+        return 'La hora de inicio y la hora de fin son requeridas.';
+      }
+
+      const inicioSplit = horaInicio.split(':');
+      const finSplit = horaFin.split(':');
+
+      if (inicioSplit.length < 2 || finSplit.length < 2) {
+        // Verifica que ambos tiempos tengan el formato esperado
+        return 'Formato de hora incorrecto.';
+      }
+
+      const fechaInicio = new Date(selectedDate);
+      fechaInicio.setHours(parseInt(inicioSplit[0]), parseInt(inicioSplit[1]), 0);
+
+      const fechaFin = new Date(selectedDate);
+      fechaFin.setHours(parseInt(finSplit[0]), parseInt(finSplit[1]), 0);
+
+      // Calcular la diferencia en milisegundos
+      const diferencia = fechaFin - fechaInicio;
+
+      if (diferencia < 0) {
+        return 'La hora de fin no puede ser anterior a la hora de inicio.';
+      }
+
+      // Convertir diferencia a minutos
+      const minutos = diferencia / 60000; // 1000 ms * 60 s
+
+      if (minutos < 150) {
+        return 'La hora de fin debe ser al menos 2 horas y 30 minutos después de la hora de inicio.';
+      }
+
+      return true;
+    }
+
 
   },
   //
@@ -1239,6 +1455,14 @@ export default {
         (submarino) => submarino.id_area === this.areaEncontradaID
       );
     },
+
+    actividadesAsignadas() {
+      // Asegúrate de que cada vez que se solicite, calcule las actividades asignadas de nuevo
+      return [
+        ...this.rutinas.rutinas.filter(r => r.submarinos.includes(this.submarinoSeleccionado.id)),
+        ...this.tareas.tareas.filter(t => t.submarinos.includes(this.submarinoSeleccionado.id))
+      ];
+    }
   },
 
   //CONSOLA
