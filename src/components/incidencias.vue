@@ -62,6 +62,9 @@
               <td style="border: none; margin-left: ">
                 <v-icon @click="editarIncidencia(index, item.id_incidencia)">mdi-pencil</v-icon>
               </td>
+              <td style="border: none; margin-left: ">
+                <v-icon @click="reportIncidencia(item.id_incidencia)">mdi-chat-processing-outline</v-icon>
+              </td>
             </tr>
           </tbody>
         </table>
@@ -77,6 +80,16 @@
         </v-card-text>
         <v-card-actions>
           <v-btn color="primary" @click="dialogDescripcion = false">Cerrar</v-btn>
+        </v-card-actions>
+      </v-card>
+    </v-dialog>
+
+    <v-dialog v-model="dialogReport" max-width="500">
+      <v-card>
+        <v-card-title>Reportes de la incidencia</v-card-title>
+        
+        <v-card-actions>
+          <v-btn color="primary" @click="dialogReport = false">Cerrar</v-btn>
         </v-card-actions>
       </v-card>
     </v-dialog>
@@ -210,6 +223,7 @@ export default {
       dialogDescripcion: false,
       descripcionSeleccionada: "",
       idIncidenciaEditando: null,
+      dialogReport: false,
     };
   },
   methods: {
@@ -391,6 +405,12 @@ export default {
 
       // Abrir el diálogo de edición
       this.dialogoEdicionVisible = true;
+    },
+
+    reportIncidencia(descripcion) {
+      this.descripcionSeleccionada = descripcion;
+
+      this.dialogReport = true;
     },
 
     // GUARDAR Y HACER UPDATE

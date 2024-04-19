@@ -284,7 +284,7 @@
                   empresaSeleccionada.nombre_calle
                 }}</v-list-item-subtitle>
                         <v-list-item-subtitle><b>TEL: </b>{{
-                  empresaSeleccionada.numero_teléfono
+                  empresaSeleccionada.numero_telefono
                 }}</v-list-item-subtitle>
                         <v-list-item-subtitle><b>MAIL: </b>{{
                   empresaSeleccionada.correo
@@ -806,7 +806,7 @@ export default {
       this.empresas.push({
         nom_empresa: this.nuevaEmpresa.nombre,
         nombre_calle: this.nuevaEmpresa.nombre_calle,
-        numero_teléfono: this.nuevaEmpresa.telefono,
+        numero_telefono: this.nuevaEmpresa.telefono,
         correo: this.nuevaEmpresa.correo,
         plan: this.nuevaEmpresa.plan,
         sitio_web: this.nuevaEmpresa.sitioWeb,
