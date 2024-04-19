@@ -579,6 +579,20 @@ export async function getSuscripciones() {
     }
 }
 
+export async function getReports() {
+    try {
+        const response = await fetch('http://localhost:3169/getReportes');
+        if (!response.ok) {
+            throw new Error('Error al obtener los reportes');
+        }
+        const data = await response.json();
+        return data;
+    } catch (error) {
+        console.error('Error en la solicitud:', error.message);
+        throw error;
+    }
+}
+
 export async function updateIncidencias(asunto, descripcio, prioridad, idIncidencia) {
     try {
         const response = await fetch('http://localhost:3169/updateIncidencia', {

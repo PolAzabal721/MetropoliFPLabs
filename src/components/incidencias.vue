@@ -62,6 +62,9 @@
               <td style="border: none; margin-left: ">
                 <v-icon @click="editarIncidencia(index, item.id_incidencia)">mdi-pencil</v-icon>
               </td>
+              <td style="border: none; margin-left: ">
+                <v-icon @click="reportIncidencia(item.id_incidencia)">mdi-history</v-icon>
+              </td>
             </tr>
           </tbody>
         </table>
@@ -81,6 +84,28 @@
       </v-card>
     </v-dialog>
 
+    <v-dialog v-model="dialogReport" max-width="500">
+      <v-card>
+        <v-card-title>Historial de reportes de la incidencia</v-card-title>
+
+        <v-list>
+          <v-list-item v-for="(reporte, index) in reporteSeleccionado" :key="index">
+            <v-list-item-content>
+              <v-list-item-title>{{ reporte.fecha_report }}</v-list-item-title>
+              <v-list-item-subtitle>{{ reporte.mensaje }}</v-list-item-subtitle>
+              <v-list-item-subtitle>{{ reporte.solucionado }}</v-list-item-subtitle>
+
+            </v-list-item-content>
+          </v-list-item>
+        </v-list>
+
+        <v-card-actions>
+          <v-btn color="primary" @click="dialogReport = false">Cerrar</v-btn>
+        </v-card-actions>
+      </v-card>
+    </v-dialog>
+
+
     <!-- Diálogo para crear una nueva incidencia -->
     <v-dialog v-model="dialogoVisible" max-width="600px">
       <v-card>
@@ -89,7 +114,7 @@
           <v-text-field v-model="nuevaIncidencia.nombre" label="Asunto de la incidencia"></v-text-field>
           <v-textarea v-model="nuevaIncidencia.descripcion" label="Descripción de la incidencia"></v-textarea>
           <v-select v-model="nuevaIncidencia.submarinoSeleccionado" label="Submarino" :items="submarinos.map((submarino) => submarino.nom_sub)
-            " item-text="text" item-value="value"></v-select>
+      " item-text="text" item-value="value"></v-select>
 
           <v-select v-model="nuevaIncidencia.tipo" :items="['Actualización software', 'Reparación']"
             label="Tipo"></v-select>
@@ -126,7 +151,8 @@ import {
   insertIncidencia,
   getIncidencias,
   updateIncidencias,
-  selectIncidenciasEmpresa
+  selectIncidenciasEmpresa,
+  getReports
 } from "@/services/connectionManager.js";
 import { useAppStore } from "@/store/app";
 
@@ -156,6 +182,8 @@ export default {
   data() {
     return {
       listaEnviar: [],
+      reportes: [],
+      reporteSeleccionado: [],
       listaItems: [],
       ordenFecha: {
         campo: null,
@@ -210,6 +238,7 @@ export default {
       dialogDescripcion: false,
       descripcionSeleccionada: "",
       idIncidenciaEditando: null,
+      dialogReport: false,
     };
   },
   methods: {
@@ -393,6 +422,24 @@ export default {
       this.dialogoEdicionVisible = true;
     },
 
+    reportIncidencia(id) {
+      // Encuentra todos los reportes que coinciden con el id_incidencia proporcionado
+      const reportesEncontrados = this.reportes.filter(reporte => reporte.id_incidencia === id);
+
+      if (reportesEncontrados.length > 0) {
+        // Si se encontraron reportes, asigna el array de reportes encontrados a reporteSeleccionado
+        this.reporteSeleccionado = reportesEncontrados;
+        console.log(this.reporteSeleccionado);
+        // Muestra el diálogo
+        this.dialogReport = true;
+      } else {
+        // Si no se encontró ningún reporte, puedes manejarlo como desees
+        window.alert('No se encontró ningún reporte en esa incidencia.');
+        // Podrías mostrar un mensaje de error o tomar alguna otra acción
+      }
+    },
+
+
     // GUARDAR Y HACER UPDATE
     async guardarEdicionIncidencia() {
       // Verificar que el índice de edición esté definido
@@ -499,12 +546,23 @@ export default {
 
       // console.log(this.listaItems);
     },
+
+    async getReportes() {
+      try {
+        this.reportes = await getReports();
+        console.log(this.reportes);
+      } catch (error) {
+        console.error("Error fetching reportes:", error);
+      }
+    }
+
   },
   //CONSOLA
   created() {
     console.log("CREADO");
     this.getSubmarino();
     this.getIncidencia();
+    this.getReportes();
   },
   mounted() {
     console.log("MONTADO");
