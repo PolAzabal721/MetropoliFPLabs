@@ -63,6 +63,7 @@
                 <v-icon @click="editarIncidencia(index, item.id_incidencia)">mdi-pencil</v-icon>
               </td>
               <td style="border: none; margin-left: ">
+                
                 <v-icon @click="reportIncidencia(item.id_incidencia)">mdi-history</v-icon>
               </td>
             </tr>
