@@ -424,23 +424,13 @@ export default {
     };
   },
   methods: {
-
     validarSolapamientos(nuevaActividad, submarinoId) {
       let actividadesAsignadas = [
         ...this.tareas.tareas.filter(t => t.submarinos.includes(submarinoId) && t.id !== nuevaActividad.id),
         ...this.rutinas.rutinas.filter(r => r.submarinos.includes(submarinoId) && r.id !== nuevaActividad.id)
       ];
 
-      console.log('Submarino ID:', submarinoId);
-      console.log('Tareas disponibles:', this.tareas.tareas.map(t => t.id));
-      console.log('Rutinas disponibles:', this.rutinas.rutinas.map(r => r.id));
-
-
-      //console.log('Filtrado de actividades:', actividadesAsignadas);
-      //console.log('Actividades asignadas para comparar:', actividadesAsignadas.length);
-
       const repeticionesNuevaActividad = this.generarRepeticiones(nuevaActividad, nuevaActividad.repetir || 'No repetir');
-
       return repeticionesNuevaActividad.every(nuevaRep => {
         const inicioNuevo = new Date(nuevaRep.fechaHoraInicio);
         const finNuevo = new Date(nuevaRep.fechaHoraFin);
@@ -452,7 +442,6 @@ export default {
             const finExistente = new Date(existenteRep.fechaHoraFin);
 
             let noSolapan = finNuevo <= inicioExistente || inicioNuevo >= finExistente;
-            console.log(`Comparando: Nuevo [${inicioNuevo} - ${finNuevo}] con Existente [${inicioExistente} - ${finExistente}], No solapan: ${noSolapan}`);
             return noSolapan;
           });
         });
@@ -501,12 +490,12 @@ export default {
       const index = rutina.submarinos.indexOf(submarino.id);
       if (index === -1) { // Si la rutina no está ya asignada a este submarino
         if (confirm("¿Deseas asignar esta rutina al submarino?")) {
-          if (this.validarSolapamientos(rutina, submarino.id)) {
-            rutina.submarinos.push(submarino.id); // Asigna la rutina si no hay solapamiento
-            this.actualizarBaseDeDatosRutina(rutina);
-          } else {
+          if (!this.validarSolapamientos(rutina, submarino.id)) {
             alert("La asignación de la rutina se solapa con otras actividades o no respeta el intervalo de descanso requerido.");
+            return; // Asegurarse de salir si hay solapamiento
           }
+          rutina.submarinos.push(submarino.id); // Asigna la rutina si no hay solapamiento
+          this.actualizarBaseDeDatosRutina(rutina);
         }
       } else { // Si ya está asignada y se desea desvincular
         if (confirm("¿Deseas desvincular esta rutina del submarino?")) {
@@ -521,13 +510,12 @@ export default {
     toggleAsignacionTarea(tarea, submarino) {
       if (!tarea.submarinos.includes(submarino.id)) {
         if (confirm("¿Deseas asignar esta tarea al submarino?")) {
-          if (this.validarSolapamientos(tarea, submarino.id)) {
-            tarea.submarinos.push(submarino.id);
-            this.actualizarBaseDeDatos(tarea);
-          } else {
+          if (!this.validarSolapamientos(tarea, submarino.id)) { // Verifica solapamientos
             alert("No se puede asignar la tarea debido a solapamientos con otras actividades.");
-            return;  // Asegurarse de salir si hay solapamiento
+            return; // Asegurarse de salir si hay solapamiento
           }
+          tarea.submarinos.push(submarino.id);
+          this.actualizarBaseDeDatos(tarea);
         }
       } else {
         if (confirm("¿Deseas desvincular esta tarea del submarino?")) {
