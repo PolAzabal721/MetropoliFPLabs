@@ -883,8 +883,11 @@ export default {
     // SELECT PARA PILLAR COODS + NOMBRE DEL AREA + ID
     async getAreas() {
       try {
+        const store = useAppStore();
+        const idEmpresa = store.getUserEmpresa;
         this.areas = await fetchAreas();
-        // console.log(this.areas);
+        this.areas = this.areas.filter(area => area.idEmpresa === idEmpresa);  
+         console.log(this.areas);
       } catch (error) {
         console.error("Error fetching areas:", error);
       }

@@ -5,7 +5,7 @@ export async function getDades() {
     return result;
 }
 
-export async function insertarArea(coordenadas, nombreArea, idSubmarino) {
+export async function insertarArea(coordenadas, nombreArea, idEmpresa, idSubmarino) {
     try {
         const response = await fetch('http://localhost:3169/areas', {
             method: 'PUT',
@@ -15,6 +15,7 @@ export async function insertarArea(coordenadas, nombreArea, idSubmarino) {
             body: JSON.stringify({
                 coordenadas: coordenadas,
                 nombreArea: nombreArea,
+                idEmpresa: idEmpresa,
                 idSubmarino: idSubmarino
             })
         });
@@ -199,7 +200,7 @@ export async function deleteSubMongo(id_area, id_sub) {
             headers: {
                 'Content-Type': 'application/json'
             },
-            body: JSON.stringify({ areaId: id_area, submarinoId: id_sub }) 
+            body: JSON.stringify({ areaId: id_area, submarinoId: id_sub })
         })
     } catch (error) {
         console.log(error);

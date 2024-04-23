@@ -69,7 +69,7 @@
       </v-dialog>
     </v-container>
   </v-layout>
-</template> 
+</template>
 
 <script>
 import "leaflet/dist/leaflet.css";
@@ -244,10 +244,13 @@ export default {
 
         // Guardar el área en la base de datos (reemplazar con tu método de guardado real)
         console.log(this.selectedSubmarine);
+        const store = useAppStore();
+        const idEmpresa = store.getUserEmpresa;
         try {
           const areaId = await insertarArea(
             this.drawnGeometries,
             this.nombreLugar,
+            idEmpresa,
             this.selectedSubmarine
           );
 
@@ -290,6 +293,8 @@ export default {
     // SELECT PARA PILLAR COODS + NOMBRE DEL AREA + ID
     async getAreas() {
       try {
+        const store = useAppStore();
+        const idEmpresa = store.getUserEmpresa;
         this.areas = await fetchAreas();
       } catch (error) {
         console.error("Error fetching areas:", error);

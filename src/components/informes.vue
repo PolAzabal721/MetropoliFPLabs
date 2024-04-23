@@ -56,6 +56,8 @@ import "leaflet-draw/dist/leaflet.draw";
 import "leaflet-draw/dist/leaflet.draw-src";
 import "leaflet-draw/dist/leaflet.draw-src.js";
 import { fetchAreas } from "@/services/connectionManager.js";
+import { useAppStore } from "@/store/app";
+
 
 export default {
   data() {
@@ -71,6 +73,8 @@ export default {
     // FETCH PARA PILLAR COODS + NOMBRE DEL AREA + ID
     async getAreas() {
       try {
+        const store = useAppStore();
+        const idEmpresa = store.getUserEmpresa;
         this.areas = await fetchAreas();
       } catch (error) {
         console.error("Error fetching areas:", error);
