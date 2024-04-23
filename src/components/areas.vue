@@ -296,6 +296,8 @@ export default {
         const store = useAppStore();
         const idEmpresa = store.getUserEmpresa;
         this.areas = await fetchAreas();
+        this.areas = this.areas.filter(area => area.idEmpresa === idEmpresa);  
+
       } catch (error) {
         console.error("Error fetching areas:", error);
       }
