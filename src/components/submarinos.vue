@@ -427,11 +427,18 @@ export default {
 
     validarSolapamientos(nuevaActividad, submarinoId) {
       let actividadesAsignadas = [
-        ...this.rutinas.rutinas.filter(r => r.submarinos.includes(submarinoId) && r.id !== nuevaActividad.id),
-        ...this.tareas.tareas.filter(t => t.submarinos.includes(submarinoId) && t.id !== nuevaActividad.id)
+        ...this.tareas.tareas.filter(t => t.submarinos.includes(submarinoId) && t.id !== nuevaActividad.id),
+        ...this.rutinas.rutinas.filter(r => r.submarinos.includes(submarinoId) && r.id !== nuevaActividad.id)
       ];
 
-      // Para actividades que no tienen 'repetir' definido, se asume que no se repiten.
+      console.log('Submarino ID:', submarinoId);
+      console.log('Tareas disponibles:', this.tareas.tareas.map(t => t.id));
+      console.log('Rutinas disponibles:', this.rutinas.rutinas.map(r => r.id));
+
+
+      //console.log('Filtrado de actividades:', actividadesAsignadas);
+      //console.log('Actividades asignadas para comparar:', actividadesAsignadas.length);
+
       const repeticionesNuevaActividad = this.generarRepeticiones(nuevaActividad, nuevaActividad.repetir || 'No repetir');
 
       return repeticionesNuevaActividad.every(nuevaRep => {
@@ -444,14 +451,9 @@ export default {
             const inicioExistente = new Date(existenteRep.fechaHoraInicio);
             const finExistente = new Date(existenteRep.fechaHoraFin);
 
-            // Verificar que no haya solapamientos directos
             let noSolapan = finNuevo <= inicioExistente || inicioNuevo >= finExistente;
-
-            // Asegurarse de que hay un descanso adecuado entre actividades
-            let suficienteDescansoAntes = (inicioNuevo - finExistente) >= 9000000; // 2.5 horas
-            let suficienteDescansoDespués = (inicioExistente - finNuevo) >= 9000000; // 2.5 horas
-
-            return noSolapan && (suficienteDescansoAntes || suficienteDescansoDespués);
+            console.log(`Comparando: Nuevo [${inicioNuevo} - ${finNuevo}] con Existente [${inicioExistente} - ${finExistente}], No solapan: ${noSolapan}`);
+            return noSolapan;
           });
         });
       });
@@ -460,32 +462,31 @@ export default {
     // CALCULAR LAS REPETICIONES 
     generarRepeticiones(actividad, repetir) {
       let fechas = [];
-      const fechaInicio = new Date(actividad.fechaHoraInicio);
-      const fechaFin = new Date(actividad.fechaHoraFin);
-      const duracion = fechaFin - fechaInicio;
+      let fechaInicio = new Date(actividad.fechaHoraInicio);
+      let fechaFin = new Date(actividad.fechaHoraFin);
+      let duracion = fechaFin.getTime() - fechaInicio.getTime();
 
       switch (repetir) {
         case 'Diariamente':
-          for (let i = 0; i < 365; i++) {  // Generar repeticiones diarias por un año
-            let nuevaFechaInicio = new Date(fechaInicio.getTime() + i * 86400000); // 86400000 ms = 1 día
+          for (let i = 0; i < 365; i++) {
+            let nuevaFechaInicio = new Date(fechaInicio.getTime() + i * 86400000);
             let nuevaFechaFin = new Date(nuevaFechaInicio.getTime() + duracion);
             fechas.push({ fechaHoraInicio: nuevaFechaInicio, fechaHoraFin: nuevaFechaFin });
           }
           break;
         case 'Semanalmente':
-          for (let i = 0; i < 52; i++) {  // Generar repeticiones semanales por un año
-            let nuevaFechaInicio = new Date(fechaInicio.getTime() + i * 604800000); // 604800000 ms = 1 semana
+          for (let i = 0; i < 52; i++) {
+            let nuevaFechaInicio = new Date(fechaInicio.getTime() + i * 604800000);
             let nuevaFechaFin = new Date(nuevaFechaInicio.getTime() + duracion);
             fechas.push({ fechaHoraInicio: nuevaFechaInicio, fechaHoraFin: nuevaFechaFin });
           }
           break;
         case 'Mensualmente':
-          let mes = fechaInicio.getMonth(); // Obtener el mes inicial
-          for (let i = 0; i < 12; i++) {  // Generar repeticiones mensuales por un año
-            let nuevaFechaInicio = new Date(fechaInicio.getFullYear(), mes + i, fechaInicio.getDate(), fechaInicio.getHours(), fechaInicio.getMinutes(), fechaInicio.getSeconds());
+          for (let i = 0; i < 12; i++) {
+            let nuevaFechaInicio = new Date(fechaInicio.getFullYear(), fechaInicio.getMonth() + i, fechaInicio.getDate(), fechaInicio.getHours(), fechaInicio.getMinutes());
             let nuevaFechaFin = new Date(nuevaFechaInicio.getTime() + duracion);
-            if (nuevaFechaInicio.getDate() !== fechaInicio.getDate()) { // Corrige el desbordamiento de meses (ejemplo: 31 de enero + 1 mes = 3 de marzo)
-              nuevaFechaInicio = new Date(nuevaFechaInicio.getFullYear(), nuevaFechaInicio.getMonth(), 0, fechaInicio.getHours(), fechaInicio.getMinutes(), fechaInicio.getSeconds());
+            if (nuevaFechaInicio.getDate() !== fechaInicio.getDate()) { // Handle month overflow
+              nuevaFechaInicio.setDate(0);
               nuevaFechaFin = new Date(nuevaFechaInicio.getTime() + duracion);
             }
             fechas.push({ fechaHoraInicio: nuevaFechaInicio, fechaHoraFin: nuevaFechaFin });
@@ -498,39 +499,39 @@ export default {
     // ASIGNAR Y QUITAR RUTINA
     toggleAsignacionRutina(rutina, submarino) {
       const index = rutina.submarinos.indexOf(submarino.id);
-      if (index === -1) {
+      if (index === -1) { // Si la rutina no está ya asignada a este submarino
         if (confirm("¿Deseas asignar esta rutina al submarino?")) {
           if (this.validarSolapamientos(rutina, submarino.id)) {
-            rutina.submarinos.push(submarino.id);
+            rutina.submarinos.push(submarino.id); // Asigna la rutina si no hay solapamiento
             this.actualizarBaseDeDatosRutina(rutina);
           } else {
             alert("La asignación de la rutina se solapa con otras actividades o no respeta el intervalo de descanso requerido.");
           }
         }
-      } else {
+      } else { // Si ya está asignada y se desea desvincular
         if (confirm("¿Deseas desvincular esta rutina del submarino?")) {
-          rutina.submarinos.splice(index, 1);
+          rutina.submarinos.splice(index, 1); // Desvincula la rutina
           this.actualizarBaseDeDatosRutina(rutina);
         }
       }
-      this.actualizarDisponibilidad(submarino.id);
+      this.actualizarDisponibilidad(submarino.id); // Actualiza la disponibilidad de tareas y rutinas basada en las asignaciones actuales
     },
 
     // ASIGNAR Y QUITAR TAREA
     toggleAsignacionTarea(tarea, submarino) {
-      const index = tarea.submarinos.indexOf(submarino.id);
-      if (index === -1) {
+      if (!tarea.submarinos.includes(submarino.id)) {
         if (confirm("¿Deseas asignar esta tarea al submarino?")) {
           if (this.validarSolapamientos(tarea, submarino.id)) {
             tarea.submarinos.push(submarino.id);
             this.actualizarBaseDeDatos(tarea);
           } else {
-            alert("La asignación de la tarea se solapa con otras actividades o no respeta el intervalo de descanso requerido.");
+            alert("No se puede asignar la tarea debido a solapamientos con otras actividades.");
+            return;  // Asegurarse de salir si hay solapamiento
           }
         }
       } else {
         if (confirm("¿Deseas desvincular esta tarea del submarino?")) {
-          tarea.submarinos.splice(index, 1);
+          tarea.submarinos.splice(tarea.submarinos.indexOf(submarino.id), 1);
           this.actualizarBaseDeDatos(tarea);
         }
       }
@@ -547,32 +548,30 @@ export default {
       // Implementa la lógica de actualización real aquí
     },
 
-
     actualizarDisponibilidad(submarinoId) {
-  // Recupera solo las tareas y rutinas asignadas al submarino para comparar.
-  const tareasAsignadas = this.tareas.tareas.filter(tarea => tarea.submarinos.includes(submarinoId));
-  const rutinasAsignadas = this.rutinas.rutinas.filter(rutina => rutina.submarinos.includes(submarinoId));
+      // Recupera solo las tareas y rutinas asignadas al submarino para comparar.
+      const tareasAsignadas = this.tareas.tareas.filter(tarea => tarea.submarinos.includes(submarinoId));
+      const rutinasAsignadas = this.rutinas.rutinas.filter(rutina => rutina.submarinos.includes(submarinoId));
+      this.tareas.tareas.forEach(tarea => {
+        tarea.disponible = true; // Asume que todas están disponibles inicialmente.
+        for (let tAsignada of tareasAsignadas) {
+          if (tarea.id !== tAsignada.id && !this.validarSolapamientos(tarea, tAsignada)) {
+            tarea.disponible = false; // Marca como no disponible si se solapa.
+            break;
+          }
+        }
+      });
 
-  this.tareas.tareas.forEach(tarea => {
-    tarea.disponible = true; // Asume que todas están disponibles inicialmente.
-    for (let tAsignada of tareasAsignadas) {
-      if (tarea.id !== tAsignada.id && this.validarSolapamientos(tarea, tAsignada)) {
-        tarea.disponible = false; // Marca como no disponible si se solapa.
-        break;
-      }
-    }
-  });
-
-  this.rutinas.rutinas.forEach(rutina => {
-    rutina.disponible = true; // Asume que todas están disponibles inicialmente.
-    for (let rAsignada of rutinasAsignadas) {
-      if (rutina.id !== rAsignada.id && this.validarSolapamientos(rutina, rAsignada)) {
-        rutina.disponible = false; // Marca como no disponible si se solapa.
-        break;
-      }
-    }
-  });
-},
+      this.rutinas.rutinas.forEach(rutina => {
+        rutina.disponible = true; // Asume que todas están disponibles inicialmente.
+        for (let rAsignada of rutinasAsignadas) {
+          if (rutina.id !== rAsignada.id && !this.validarSolapamientos(rutina, rAsignada)) {
+            rutina.disponible = false; // Marca como no disponible si se solapa.
+            break;
+          }
+        }
+      });
+    },
 
 
 
@@ -886,8 +885,8 @@ export default {
         const store = useAppStore();
         const idEmpresa = store.getUserEmpresa;
         this.areas = await fetchAreas();
-        this.areas = this.areas.filter(area => area.idEmpresa === idEmpresa);  
-         console.log(this.areas);
+        this.areas = this.areas.filter(area => area.idEmpresa === idEmpresa);
+        // console.log(this.areas);
       } catch (error) {
         console.error("Error fetching areas:", error);
       }
