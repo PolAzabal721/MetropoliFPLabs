@@ -430,13 +430,19 @@ export default {
         ...this.rutinas.rutinas.filter(r => r.submarinos.includes(submarinoId) && r.id !== nuevaActividad.id)
       ];
 
-      const repeticionesNuevaActividad = this.generarRepeticiones(nuevaActividad, nuevaActividad.repetir || 'No repetir');
+      let repeticionesNuevaActividad;
+      if (nuevaActividad.tipo === 'Tarea') {
+        repeticionesNuevaActividad = this.generarRepeticionesDiarias(nuevaActividad);
+      } else {
+        repeticionesNuevaActividad = this.generarRepeticiones(nuevaActividad, nuevaActividad.repetir || 'No repetir');
+      }
+
       return repeticionesNuevaActividad.every(nuevaRep => {
         const inicioNuevo = new Date(nuevaRep.fechaHoraInicio);
         const finNuevo = new Date(nuevaRep.fechaHoraFin);
 
         return actividadesAsignadas.every(act => {
-          const repeticionesExistente = this.generarRepeticiones(act, act.repetir || 'No repetir');
+          let repeticionesExistente = act.tipo === 'Tarea' ? this.generarRepeticionesDiarias(act) : this.generarRepeticiones(act, act.repetir || 'No repetir');
           return repeticionesExistente.every(existenteRep => {
             const inicioExistente = new Date(existenteRep.fechaHoraInicio);
             const finExistente = new Date(existenteRep.fechaHoraFin);
@@ -447,6 +453,9 @@ export default {
         });
       });
     },
+
+
+
 
     // CALCULAR LAS REPETICIONES 
     generarRepeticiones(actividad, repetir) {
@@ -474,13 +483,24 @@ export default {
           for (let i = 0; i < 12; i++) {
             let nuevaFechaInicio = new Date(fechaInicio.getFullYear(), fechaInicio.getMonth() + i, fechaInicio.getDate(), fechaInicio.getHours(), fechaInicio.getMinutes());
             let nuevaFechaFin = new Date(nuevaFechaInicio.getTime() + duracion);
-            if (nuevaFechaInicio.getDate() !== fechaInicio.getDate()) { // Handle month overflow
-              nuevaFechaInicio.setDate(0);
-              nuevaFechaFin = new Date(nuevaFechaInicio.getTime() + duracion);
-            }
             fechas.push({ fechaHoraInicio: nuevaFechaInicio, fechaHoraFin: nuevaFechaFin });
           }
           break;
+      }
+      return fechas;
+    },
+
+
+    generarRepeticionesDiarias(actividad) {
+      let fechas = [];
+      let fechaActual = new Date(actividad.fechaHoraInicio);
+      let fechaFin = new Date(actividad.fechaHoraFin);
+
+      while (fechaActual <= fechaFin) {
+        let nuevaFechaFin = new Date(fechaActual);
+        nuevaFechaFin.setHours(fechaFin.getHours(), fechaFin.getMinutes(), fechaFin.getSeconds());
+        fechas.push({ fechaHoraInicio: new Date(fechaActual), fechaHoraFin: nuevaFechaFin });
+        fechaActual.setDate(fechaActual.getDate() + 1);
       }
       return fechas;
     },
