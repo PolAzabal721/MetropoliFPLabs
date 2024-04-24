@@ -426,36 +426,34 @@ export default {
   methods: {
     validarSolapamientos(nuevaActividad, submarinoId) {
       let actividadesAsignadas = [
-        ...this.tareas.tareas.filter(t => t.submarinos.includes(submarinoId) && t.id !== nuevaActividad.id),
-        ...this.rutinas.rutinas.filter(r => r.submarinos.includes(submarinoId) && r.id !== nuevaActividad.id)
+        ...this.tareas.tareas.filter(t => t.submarinos.includes(submarinoId)),
+        ...this.rutinas.rutinas.filter(r => r.submarinos.includes(submarinoId))
       ];
 
-      let repeticionesNuevaActividad;
-      if (nuevaActividad.tipo === 'Tarea') {
-        repeticionesNuevaActividad = this.generarRepeticionesDiarias(nuevaActividad);
-      } else {
-        repeticionesNuevaActividad = this.generarRepeticiones(nuevaActividad, nuevaActividad.repetir || 'No repetir');
+      let repeticionesNuevaActividad = this.generarRepeticionesTotales(nuevaActividad);
+
+      for (let nuevaRep of repeticionesNuevaActividad) {
+        for (let act of actividadesAsignadas) {
+          if (nuevaActividad.id === act.id) continue; // Ignora la comparación consigo mismo
+          let repeticionesExistente = this.generarRepeticionesTotales(act);
+          for (let existenteRep of repeticionesExistente) {
+            if (!(nuevaRep.fechaHoraFin <= existenteRep.fechaHoraInicio || nuevaRep.fechaHoraInicio >= existenteRep.fechaHoraFin)) {
+              alert(`Solapamiento detectado entre ${nuevaActividad.nombre} y ${act.nombre}`);
+              return false;
+            }
+          }
+        }
       }
-
-      return repeticionesNuevaActividad.every(nuevaRep => {
-        const inicioNuevo = new Date(nuevaRep.fechaHoraInicio);
-        const finNuevo = new Date(nuevaRep.fechaHoraFin);
-
-        return actividadesAsignadas.every(act => {
-          let repeticionesExistente = act.tipo === 'Tarea' ? this.generarRepeticionesDiarias(act) : this.generarRepeticiones(act, act.repetir || 'No repetir');
-          return repeticionesExistente.every(existenteRep => {
-            const inicioExistente = new Date(existenteRep.fechaHoraInicio);
-            const finExistente = new Date(existenteRep.fechaHoraFin);
-
-            let noSolapan = finNuevo <= inicioExistente || inicioNuevo >= finExistente;
-            return noSolapan;
-          });
-        });
-      });
+      return true;
     },
 
-
-
+    generarRepeticionesTotales(actividad) {
+      if (actividad.tipo === 'Tarea') {
+        return this.generarRepeticionesDiarias(actividad);
+      } else {
+        return this.generarRepeticiones(actividad, actividad.repetir || 'No repetir');
+      }
+    },
 
     // CALCULAR LAS REPETICIONES 
     generarRepeticiones(actividad, repetir) {
@@ -490,7 +488,7 @@ export default {
       return fechas;
     },
 
-
+    // CALCULAR REPES TAREAS
     generarRepeticionesDiarias(actividad) {
       let fechas = [];
       let fechaActual = new Date(actividad.fechaHoraInicio);
