@@ -46,8 +46,7 @@
           <v-row v-if="mostrarColumnaDerecha">
             <!-- Opciones para submarinos -->
             <v-col>
-              <v-btn @click="crearRutina">Rutinas de los submarinos</v-btn>
-              <v-btn style="margin-left: 20px;" @click="crearTarea">Tareas de los submarinos</v-btn>
+              <v-btn @click="crearRutina">Actividades de los submarinos</v-btn>
 
               <!-- Lista submarinos -->
               <h3 style="margin-top: 25px;" class="text-center">Submarinos Asignados a {{ nombreLugarBusqueda }}</h3>
@@ -181,103 +180,6 @@
         </v-card>
       </v-dialog>
 
-      <!-- DIALOGO PARA TAREAS (CREAR)-->
-      <v-dialog v-model="dialogTarea" max-height="900" max-width="800">
-        <v-card height="900" width="800">
-          <v-card-title>Tareas del Submarino</v-card-title>
-          <v-card-text>
-            <v-row>
-              <!-- Columna izquierda -->
-              <v-col cols="6">
-                <!-- Formulario para añadir tareas -->
-                <v-form ref="taskForm">
-                  <v-text-field ref="nombreTarea" v-model="nuevaTarea.nombre"
-                    label="* Nombre de la tarea"></v-text-field>
-                  <v-text-field v-model="nuevaTarea.descripcion" label="Descripción"
-                    style="height: 500px; margin-bottom: -210px"></v-text-field>
-
-                  <!-- Campos para la fecha y hora de inicio -->
-                  <v-text-field ref="diaInicio" v-model="nuevaTarea.diaInicio" label="Dia de inicio" type="date"
-                    :rules="[() => validarFechaHoraActual(nuevaTarea.diaInicio, nuevaTarea.horaInicio) || 'Fecha/hora de inicio inválida']"
-                    required></v-text-field>
-                  <v-text-field ref="horaInicio" v-model="nuevaTarea.horaInicio" label="Hora de inicio" type="time"
-                    :rules="[() => validarFechaHoraActual(nuevaTarea.diaInicio, nuevaTarea.horaInicio) || 'Hora de inicio inválida']"
-                    required></v-text-field>
-
-                  <!-- Campos para la fecha y hora de fin -->
-                  <v-text-field ref="diaFin" v-model="nuevaTarea.diaFin" label="Dia de fin" type="date"
-                    :rules="[() => validarFechaHoraFin(nuevaTarea.diaInicio, nuevaTarea.horaInicio, nuevaTarea.diaFin, nuevaTarea.horaFin) || 'Fecha/hora de fin inválida']"
-                    required></v-text-field>
-                  <v-text-field ref="horaFin" v-model="nuevaTarea.horaFin" label="Hora de fin" type="time"
-                    :rules="[() => validarFechaHoraFin(nuevaTarea.diaInicio, nuevaTarea.horaInicio, nuevaTarea.diaFin, nuevaTarea.horaFin) || 'Hora de fin inválida']"
-                    required></v-text-field>
-
-                  <v-btn @click="agregarTarea">Agregar Tarea</v-btn>
-                </v-form>
-              </v-col>
-
-              <!-- Columna derecha -->
-              <v-col cols="6">
-                <!-- Lista de tareas -->
-                <v-row>
-                  <v-col v-for="(tarea, index) in tareas.tareas" :key="tarea.id" cols="12">
-                    <v-card>
-                      <div class="d-flex justify-space-between align-center p-2">
-                        <h3 style="margin: 20px;">{{ tarea.nombre }}</h3>
-                        <div>
-                          <v-icon @click="editarTarea(index)">mdi-pencil</v-icon>
-                          <v-icon @click="confirmarEliminarTarea(index)"
-                            style="margin-left: 10px; margin-right: 10px;">mdi-delete</v-icon>
-                        </div>
-                      </div>
-                    </v-card>
-                  </v-col>
-                </v-row>
-              </v-col>
-            </v-row>
-          </v-card-text>
-          <v-card-actions>
-            <v-btn @click="cerrarDialogTarea">Cerrar</v-btn>
-          </v-card-actions>
-        </v-card>
-      </v-dialog>
-
-      <!-- Diálogo para editar TAREA -->
-      <v-dialog v-model="showDialogEdicionTarea" position="center" max-width="800">
-        <v-card height="900" width="800">
-          <v-card-title>Editar Tarea</v-card-title>
-          <v-card-text>
-            <v-form @submit.prevent="actualizarTareaEditada(editingTaskIndex)">
-              <v-text-field ref="nombreEdit" v-model="tareaEnEdicion.nombre" label="* Nombre de la tarea"
-                required></v-text-field>
-              <v-text-field v-model="tareaEnEdicion.descripcion" label="Descripción"
-                style="height: 500px; margin-bottom: -210px"></v-text-field>
-
-              <!-- Campos de fecha y hora de inicio -->
-              <v-text-field ref="diaInicioEdit" v-model="tareaEnEdicion.diaInicio" label="Dia de inicio" type="date"
-                :rules="[() => validarFechaHoraActual(tareaEnEdicion.diaInicio, tareaEnEdicion.horaInicio) || 'Fecha/hora de inicio inválida']"
-                required></v-text-field>
-              <v-text-field ref="horaInicioEdit" v-model="tareaEnEdicion.horaInicio" label="Hora de inicio" type="time"
-                :rules="[() => validarFechaHoraActual(tareaEnEdicion.diaInicio, tareaEnEdicion.horaInicio) || 'Hora de inicio inválida']"
-                required></v-text-field>
-
-              <!-- Campos de fecha y hora de fin -->
-              <v-text-field ref="diaFinEdit" v-model="tareaEnEdicion.diaFin" label="Dia de fin" type="date"
-                :rules="[() => validarFechaHoraFin(tareaEnEdicion.diaInicio, tareaEnEdicion.horaInicio, tareaEnEdicion.diaFin, tareaEnEdicion.horaFin) || 'Fecha/hora de fin inválida']"
-                required></v-text-field>
-              <v-text-field ref="horaFinEdit" v-model="tareaEnEdicion.horaFin" label="Hora de fin" type="time"
-                :rules="[() => validarFechaHoraFin(tareaEnEdicion.diaInicio, tareaEnEdicion.horaInicio, tareaEnEdicion.diaFin, tareaEnEdicion.horaFin) || 'Hora de fin inválida']"
-                required></v-text-field>
-
-            </v-form>
-          </v-card-text>
-          <v-card-actions>
-            <v-btn @click="actualizarTareaEditada(editingTaskIndex)">Actualizar Tarea</v-btn>
-            <v-btn @click="this.showDialogEdicionTarea = false">Cancelar</v-btn>
-          </v-card-actions>
-        </v-card>
-      </v-dialog>
-
       <!-- ERRORES -->
       <v-dialog v-model="showAlert" persistent max-height="400" max-width="400">
         <v-card>
@@ -296,15 +198,9 @@
           <v-card-text>
             <v-row>
               <v-col cols="6">
-                <h3>Tareas</h3>
-                <v-checkbox v-for="tarea in tareas.tareas" :key="tarea.id" :label="tarea.nombre"
-                  :checked="tarea.submarinos.includes(submarinoSeleccionado.id)"
-                  @change="() => toggleAsignacionTarea(tarea, submarinoSeleccionado)" :disabled="!tarea.disponible">
-                </v-checkbox>
-              </v-col>
-              <v-col cols="6">
                 <h3>Rutinas</h3>
-                <v-checkbox v-for="rutina in rutinas.rutinas" :key="rutina.id" :label="rutina.nombre"
+                <v-checkbox v-for="rutina in rutinas.rutinas" :key="rutina.id"
+                  :label="`${rutina.nombre} - ${rutina.repetir}`"
                   :checked="rutina.submarinos.includes(submarinoSeleccionado.id)"
                   @change="() => toggleAsignacionRutina(rutina, submarinoSeleccionado)" :disabled="!rutina.disponible">
                 </v-checkbox>
@@ -316,7 +212,6 @@
           </v-card-actions>
         </v-card>
       </v-dialog>
-
     </v-main>
   </v-layout>
 </template>
@@ -342,10 +237,10 @@ import {
   selectRutinas,
   eliminartRutinas,
   updateRutinasMongo,
-  addTareaMongo,
-  selectTareasMongo,
-  deleteTareasMongo,
-  updateTareasMongo
+  insertarIdSubmarino,
+  insertarIdActividad,
+  eliminarIdActividad,
+  eliminarIdSubmarino
 } from "@/services/connectionManager.js";
 import { useAppStore } from "@/store/app";
 import { ref } from "vue";
@@ -376,7 +271,6 @@ export default {
       },
       nuevaHoraFin: null,
       hacerRutinas: [],
-      tareas: [],
       descripciones: [],
       dias: [],
       nuevaDescripcion: "",
@@ -392,15 +286,6 @@ export default {
         horaFin: null,
         repetir: ""
       },
-      tareaEnEdicion: {
-        id: null,
-        nombre: "",
-        descripcion: '',
-        diaInicio: null,
-        horaInicio: null,
-        diaFin: null,
-        horaFin: null
-      },
       submarinos: [],
       editingTaskIndex: null,
       showDialogEdicion: false,
@@ -411,6 +296,7 @@ export default {
       areaEncontradaID: null,
       mapaInicializado: false,
       repetirOpciones: [
+        'No repetir',
         'Diariamente',
         'Semanalmente',
         'Mensualmente',
@@ -426,7 +312,6 @@ export default {
   methods: {
     validarSolapamientos(nuevaActividad, submarinoId) {
       let actividadesAsignadas = [
-        ...this.tareas.tareas.filter(t => t.submarinos.includes(submarinoId)),
         ...this.rutinas.rutinas.filter(r => r.submarinos.includes(submarinoId))
       ];
 
@@ -518,56 +403,35 @@ export default {
       } else { // Si ya está asignada y se desea desvincular
         if (confirm("¿Deseas desvincular esta rutina del submarino?")) {
           rutina.submarinos.splice(index, 1); // Desvincula la rutina
-          this.actualizarBaseDeDatosRutina(rutina);
+          this.actualizarBaseDeDatosRutinaEliminar(rutina);
         }
       }
       this.actualizarDisponibilidad(submarino.id); // Actualiza la disponibilidad de tareas y rutinas basada en las asignaciones actuales
     },
 
-    // ASIGNAR Y QUITAR TAREA
-    toggleAsignacionTarea(tarea, submarino) {
-      if (!tarea.submarinos.includes(submarino.id)) {
-        if (confirm("¿Deseas asignar esta tarea al submarino?")) {
-          if (!this.validarSolapamientos(tarea, submarino.id)) { // Verifica solapamientos
-            alert("No se puede asignar la tarea debido a solapamientos con otras actividades.");
-            return; // Asegurarse de salir si hay solapamiento
-          }
-          tarea.submarinos.push(submarino.id);
-          this.actualizarBaseDeDatos(tarea);
-        }
-      } else {
-        if (confirm("¿Deseas desvincular esta tarea del submarino?")) {
-          tarea.submarinos.splice(tarea.submarinos.indexOf(submarino.id), 1);
-          this.actualizarBaseDeDatos(tarea);
-        }
-      }
-      this.actualizarDisponibilidad(submarino.id);
+    // INSERTAR IDS
+    async actualizarBaseDeDatosRutina(rutina) {
+      console.log( this.areaEncontradaID+ rutina.id+ this.submarinoSeleccionado.id);
+    await insertarIdSubmarino(this.areaEncontradaID, rutina.id, this.submarinoSeleccionado.id);
+    //console.log(this.areaEncontradaID, rutina.id, this.submarinoSeleccionado.id);
+    await insertarIdActividad();
     },
 
-    actualizarBaseDeDatosRutina(rutina) {
-      console.log("Actualizando base de datos para la rutina", rutina);
-      // Implementa la lógica de actualización real aquí
+    // ELIMINAR IDS
+    async actualizarBaseDeDatosRutinaEliminar(rutina) {
+     await eliminarIdSubmarino(this.areaEncontradaID, rutina.id, this.submarinoSeleccionado.id);
+     await eliminarIdActividad();
     },
 
-    actualizarBaseDeDatos(tarea) {
-      console.log("Actualizando base de datos para la tarea", tarea);
-      // Implementa la lógica de actualización real aquí
-    },
-
+    // ACTUALIZAR LA DISPO DE ACTIVIDADES
     actualizarDisponibilidad(submarinoId) {
-      // Recupera solo las tareas y rutinas asignadas al submarino para comparar.
-      const tareasAsignadas = this.tareas.tareas.filter(tarea => tarea.submarinos.includes(submarinoId));
-      const rutinasAsignadas = this.rutinas.rutinas.filter(rutina => rutina.submarinos.includes(submarinoId));
-      this.tareas.tareas.forEach(tarea => {
-        tarea.disponible = true; // Asume que todas están disponibles inicialmente.
-        for (let tAsignada of tareasAsignadas) {
-          if (tarea.id !== tAsignada.id && !this.validarSolapamientos(tarea, tAsignada)) {
-            tarea.disponible = false; // Marca como no disponible si se solapa.
-            break;
-          }
-        }
-      });
+      if (!this.rutinas || !this.rutinas.rutinas) {
+        console.error('No se ha inicializado correctamente la lista de rutinas');
+        return; 
+      }
 
+      // Recupera solo las tareas y rutinas asignadas al submarino para comparar.  
+      const rutinasAsignadas = this.rutinas.rutinas.filter(rutina => rutina.submarinos.includes(submarinoId));
       this.rutinas.rutinas.forEach(rutina => {
         rutina.disponible = true; // Asume que todas están disponibles inicialmente.
         for (let rAsignada of rutinasAsignadas) {
@@ -717,7 +581,6 @@ export default {
 
     // Método agregarRutina
     async agregarRutina() {
-      // Realizar validaciones previas antes de proceder
       const esFechaValida = this.validarFecha(this.selectedDate);
       const esHoraInicioValida = this.validarHora(this.nuevaHoraInicio);
       const esHoraFinValida = this.validarHoraFin(this.selectedDate, this.nuevaHoraInicio, this.nuevaHoraFin);
@@ -730,27 +593,26 @@ export default {
             this.hacerRutinas.push(this.nuevaRutina);
             this.descripciones.push(this.nuevaDescripcion);
 
-            // Fusionar fecha y hora seleccionadas para el inicio
+            // Fusionar fecha y hora seleccionadas para el inicio, ajustando la zona horaria local
             const fechaHoraInicio = new Date(this.selectedDate);
             const horaInicioSplit = this.nuevaHoraInicio.split(':');
-            fechaHoraInicio.setHours(parseInt(horaInicioSplit[0]));
-            fechaHoraInicio.setMinutes(parseInt(horaInicioSplit[1]));
+            fechaHoraInicio.setHours(parseInt(horaInicioSplit[0]), parseInt(horaInicioSplit[1]), 0, 0);
+            fechaHoraInicio.setMinutes(fechaHoraInicio.getMinutes() - fechaHoraInicio.getTimezoneOffset()); // Ajustar por la zona horaria
 
-            // Establecer la hora de fin utilizando la misma fecha para consistencia
+            // Establecer la hora de fin utilizando la misma fecha para consistencia, y ajustar la zona horaria
             const fechaHoraFin = new Date(fechaHoraInicio);
             const horaFinSplit = this.nuevaHoraFin.split(':');
-            fechaHoraFin.setHours(parseInt(horaFinSplit[0]));
-            fechaHoraFin.setMinutes(parseInt(horaFinSplit[1]));
-            fechaHoraFin.setSeconds(0);
-            fechaHoraFin.setMilliseconds(0);
+            fechaHoraFin.setHours(parseInt(horaFinSplit[0]), parseInt(horaFinSplit[1]), 0, 0);
+            fechaHoraFin.setMinutes(fechaHoraFin.getMinutes() - fechaHoraFin.getTimezoneOffset()); // Ajustar por la zona horaria
 
-            const horaFinFormatted = fechaHoraFin.toISOString().split('T')[1];
+            // Formatear la hora de fin al formato ISO solo con la parte de la hora
+            const horaFinFormatted = `T${fechaHoraFin.getUTCHours().toString().padStart(2, '0')}:${fechaHoraFin.getUTCMinutes().toString().padStart(2, '0')}:00.000Z`;
 
             // Agregar los valores a newRutina
             this.newRutina = {
               nombre: this.nuevaRutina,
               descripcion: this.nuevaDescripcion,
-              fechaHoraInicio: fechaHoraInicio,
+              fechaHoraInicio: fechaHoraInicio.toISOString(), // Usar ISO string para la hora de inicio
               repetir: this.nuevaRepetir,
               submarinos: this.submarinos,
               fechaHoraFin: horaFinFormatted
@@ -773,7 +635,6 @@ export default {
         }
         this.selectRutinas();
       } else {
-        // Manejar el caso donde las validaciones fallan
         console.error("Error en la validación: No se puede agregar la rutina debido a datos inválidos.");
         alert("Error en la validación: No se puede agregar la rutina debido a datos inválidos.");
       }
@@ -787,29 +648,16 @@ export default {
         this.rutinaEnEdicion.nombre = rutina.nombre;
         this.rutinaEnEdicion.descripcion = rutina.descripcion || "";
 
-        // Descomponer la fecha y la hora
-        const fecha = new Date(rutina.fechaHoraInicio);
-        const hora = fecha.getHours();
-        const minutos = fecha.getMinutes();
-
-        // Asignar la fecha y la hora a las variables correspondientes
-        this.rutinaEnEdicion.selectedDate = fecha.toISOString().split('T')[0];
-        this.rutinaEnEdicion.horaInicio = `${hora.toString().padStart(2, '0')}:${minutos.toString().padStart(2, '0')}`;
+        // Descomponer la fecha y la hora de inicio
+        const fechaInicio = new Date(rutina.fechaHoraInicio);
+        this.rutinaEnEdicion.selectedDate = fechaInicio.toISOString().split('T')[0];
+        this.rutinaEnEdicion.horaInicio = `${fechaInicio.getUTCHours().toString().padStart(2, '0')}:${fechaInicio.getUTCMinutes().toString().padStart(2, '0')}`;
 
         // Asegurar que fechaHoraFin está en un formato correcto antes de procesar
-        if (rutina.fechaHoraFin && rutina.fechaHoraFin.includes(':')) {
-          const horaFinSplit = rutina.fechaHoraFin.split(':');
-          if (horaFinSplit.length >= 2) {
-            const horaFin = parseInt(horaFinSplit[0], 10);
-            const minutosFin = parseInt(horaFinSplit[1], 10);
-            if (!isNaN(horaFin) && !isNaN(minutosFin)) {
-              this.rutinaEnEdicion.horaFin = `${horaFin.toString().padStart(2, '0')}:${minutosFin.toString().padStart(2, '0')}`;
-            } else {
-              this.rutinaEnEdicion.horaFin = "";
-            }
-          } else {
-            this.rutinaEnEdicion.horaFin = "";
-          }
+        if (rutina.fechaHoraFin && rutina.fechaHoraFin.startsWith('T')) {
+          const tiempoFin = rutina.fechaHoraFin.slice(1, -5); // Extrae '21:16:00'
+          const [horaFin, minutosFin] = tiempoFin.split(':');
+          this.rutinaEnEdicion.horaFin = `${horaFin}:${minutosFin}`;
         } else {
           this.rutinaEnEdicion.horaFin = "";
         }
@@ -824,42 +672,24 @@ export default {
 
     // UPDATE EN EL MONGO RUTINAS
     async actualizarRutinaEditada() {
-      // Validar todas las condiciones necesarias antes de proceder
+      // Validación de la fecha y horas
       const esFechaValida = this.validarFecha(this.rutinaEnEdicion.selectedDate);
       const esHoraInicioValida = this.validarHoraEditar(this.rutinaEnEdicion.selectedDate, this.rutinaEnEdicion.horaInicio);
       const esHoraFinValida = this.validarHoraFin(this.rutinaEnEdicion.selectedDate, this.rutinaEnEdicion.horaInicio, this.rutinaEnEdicion.horaFin);
 
-      if (esFechaValida && esHoraInicioValida && esHoraFinValida === true) { // Asegurar que todas las validaciones son verdaderamente válidas
+      if (esFechaValida && esHoraInicioValida && esHoraFinValida === true) {
         try {
-          const rutina = this.rutinas.rutinas[this.editingTaskIndex];
-          const idArea = this.areaEncontradaID;
-          const idRutina = rutina.id;
-
-          // Fusionar fecha y hora seleccionadas
           const fechaHoraInicio = new Date(this.rutinaEnEdicion.selectedDate);
-          const horaInicioSplit = this.rutinaEnEdicion.horaInicio.split(':');
-          fechaHoraInicio.setHours(parseInt(horaInicioSplit[0]));
-          fechaHoraInicio.setMinutes(parseInt(horaInicioSplit[1]));
+          const [horaInicio, minutosInicio] = this.rutinaEnEdicion.horaInicio.split(':');
+          fechaHoraInicio.setUTCHours(parseInt(horaInicio), parseInt(minutosInicio), 0, 0);
 
-          // Establecer la hora de fin usando toLocaleTimeString para mantener la zona horaria local
-          const fechaHoraFin = new Date(this.rutinaEnEdicion.selectedDate);
-          const horaFinSplit = this.rutinaEnEdicion.horaFin.split(':');
-          fechaHoraFin.setHours(parseInt(horaFinSplit[0]));
-          fechaHoraFin.setMinutes(parseInt(horaFinSplit[1]));
-          fechaHoraFin.setSeconds(0);
-          fechaHoraFin.setMilliseconds(0);
+          const [horaFin, minutosFin] = this.rutinaEnEdicion.horaFin.split(':');
+          const fechaHoraFin = new Date(fechaHoraInicio);
+          fechaHoraFin.setUTCHours(parseInt(horaFin), parseInt(minutosFin), 0, 0);
+          const horaFinFormatted = `T${fechaHoraFin.getUTCHours().toString().padStart(2, '0')}:${fechaHoraFin.getUTCMinutes().toString().padStart(2, '0')}:00.000Z`;
 
-          // Usar toLocaleTimeString para obtener solo la hora y minutos en formato local
-          const horaFinFormatted = fechaHoraFin.toLocaleTimeString('en-GB', {
-            hour: '2-digit',
-            minute: '2-digit',
-            second: '2-digit',
-            hour12: false
-          });
+          await updateRutinasMongo(this.rutinaEnEdicion.nombre.trim(), this.rutinaEnEdicion.descripcion || "", fechaHoraInicio.toISOString(), horaFinFormatted, this.rutinaEnEdicion.repetir, this.areaEncontradaID, this.rutinaEnEdicion.id);
 
-          await updateRutinasMongo(this.rutinaEnEdicion.nombre.trim(), this.rutinaEnEdicion.descripcion || "", fechaHoraInicio, horaFinFormatted, this.rutinaEnEdicion.repetir, idArea, idRutina);
-
-          //console.log('Rutina actualizada correctamente');
           this.editingTaskIndex = null;
           this.rutinaEnEdicion = { nombre: "", descripcion: "", fechaHoraInicio: null, horaInicio: "", horaFin: "", repetir: null };
           this.selectRutinas();
@@ -929,7 +759,6 @@ export default {
 
         // Llamar al método selectRutinas para cargar las rutinas del área encontrada
         await this.selectRutinas(this.areaEncontradaID);
-        await this.selectTareas(this.areaEncontradaID);
       } else {
         // Si el área no se encuentra, limpiar las rutinas
         this.rutinas = [];
@@ -951,133 +780,6 @@ export default {
         this.rutinas = rutinas;
       } catch (error) {
         console.error("Error fetching rutinas:", error);
-      }
-    },
-
-    crearTarea() {
-      this.selectTareas();
-
-      // Abrir la ventana emergente para seleccionar la tarea
-      this.dialogTarea = true;
-    },
-
-    cerrarDialogTarea() {
-      // Cerrar la ventana emergente de tareas
-      this.dialogTarea = false;
-
-      // Restablecer la selección de la tarea
-      this.selectTareas();
-    },
-
-    // SELECT TAREAS 
-    async selectTareas() {
-      try {
-        // Llamar al servicio connectionManager.js para obtener las tareas del área específica
-        const tareas = await selectTareasMongo(this.areaEncontradaID);
-        //console.log("Tareas obtenidas de selectTareas: ", tareas);
-
-        // Asignar las tareas al estado tareas
-        this.tareas = tareas;
-      } catch (error) {
-        console.error("Error fetching tareas:", error);
-      }
-    },
-
-    // AGREGAR TAREA
-    async agregarTarea() {
-      if (this.validarCamposTareas() &&
-        this.validarFechaHoraActual(this.nuevaTarea.diaInicio, this.nuevaTarea.horaInicio) &&
-        this.validarFechaHoraFin(this.nuevaTarea.diaInicio, this.nuevaTarea.horaInicio, this.nuevaTarea.diaFin, this.nuevaTarea.horaFin)) {
-        if (this.nuevaTarea.nombre.trim() !== "") {
-          const fechaInicioCompleta = new Date(this.nuevaTarea.diaInicio + 'T' + this.nuevaTarea.horaInicio);
-          const fechaFinCompleta = new Date(this.nuevaTarea.diaFin + 'T' + this.nuevaTarea.horaFin);
-
-          const newTarea = {
-            nombre: this.nuevaTarea.nombre,
-            descripcion: this.nuevaTarea.descripcion,
-            fechaInicio: fechaInicioCompleta,
-            fechaFin: fechaFinCompleta,
-            submarinos: this.submarinos
-          };
-
-          this.nuevaTarea.submarinos = [];
-          await addTareaMongo(this.areaEncontradaID, newTarea);
-          this.limpiarCamposTarea();
-        }
-        this.selectTareas();
-      }
-    },
-
-    // ELIMINAR TAREAS
-    async confirmarEliminarTarea(index) {
-      if (confirm("¿Estás seguro de que deseas eliminar esta tarea?")) {
-        try {
-          const id_area = this.areaEncontradaID;
-          const id_tarea = this.tareas.tareas[index].id;
-          await deleteTareasMongo(id_area, id_tarea);
-
-          // Actualizar la lista de tareas después de eliminar
-          this.selectTareas();
-        } catch (error) {
-          console.error("Error al eliminar la tarea:", error);
-        }
-      }
-    },
-
-    // EDITAR TAREA
-    editarTarea(index) {
-      if (index >= 0 && index < this.tareas.tareas.length) {
-        const tarea = this.tareas.tareas[index];
-        this.tareaEnEdicion.id = tarea.id;
-        this.tareaEnEdicion.nombre = tarea.nombre;
-        this.tareaEnEdicion.descripcion = tarea.descripcion || "";
-
-        // Descomponer la fecha y la hora de inicio
-        const fechaInicio = new Date(tarea.fechaInicio);
-        const horaInicio = fechaInicio.getHours();
-        const minutosInicio = fechaInicio.getMinutes();
-
-        // Descomponer la fecha y la hora de fin
-        const fechaFin = new Date(tarea.fechaFin);
-        const horaFin = fechaFin.getHours();
-        const minutosFin = fechaFin.getMinutes();
-
-        // Asignar la fecha y la hora de inicio a las variables correspondientes
-        this.tareaEnEdicion.diaInicio = fechaInicio.toISOString().split('T')[0];
-        this.tareaEnEdicion.horaInicio = `${horaInicio.toString().padStart(2, '0')}:${minutosInicio.toString().padStart(2, '0')}`;
-
-        // Asignar la fecha y la hora de fin a las variables correspondientes
-        this.tareaEnEdicion.diaFin = fechaFin.toISOString().split('T')[0];
-        this.tareaEnEdicion.horaFin = `${horaFin.toString().padStart(2, '0')}:${minutosFin.toString().padStart(2, '0')}`;
-
-        this.editingTaskIndex = index;
-        this.showDialogEdicionTarea = true;
-      } else {
-        console.error("Índice de tarea no válido:", index);
-      }
-    },
-
-    // ACTUALIZAR TAREA EDITADA
-    async actualizarTareaEditada(index) {
-      if (this.validarCamposTareasEditar() &&
-        this.validarFechaHoraActual(this.tareaEnEdicion.diaInicio, this.tareaEnEdicion.horaInicio) &&
-        this.validarFechaHoraFin(this.tareaEnEdicion.diaInicio, this.tareaEnEdicion.horaInicio, this.tareaEnEdicion.diaFin, this.tareaEnEdicion.horaFin)) {
-        try {
-          const tarea = this.tareas.tareas[index];
-          const areaId = this.areaEncontradaID;
-          const tareaId = tarea.id;
-
-          const fechaInicio = new Date(this.tareaEnEdicion.diaInicio + 'T' + this.tareaEnEdicion.horaInicio);
-          const fechaFin = new Date(this.tareaEnEdicion.diaFin + 'T' + this.tareaEnEdicion.horaFin);
-          await updateTareasMongo(this.tareaEnEdicion.nombre.trim(), this.tareaEnEdicion.descripcion || "", fechaInicio, fechaFin, areaId, tareaId);
-
-          this.editingTaskIndex = null;
-          this.tareaEnEdicion = { nombre: "", descripcion: "", diaInicio: "", horaInicio: "", diaFin: "", horaFin: "" };
-          this.selectTareas();
-          this.showDialogEdicionTarea = false;
-        } catch (error) {
-          console.error("Error al actualizar la tarea:", error);
-        }
       }
     },
 
@@ -1187,18 +889,6 @@ export default {
       }
     },
 
-    // Método para limpiar los campos después de agregar/editar una tarea
-    limpiarCamposTarea() {
-      this.nuevaTarea = {
-        nombre: "",
-        descripcion: "",
-        diaInicio: null,
-        horaInicio: null,
-        diaFin: null,
-        horaFin: null
-      };
-    },
-
     // VALIDAR CAMPOS AL AGREGAR 
     validarCampos() {
       let camposCompletos = true;
@@ -1262,80 +952,6 @@ export default {
       if (!camposCompletos) {
         window.alert('Por favor, rellene todos los campos obligatorios.');
 
-      }
-
-      return camposCompletos;
-    },
-
-    // VALIDAR CAMPOS AL AGREGAR 
-    validarCamposTareas() {
-      let camposCompletos = true;
-      const camposRequeridos = [
-        { modelo: this.nuevaTarea.nombre, ref: 'nombreTarea' },
-        { modelo: this.nuevaTarea.diaInicio, ref: 'diaInicio' },
-        { modelo: this.nuevaTarea.horaInicio, ref: 'horaInicio' },
-        { modelo: this.nuevaTarea.diaFin, ref: 'diaFin' },
-        { modelo: this.nuevaTarea.horaFin, ref: 'horaFin' }
-      ];
-
-      camposRequeridos.forEach(campo => {
-        // Chequea si el modelo es string y si está vacío tras quitar espacios en blanco
-        if (typeof campo.modelo === 'string' && !campo.modelo.trim()) {
-          if (this.$refs[campo.ref] && this.$refs[campo.ref].$el) {
-            this.$refs[campo.ref].$el.style.border = '1px solid red';
-          }
-          camposCompletos = false;
-        } else if (campo.modelo == null || campo.modelo === '') {
-          if (this.$refs[campo.ref] && this.$refs[campo.ref].$el) {
-            this.$refs[campo.ref].$el.style.border = '1px solid red';
-          }
-          camposCompletos = false;
-        } else {
-          if (this.$refs[campo.ref] && this.$refs[campo.ref].$el) {
-            this.$refs[campo.ref].$el.style.border = '';
-          }
-        }
-      });
-
-      if (!camposCompletos) {
-        window.alert('Por favor, rellene todos los campos obligatorios.');
-      }
-
-      return camposCompletos;
-    },
-
-    // VALIDAR CAMPOS EDITAR TAREAS
-    validarCamposTareasEditar() {
-      let camposCompletos = true;
-      const camposRequeridos = [
-        { modelo: this.tareaEnEdicion.nombre, ref: 'nombreEdit' },
-        { modelo: this.tareaEnEdicion.diaInicio, ref: 'diaInicioEdit' },
-        { modelo: this.tareaEnEdicion.horaInicio, ref: 'horaInicioEdit' },
-        { modelo: this.tareaEnEdicion.diaFin, ref: 'diaFinEdit' },
-        { modelo: this.tareaEnEdicion.horaFin, ref: 'horaFinEdit' }
-      ];
-
-      camposRequeridos.forEach(campo => {
-        // Chequea si el modelo es string y si está vacío tras quitar espacios en blanco
-        if (typeof campo.modelo === 'string' && !campo.modelo.trim()) {
-          if (this.$refs[campo.ref] && this.$refs[campo.ref].$el) {
-            this.$refs[campo.ref].$el.style.border = '1px solid red';
-          }
-          camposCompletos = false;
-        } else if (campo.modelo == null || campo.modelo === '') {
-          if (this.$refs[campo.ref] && this.$refs[campo.ref].$el) {
-            this.$refs[campo.ref].$el.style.border = '1px solid red';
-          }
-          camposCompletos = false;
-        } else {
-          if (this.$refs[campo.ref] && this.$refs[campo.ref].$el) {
-            this.$refs[campo.ref].$el.style.border = '';
-          }
-        }
-      });
-
-      if (!camposCompletos) {
-        window.alert('Por favor, rellene todos los campos obligatorios.');
       }
 
       return camposCompletos;
@@ -1467,8 +1083,7 @@ export default {
     actividadesAsignadas() {
       // Asegúrate de que cada vez que se solicite, calcule las actividades asignadas de nuevo
       return [
-        ...this.rutinas.rutinas.filter(r => r.submarinos.includes(this.submarinoSeleccionado.id)),
-        ...this.tareas.tareas.filter(t => t.submarinos.includes(this.submarinoSeleccionado.id))
+        ...this.rutinas.rutinas.filter(r => r.submarinos.includes(this.submarinoSeleccionado.id))
       ];
     }
   },
