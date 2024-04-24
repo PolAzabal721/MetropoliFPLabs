@@ -29,8 +29,8 @@
                   <p><b>Estat de la càmera:</b> {{ camara }}</p>
                   <p><b>Última connexió:</b> {{ ultimaConexion }}</p>
                   <p><b>Temps encès:</b> {{ msToTime(timeON) }}</p>
-                  <p><b>Rutina en curso:</b> {{ movimientoSub.rutina }}</p>
-                  <p><b>Tarea en curso:</b> {{ movimientoSub.tarea }}</p>
+                  <p><b>Actividades en curso:</b> {{ movimientoSub[0]?.rutina }}, {{movimientoSub[0]?.tarea}}</p>
+                  
                 </div>
               </v-card-text>
             </v-card>
@@ -48,8 +48,8 @@
                     <v-col>
                       <div class="scroll-container">
                         <v-list>
-                          <v-list-item v-if="movimientoSub.length > 0">
-                            <v-list-item v-for="(subMovimiento, index) in movimientoSub" :key="index">
+                          <v-list-item v-if="sortedMovimientosSub.length > 0">
+                            <v-list-item v-for="(subMovimiento, index) in sortedMovimientosSub" :key="index">
                               <v-list-item v-for="(movimiento, indexMov) in subMovimiento.movimientos_sub"
                                 :key="indexMov">
                                 <v-list-item class="message">
@@ -80,6 +80,7 @@
 
 <script>
 import { state } from "../services/socket";
+import io from "socket.io-client";
 import { useAppStore } from "@/store/app";
 import { getSubmarinos, getMovimientos } from "@/services/connectionManager.js";
 
@@ -97,8 +98,14 @@ export default {
   },
 
   created() {
+    this.socket = io("http://localhost:3169/");
+
+    this.socket.on("MovEnviados", (mov) => {
+      this.movimientos = mov;
+      this.updateMovimientoSub();
+      console.log(this.movimientos)
+    });
     this.getSubmarino();
-    this.getMovements();
     // Recuperar valores del almacenamiento local al iniciar la página
     if (localStorage.getItem("motor")) {
       state.motor = localStorage.getItem("motor");
@@ -116,6 +123,15 @@ export default {
       state.ultimaConexion = localStorage.getItem("ultimaConexion");
     }
   },
+  watch: {
+    submarinoSeleccionado: {
+      handler(newVal) {
+        this.updateMovimientoSub();
+      },
+      immediate: true,
+    },
+  },
+
   computed: {
     estado() {
       return state.connected;
@@ -146,6 +162,17 @@ export default {
       console.log(this.movimiento);
       return state.movimiento;
     },
+    sortedMovimientosSub() {
+    return this.movimientoSub.map(subMovimiento => {
+      // Clonamos el objeto para no modificar el original
+      const clone = { ...subMovimiento };
+      if (clone.movimientos_sub && clone.movimientos_sub.length > 0) {
+        // Ordenamos los movimientos de cada submarino
+        clone.movimientos_sub.sort((a, b) => new Date(b.fecha) - new Date(a.fecha));
+      }
+      return clone;
+    });
+  },
   },
 
   methods: {
@@ -187,6 +214,15 @@ export default {
     limpiarSeleccion() {
       this.submarinoSeleccionado = null;
       this.seleccionado = false;
+    },
+    updateMovimientoSub() {
+      if (this.submarinoSeleccionado) {
+        this.movimientoSub = this.movimientos.filter(mov =>
+          mov.idSubmarino === this.submarinoSeleccionado.id_sub
+        );
+      } else {
+        this.movimientoSub = [];
+      }
     },
   },
 };
