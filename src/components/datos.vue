@@ -29,6 +29,8 @@
                   <p><b>Estat de la càmera:</b> {{ camara }}</p>
                   <p><b>Última connexió:</b> {{ ultimaConexion }}</p>
                   <p><b>Temps encès:</b> {{ msToTime(timeON) }}</p>
+                  <p><b>Rutina en curso:</b> {{ movimientoSub.rutina }}</p>
+                  <p><b>Tarea en curso:</b> {{ movimientoSub.tarea }}</p>
                 </div>
               </v-card-text>
             </v-card>
@@ -51,9 +53,9 @@
                               <v-list-item v-for="(movimiento, indexMov) in subMovimiento.movimientos_sub"
                                 :key="indexMov">
                                 <v-list-item class="message">
-                                  <v-list-item-title>
+                                  <v-list-item-text>
                                     {{ movimiento.fecha }} - {{ movimiento.detalle }}
-                                  </v-list-item-title>
+                                  </v-list-item-text>
                                 </v-list-item>
                               </v-list-item>
                             </v-list-item>
