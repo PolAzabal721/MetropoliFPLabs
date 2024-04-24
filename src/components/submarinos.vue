@@ -51,7 +51,7 @@
               <!-- Lista submarinos -->
               <h3 style="margin-top: 25px;" class="text-center">Submarinos Asignados a {{ nombreLugarBusqueda }}</h3>
               <v-row style="margin-top: 10px;">
-                <v-col cols="12" v-for="submarino in submarinosAsignadosFiltrados" :key="submarino.id">
+                <v-col cols="12" v-for="submarino in submarinosAsignadosFiltrados" :key="submarino.id_sub">
                   <v-card
                     :class="{ 'estado-desactivado': submarino.estado_sub.trim().toLowerCase() === 'desactivado', 'estado-activo': submarino.estado_sub.trim().toLowerCase() !== 'desactivado' }">
                     <v-card-title class="text-center">
@@ -201,7 +201,7 @@
                 <h3>Rutinas</h3>
                 <v-checkbox v-for="rutina in rutinas.rutinas" :key="rutina.id"
                   :label="`${rutina.nombre} - ${rutina.repetir}`"
-                  :checked="rutina.submarinos.includes(submarinoSeleccionado.id)"
+                  :checked="rutina.submarinos.includes(submarinoSeleccionado.id_sub)"
                   @change="() => toggleAsignacionRutina(rutina, submarinoSeleccionado)" :disabled="!rutina.disponible">
                 </v-checkbox>
               </v-col>
@@ -249,6 +249,7 @@ export default {
   data() {
     return {
       drawer: false,
+      submarinoSeleccionado: null,
       dialogoSubmarinoVisible: false,
       showAlert: false,
       errorMessage: '',
@@ -310,9 +311,9 @@ export default {
     };
   },
   methods: {
-    validarSolapamientos(nuevaActividad, submarinoId) {
+    validarSolapamientos(nuevaActividad, submarino) {
       let actividadesAsignadas = [
-        ...this.rutinas.rutinas.filter(r => r.submarinos.includes(submarinoId))
+        ...this.rutinas.rutinas.filter(r => r.submarinos.includes(submarino))
       ];
 
       let repeticionesNuevaActividad = this.generarRepeticionesTotales(nuevaActividad);
@@ -390,44 +391,43 @@ export default {
 
     // ASIGNAR Y QUITAR RUTINA
     toggleAsignacionRutina(rutina, submarino) {
-      const index = rutina.submarinos.indexOf(submarino.id);
+      const index = rutina.submarinos.indexOf(submarino.id_sub);
       if (index === -1) { // Si la rutina no está ya asignada a este submarino
         if (confirm("¿Deseas asignar esta rutina al submarino?")) {
-          if (!this.validarSolapamientos(rutina, submarino.id)) {
+          if (!this.validarSolapamientos(rutina, submarino.id_sub)) {
             alert("La asignación de la rutina se solapa con otras actividades o no respeta el intervalo de descanso requerido.");
             return; // Asegurarse de salir si hay solapamiento
           }
-          rutina.submarinos.push(submarino.id); // Asigna la rutina si no hay solapamiento
-          this.actualizarBaseDeDatosRutina(rutina);
+          rutina.submarinos.push(submarino.id_sub); // Asigna la rutina si no hay solapamiento
+          this.actualizarBaseDeDatosRutina(rutina, submarino);
         }
       } else { // Si ya está asignada y se desea desvincular
         if (confirm("¿Deseas desvincular esta rutina del submarino?")) {
           rutina.submarinos.splice(index, 1); // Desvincula la rutina
-          this.actualizarBaseDeDatosRutinaEliminar(rutina);
+          this.actualizarBaseDeDatosRutinaEliminar(rutina, submarino);
         }
       }
-      this.actualizarDisponibilidad(submarino.id); // Actualiza la disponibilidad de tareas y rutinas basada en las asignaciones actuales
+      this.actualizarDisponibilidad(submarino.id_sub); // Actualiza la disponibilidad de tareas y rutinas basada en las asignaciones actuales
     },
 
     // INSERTAR IDS
-    async actualizarBaseDeDatosRutina(rutina) {
-      console.log( this.areaEncontradaID+ rutina.id+ this.submarinoSeleccionado.id);
-    await insertarIdSubmarino(this.areaEncontradaID, rutina.id, this.submarinoSeleccionado.id);
-    //console.log(this.areaEncontradaID, rutina.id, this.submarinoSeleccionado.id);
-    await insertarIdActividad();
+    async actualizarBaseDeDatosRutina(rutina, submarino) {
+      console.log("ID AREA " + this.areaEncontradaID + " ID rutina " + rutina.id + " Id sub: " + submarino.id_sub);
+      await insertarIdSubmarino(this.areaEncontradaID, rutina.id, submarino.id_sub);
+      await insertarIdActividad();
     },
 
     // ELIMINAR IDS
-    async actualizarBaseDeDatosRutinaEliminar(rutina) {
-     await eliminarIdSubmarino(this.areaEncontradaID, rutina.id, this.submarinoSeleccionado.id);
-     await eliminarIdActividad();
+    async actualizarBaseDeDatosRutinaEliminar(rutina, submarino) {
+      await eliminarIdSubmarino(this.areaEncontradaID, rutina.id, submarino.id_sub);
+      await eliminarIdActividad();
     },
 
     // ACTUALIZAR LA DISPO DE ACTIVIDADES
     actualizarDisponibilidad(submarinoId) {
       if (!this.rutinas || !this.rutinas.rutinas) {
         console.error('No se ha inicializado correctamente la lista de rutinas');
-        return; 
+        return;
       }
 
       // Recupera solo las tareas y rutinas asignadas al submarino para comparar.  
@@ -1029,7 +1029,7 @@ export default {
 
     abrirDialogoSubmarino(submarino) {
       this.submarinoSeleccionado = submarino;
-      this.actualizarDisponibilidad(submarino.id);
+      this.actualizarDisponibilidad(submarino.id_sub);
       this.dialogoSubmarinoVisible = true;
     },
 
