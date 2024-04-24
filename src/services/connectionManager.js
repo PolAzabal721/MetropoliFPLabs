@@ -75,6 +75,21 @@ export async function fetchAreas() {
     }
 }
 
+export async function getMovimientos() {
+    try {
+        const response = await fetch('http://localhost:3169/movimientos');
+        if (!response.ok) {
+            throw new Error('Error getting movimientos');
+        }
+        const movimientos = await response.json();
+        return movimientos;
+    } catch (error) {
+        console.error('Error fetching movimientos:', error);
+        throw error;
+    }
+
+}
+
 export async function deletearea(id) {
     try {
         const response = await fetch('http://localhost:3169/deletearea', {

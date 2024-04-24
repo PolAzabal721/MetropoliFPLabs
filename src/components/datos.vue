@@ -23,14 +23,11 @@
             </v-card>
             <v-card class="mx-5" height="600" width="800" style="margin-top: 10px">
               <v-card-text class="vCardText">
-                <!-- Contenido del segundo v-card (info del robot) -->
                 <div v-if="seleccionado">
-                  <p>
-                    <b>Nom del robot:</b> {{ submarinoSeleccionado.nom_sub }}
-                  </p>
+                  <p><b>Nom del robot:</b> {{ submarinoSeleccionado.nom_sub }}</p>
                   <p><b>Estat del robot:</b> {{ motor }}</p>
                   <p><b>Estat de la càmera:</b> {{ camara }}</p>
-                  <p><b> Última connexió:</b> {{ ultimaConexion }}</p>
+                  <p><b>Última connexió:</b> {{ ultimaConexion }}</p>
                   <p><b>Temps encès:</b> {{ msToTime(timeON) }}</p>
                 </div>
               </v-card-text>
@@ -49,21 +46,20 @@
                     <v-col>
                       <div class="scroll-container">
                         <v-list>
-                          <v-list-item v-if="state.movimientos.length > 0">
-                            <v-list-item v-for="(movimiento, index) in state.movimientos
-                                  .slice()
-                                  .reverse()" :key="index">
-                              <v-list-item class="message">
-                                <v-list-item-title>{{
-                                  movimiento
-                                }}</v-list-item-title>
+                          <v-list-item v-if="movimientoSub.length > 0">
+                            <v-list-item v-for="(subMovimiento, index) in movimientoSub" :key="index">
+                              <v-list-item v-for="(movimiento, indexMov) in subMovimiento.movimientos_sub"
+                                :key="indexMov">
+                                <v-list-item class="message">
+                                  <v-list-item-title>
+                                    {{ movimiento.fecha }} - {{ movimiento.detalle }}
+                                  </v-list-item-title>
+                                </v-list-item>
                               </v-list-item>
                             </v-list-item>
                           </v-list-item>
                           <v-list-item v-else>
-                            <v-list-item>
-                              <v-list-item-title>No hi ha moviments</v-list-item-title>
-                            </v-list-item>
+                            <v-list-item-title>No hi ha moviments</v-list-item-title>
                           </v-list-item>
                         </v-list>
                       </div>
@@ -79,16 +75,19 @@
   </v-layout>
 </template>
 
+
 <script>
 import { state } from "../services/socket";
 import { useAppStore } from "@/store/app";
-import { getSubmarinos } from "@/services/connectionManager.js";
+import { getSubmarinos, getMovimientos } from "@/services/connectionManager.js";
 
 export default {
   //192.168.205.140
   data() {
     return {
       submarinos: [],
+      movimientos: [],
+      movimientoSub: [],
       submarinoSeleccionado: null,
       nombreSubmarino: "",
       seleccionado: false,
@@ -97,6 +96,7 @@ export default {
 
   created() {
     this.getSubmarino();
+    this.getMovements();
     // Recuperar valores del almacenamiento local al iniciar la página
     if (localStorage.getItem("motor")) {
       state.motor = localStorage.getItem("motor");
@@ -169,9 +169,18 @@ export default {
         console.error("Error fetching submarinos:", error);
       }
     },
+    async getMovements() {
+      this.movimientos = await getMovimientos();
+      console.log(this.movimientos);
+    },
     avanzar() {
       this.seleccionado = true;
-      console.log(this.submarinoSeleccionado);
+      console.log("Submarino seleccionado:", this.submarinoSeleccionado);
+      // Filtrar los movimientos para el submarino seleccionado
+      this.movimientoSub = this.movimientos.filter(mov =>
+        mov.idSubmarino === this.submarinoSeleccionado.id_sub
+      );
+      console.log("Movimientos filtrados:", this.movimientoSub);
     },
     limpiarSeleccion() {
       this.submarinoSeleccionado = null;
@@ -192,8 +201,9 @@ import DefaultBar from "@/layouts/default/AppBar.vue";
 }
 
 /* Estilos para los párrafos dentro del div */
-.vCardText div p {
-  margin: 8px 0;
+.vCardText {
+  overflow: hidden; /* Elimina si está causando problemas */
+  text-overflow: ellipsis; /* Elimina si está causando problemas */
 }
 
 .marg {
@@ -201,11 +211,9 @@ import DefaultBar from "@/layouts/default/AppBar.vue";
 }
 
 .scroll-container {
-  overflow-y: auto !important;
+  overflow-y: auto;
   overflow-x: hidden;
-  padding: 1rem;
-  max-height: 600px;
-  /* Ajusta la altura máxima según tus necesidades */
+  max-height: 600px; /* Asegúrate de que esta altura es suficiente */
 }
 
 .message {
@@ -213,8 +221,11 @@ import DefaultBar from "@/layouts/default/AppBar.vue";
   background-color: #efefef;
   border-radius: 8px;
   margin-bottom: 8px;
-  display: inline-block;
+  display: block; /* Cambiar de inline-block a block */
+  white-space: normal; /* Permitir envoltura de texto */
+  word-wrap: break-word; /* Asegurar la ruptura de palabras */
 }
+
 
 .select {
   width: 300px;

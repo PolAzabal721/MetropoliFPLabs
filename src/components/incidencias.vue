@@ -301,6 +301,7 @@ export default {
         fecha_fin: "",
         nom_sub: submarino.nom_sub,
       });
+      const id = store.getUserEmpresa;
 
       this.listaEnviar.push(
         this.nuevaIncidencia.nombre,
@@ -310,7 +311,8 @@ export default {
         this.nuevaIncidencia.prioridad,
         "Nueva",
         this.nuevaIncidencia.fechaInicio,
-        submarino.id_sub
+        submarino.id_sub,
+        id
       );
 
       //console.log(this.listaEnviar);
