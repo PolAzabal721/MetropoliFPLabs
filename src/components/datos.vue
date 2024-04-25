@@ -29,8 +29,8 @@
                   <p><b>Estat de la càmera:</b> {{ camara }}</p>
                   <p><b>Última connexió:</b> {{ ultimaConexion }}</p>
                   <p><b>Temps encès:</b> {{ msToTime(timeON) }}</p>
-                  <p><b>Actividades en curso:</b> {{ movimientoSub[0]?.rutina }}, {{ movimientoSub[0]?.tarea }}</p>
-
+                  <p><b>Rutina en curso:</b> {{ movimientoSub.rutina }}</p>
+                  <p><b>Tarea en curso:</b> {{ movimientoSub.tarea }}</p>
                 </div>
               </v-card-text>
             </v-card>
@@ -48,8 +48,8 @@
                     <v-col>
                       <div class="scroll-container">
                         <v-list>
-                          <v-list-item v-if="sortedMovimientosSub.length > 0">
-                            <v-list-item v-for="(subMovimiento, index) in sortedMovimientosSub" :key="index">
+                          <v-list-item v-if="movimientoSub.length > 0">
+                            <v-list-item v-for="(subMovimiento, index) in movimientoSub" :key="index">
                               <v-list-item v-for="(movimiento, indexMov) in subMovimiento.movimientos_sub"
                                 :key="indexMov">
                                 <v-list-item class="message">
@@ -79,6 +79,7 @@
 
 
 <script>
+import { state } from "../services/socket";
 import io from "socket.io-client";
 import { useAppStore } from "@/store/app";
 import { getSubmarinos, getMovimientos } from "@/services/connectionManager.js";
@@ -88,23 +89,22 @@ export default {
   data() {
     return {
       submarinos: [],
-      socket: null,
       movimientos: [],
       movimientoSub: [],
       submarinoSeleccionado: null,
       nombreSubmarino: "",
+      socket: null,
       seleccionado: false,
     };
   },
 
   created() {
+    this.getSubmarino();
     this.socket = io("http://localhost:3169/");
 
     this.socket.on("actualizarMovimientos", async (mov) => {
       this.movimientos = mov;
     });
-
-    this.getSubmarino();
     // Recuperar valores del almacenamiento local al iniciar la página
     if (localStorage.getItem("motor")) {
       state.motor = localStorage.getItem("motor");
@@ -122,15 +122,6 @@ export default {
       state.ultimaConexion = localStorage.getItem("ultimaConexion");
     }
   },
-  watch: {
-    submarinoSeleccionado: {
-      handler(newVal) {
-        this.updateMovimientoSub();
-      },
-      immediate: true,
-    },
-  },
-
   computed: {
     estado() {
       return state.connected;
@@ -161,17 +152,6 @@ export default {
       console.log(this.movimiento);
       return state.movimiento;
     },
-    sortedMovimientosSub() {
-      return this.movimientoSub.map(subMovimiento => {
-        // Clonamos el objeto para no modificar el original
-        const clone = { ...subMovimiento };
-        if (clone.movimientos_sub && clone.movimientos_sub.length > 0) {
-          // Ordenamos los movimientos de cada submarino
-          clone.movimientos_sub.sort((a, b) => new Date(b.fecha) - new Date(a.fecha));
-        }
-        return clone;
-      });
-    },
   },
 
   methods: {
@@ -197,7 +177,10 @@ export default {
         console.error("Error fetching submarinos:", error);
       }
     },
-
+    async getMovements() {
+      this.movimientos = await getMovimientos();
+      console.log(this.movimientos);
+    },
     avanzar() {
       this.seleccionado = true;
       console.log("Submarino seleccionado:", this.submarinoSeleccionado);
@@ -210,15 +193,6 @@ export default {
     limpiarSeleccion() {
       this.submarinoSeleccionado = null;
       this.seleccionado = false;
-    },
-    updateMovimientoSub() {
-      if (this.submarinoSeleccionado) {
-        this.movimientoSub = this.movimientos.filter(mov =>
-          mov.idSubmarino === this.submarinoSeleccionado.id_sub
-        );
-      } else {
-        this.movimientoSub = [];
-      }
     },
   },
 };
@@ -236,10 +210,8 @@ import DefaultBar from "@/layouts/default/AppBar.vue";
 
 /* Estilos para los párrafos dentro del div */
 .vCardText {
-  overflow: hidden;
-  /* Elimina si está causando problemas */
-  text-overflow: ellipsis;
-  /* Elimina si está causando problemas */
+  overflow: hidden; /* Elimina si está causando problemas */
+  text-overflow: ellipsis; /* Elimina si está causando problemas */
 }
 
 .marg {
@@ -249,8 +221,7 @@ import DefaultBar from "@/layouts/default/AppBar.vue";
 .scroll-container {
   overflow-y: auto;
   overflow-x: hidden;
-  max-height: 600px;
-  /* Asegúrate de que esta altura es suficiente */
+  max-height: 600px; /* Asegúrate de que esta altura es suficiente */
 }
 
 .message {
@@ -258,12 +229,9 @@ import DefaultBar from "@/layouts/default/AppBar.vue";
   background-color: #efefef;
   border-radius: 8px;
   margin-bottom: 8px;
-  display: block;
-  /* Cambiar de inline-block a block */
-  white-space: normal;
-  /* Permitir envoltura de texto */
-  word-wrap: break-word;
-  /* Asegurar la ruptura de palabras */
+  display: block; /* Cambiar de inline-block a block */
+  white-space: normal; /* Permitir envoltura de texto */
+  word-wrap: break-word; /* Asegurar la ruptura de palabras */
 }
 
 
