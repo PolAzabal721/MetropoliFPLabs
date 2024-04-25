@@ -640,7 +640,7 @@ export async function editSubEmpresa(id_empresa, id_sub, autorenovable) {
 }
 
 
-// INSERTAR ID SUBMARINO
+// INSERTAR ID SUBMARINO A LA TAREA
 export async function insertarIdSubmarino(areaId, rutinaId, idSubmarino) {
     try {
         const response = await fetch('http://localhost:3169/insertarIdSubmarino', {
@@ -664,20 +664,21 @@ export async function insertarIdSubmarino(areaId, rutinaId, idSubmarino) {
     }
 }
 
-//
-export async function insertarIdActividad() {
+
+// AÑADIR ID RUTINA AL SUBMARINO
+export async function insertarIdRutinaEnSubmarino(areaId, rutinaId, submarinoId) {
     try {
-        const response = await fetch('http://localhost:3169/editSubEmpresa', {
+        const response = await fetch('http://localhost:3169/insertarIdRutinaEnSubmarino', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'
             },
-            body: JSON.stringify({ id_empresa: id_empresa, id_sub: id_sub, autorenovable: autorenovable })
+            body: JSON.stringify({ areaId, rutinaId, submarinoId })
         });
 
         if (!response.ok) {
             const errorMessage = await response.text();
-            throw new Error(`Error al agregar sub a empresa: ${errorMessage}`);
+            throw new Error(`Error al agregar la rutina a las actividades del submarino: ${errorMessage}`);
         }
 
         const responseData = await response.json();
@@ -687,6 +688,7 @@ export async function insertarIdActividad() {
         throw error;
     }
 }
+
 
 //
 export async function eliminarIdActividad() {

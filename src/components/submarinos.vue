@@ -201,7 +201,7 @@
                 <h3>Rutinas</h3>
                 <v-checkbox v-for="rutina in rutinas.rutinas" :key="rutina.id"
                   :label="`${rutina.nombre} - ${rutina.repetir}`"
-                  :checked="rutina.submarinos.includes(submarinoSeleccionado.id_sub)"
+                  :v-model="estaRutinaAsignada(rutina, submarinoSeleccionado)"
                   @change="() => toggleAsignacionRutina(rutina, submarinoSeleccionado)" :disabled="!rutina.disponible">
                 </v-checkbox>
               </v-col>
@@ -238,7 +238,7 @@ import {
   eliminartRutinas,
   updateRutinasMongo,
   insertarIdSubmarino,
-  insertarIdActividad,
+  insertarIdRutinaEnSubmarino,
   eliminarIdActividad,
   eliminarIdSubmarino
 } from "@/services/connectionManager.js";
@@ -414,13 +414,13 @@ export default {
     async actualizarBaseDeDatosRutina(rutina, submarino) {
       console.log("ID AREA " + this.areaEncontradaID + " ID rutina " + rutina.id + " Id sub: " + submarino.id_sub);
       await insertarIdSubmarino(this.areaEncontradaID, rutina.id, submarino.id_sub);
-      await insertarIdActividad();
+      await insertarIdRutinaEnSubmarino(this.areaEncontradaID, rutina.id, submarino.id_sub);
     },
 
     // ELIMINAR IDS
     async actualizarBaseDeDatosRutinaEliminar(rutina, submarino) {
-      await eliminarIdSubmarino(this.areaEncontradaID, rutina.id, submarino.id_sub);
-      await eliminarIdActividad();
+      // await eliminarIdSubmarino(this.areaEncontradaID, rutina.id, submarino.id_sub);
+      //await eliminarIdActividad();
     },
 
     // ACTUALIZAR LA DISPO DE ACTIVIDADES
@@ -443,6 +443,15 @@ export default {
       });
     },
 
+    // VERIFICAR COMO HA DE ESTAR EL CHECK
+    estaRutinaAsignada(rutina, submarino) {
+      if (!rutina || !submarino || !rutina.submarinos || !submarino.actividades) {
+        return false; // Retorna falso si alguno de los necesarios no está definido.
+      }
+      const submarinoEnRutina = rutina.submarinos.includes(submarino.id_sub);
+      const rutinaEnSubmarino = submarino.actividades.includes(rutina.id);
+      return submarinoEnRutina && rutinaEnSubmarino;
+    },
 
 
 
