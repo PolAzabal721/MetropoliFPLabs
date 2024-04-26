@@ -260,6 +260,9 @@ export default {
     // GUARDAR LA INCIDENCIA
     async guardarIncidencia() {
       const store = useAppStore();
+      const idEmpresa = store.getUserEmpresa;  // Supongamos que esto te da el ID directamente
+
+      const hasIdEmpresa = idEmpresa !== null;
       // Validar que todos los campos obligatorios estén llenos
       const submarino = this.submarinos.find(
         (submarinos) => submarinos.nom_sub === this.nuevaIncidencia.submarinoSeleccionado
@@ -319,8 +322,26 @@ export default {
         id
       );
 
+
+      const dataToSend = {
+        listaEnviar: this.listaEnviar,
+        hasIdEmpresa: hasIdEmpresa, //Si hasId es true es que tiene una empresa seleccionada si es false es admin sin empresa elegida
+        id, id
+      };
+      this.socket.emit('insertarIncidencia', dataToSend, (response) => {
+        if (response.status === 200) {
+          window.alert('Incidencia insertada correctamente')
+        } else {
+          window.alert('Error al insertar la incidencia')
+        }
+      });
+
+      this.socket.on("incidenciaResult", (result) => {
+        this.incidencias = result;
+        console.log("Incidencias para la empresa:", this.incidencias);
+      });
+
       //console.log(this.listaEnviar);
-      await insertIncidencia(this.listaEnviar);
 
       // Limpiar el formulario y cerrar el diálogo
       this.nuevaIncidencia.nombre = "";
