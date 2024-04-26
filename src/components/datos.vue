@@ -29,19 +29,18 @@
                   <p><b>Estat de la càmera:</b> {{ camara }}</p>
                   <p><b>Última connexió:</b> {{ ultimaConexion }}</p>
                   <p><b>Temps encès:</b> {{ msToTime(timeON) }}</p>
-                  <p><b>Rutina en curso:</b> {{ movimientoSub.rutina }}</p>
-                  <p><b>Tarea en curso:</b> {{ movimientoSub.tarea }}</p>
+                  <p><b>Rutina en curso:</b> {{ movimientoSub[0]?.rutina }}</p>
                 </div>
               </v-card-text>
             </v-card>
           </v-col>
           <v-col cols="6">
             <v-card class="mx-auto" height="800" width="400">
-              <v-card height="150" width="400">
-                <v-card-text class="vCardText marg text-center">
-                  <h2>Historial de moviments</h2>
-                </v-card-text>
-              </v-card>
+              <v-card-text class="vCardText marg text-center">
+                <h2>Historial de moviments</h2>
+                <v-select v-model="opcionSeleccionada" :items="opciones" label="Seleccionar opción"></v-select>
+                <v-btn @click="enviarMovimientos">Enviar</v-btn>
+              </v-card-text>
               <v-card-text class="vCardText" ref="movimientosList">
                 <v-container fluid>
                   <v-row>
@@ -54,7 +53,9 @@
                                 :key="indexMov">
                                 <v-list-item class="message">
                                   <v-list-item-text>
-                                    {{ movimiento.fecha }} - {{ movimiento.detalle }}
+                                    <span :class="getColor(movimiento.detalle)">
+                                      {{ movimiento.fecha }} - {{ movimiento.detalle }}
+                                    </span>
                                   </v-list-item-text>
                                 </v-list-item>
                               </v-list-item>
@@ -88,6 +89,8 @@ export default {
   //192.168.205.140
   data() {
     return {
+      opciones: ['Inmersión', 'Ascenso', 'En rutina', 'Llegada a destino', 'EMERGENCIA', 'Home', 'En camino a destino'],
+      opcionSeleccionada: null,
       submarinos: [],
       movimientos: [],
       movimientoSub: [],
@@ -104,6 +107,7 @@ export default {
 
     this.socket.on("actualizarMovimientos", async (mov) => {
       this.movimientos = mov;
+      console.log(this.movimientos);
     });
     // Recuperar valores del almacenamiento local al iniciar la página
     if (localStorage.getItem("motor")) {
@@ -155,6 +159,26 @@ export default {
   },
 
   methods: {
+    getColor(detalle) {
+      switch (detalle) {
+        case 'Inmersión':
+          return 'verde-oscuro';
+        case 'Ascenso':
+          return 'verde-claro';
+        case 'En rutina':
+          return 'negro';
+        case 'Llegada a destino':
+          return 'azul-oscuro';
+        case 'EMERGENCIA':
+          return 'rojo';
+        case 'Home':
+          return 'azul-claro';
+        case 'En camino a destino':
+          return 'morado';
+        default:
+          return '';
+      }
+    },
     // CONTROLAR TIEMPO DE ENCENDIDO
     msToTime(s) {
       var ms = s % 1000;
@@ -194,6 +218,47 @@ export default {
       this.submarinoSeleccionado = null;
       this.seleccionado = false;
     },
+
+    //ESTO ES PARA PROBAR EL SOCKET EMIR
+    enviarMovimientos() {
+      const fechaActual = new Date().toISOString().slice(0, 10); // YYYY-MM-DD
+      
+      const movimiento = {
+        detalle: this.opcionSeleccionada,
+        fecha: fechaActual,
+      };// Opción seleccionada
+      console.log("Movimiento a enviar:", movimiento);
+      const idSubmarino = this.submarinoSeleccionado.id_sub; // ID del submarino
+
+      const datos = {
+        movimiento: movimiento,
+        idSubmarino: idSubmarino,
+      };
+
+      this.socket.emit('addMovimientos', datos, (respuesta) => {
+        if (respuesta.success) {
+          console.log('Movimiento añadido y movimientos actualizados.');
+        } else if (respuesta.info) {
+          console.log('No se realizó ninguna actualización.');
+        } else if (respuesta.error) {
+          console.error('Error al enviar datos:', respuesta.error);
+        }
+      });
+    },
+  },
+  watch: {
+    // Vigila los cambios en 'movimientos' y actualiza 'movimientoSub'
+    movimientos: {
+      immediate: true,
+      handler(newMovimientos) {
+        if (this.submarinoSeleccionado) {
+          this.movimientoSub = newMovimientos.filter(mov =>
+            mov.idSubmarino === this.submarinoSeleccionado.id_sub
+          );
+          console.log("Actualizado movimientoSub:", this.movimientoSub);
+        }
+      }
+    },
   },
 };
 </script>
@@ -210,8 +275,10 @@ import DefaultBar from "@/layouts/default/AppBar.vue";
 
 /* Estilos para los párrafos dentro del div */
 .vCardText {
-  overflow: hidden; /* Elimina si está causando problemas */
-  text-overflow: ellipsis; /* Elimina si está causando problemas */
+  overflow: hidden;
+  /* Elimina si está causando problemas */
+  text-overflow: ellipsis;
+  /* Elimina si está causando problemas */
 }
 
 .marg {
@@ -221,7 +288,8 @@ import DefaultBar from "@/layouts/default/AppBar.vue";
 .scroll-container {
   overflow-y: auto;
   overflow-x: hidden;
-  max-height: 600px; /* Asegúrate de que esta altura es suficiente */
+  max-height: 600px;
+  /* Asegúrate de que esta altura es suficiente */
 }
 
 .message {
@@ -229,9 +297,12 @@ import DefaultBar from "@/layouts/default/AppBar.vue";
   background-color: #efefef;
   border-radius: 8px;
   margin-bottom: 8px;
-  display: block; /* Cambiar de inline-block a block */
-  white-space: normal; /* Permitir envoltura de texto */
-  word-wrap: break-word; /* Asegurar la ruptura de palabras */
+  display: block;
+  /* Cambiar de inline-block a block */
+  white-space: normal;
+  /* Permitir envoltura de texto */
+  word-wrap: break-word;
+  /* Asegurar la ruptura de palabras */
 }
 
 
@@ -263,5 +334,33 @@ import DefaultBar from "@/layouts/default/AppBar.vue";
   size: 20px;
   transform: translateY(-50%);
   cursor: pointer;
+}
+
+.verde-oscuro {
+  color: rgb(3, 143, 3);
+}
+
+.verde-claro {
+  color: rgb(23, 211, 23);
+}
+
+.negro {
+  color: black;
+}
+
+.azul-oscuro {
+  color: rgb(3, 3, 236);
+}
+
+.rojo {
+  color: red;
+}
+
+.azul-claro {
+  color: rgb(0, 191, 255);
+}
+
+.morado {
+  color: rgb(89, 0, 255);
 }
 </style>

@@ -63,7 +63,7 @@
                 <v-icon @click="editarIncidencia(index, item.id_incidencia)">mdi-pencil</v-icon>
               </td>
               <td style="border: none; margin-left: ">
-                
+
                 <v-icon @click="reportIncidencia(item.id_incidencia)">mdi-history</v-icon>
               </td>
             </tr>
@@ -115,7 +115,7 @@
           <v-text-field v-model="nuevaIncidencia.nombre" label="Asunto de la incidencia"></v-text-field>
           <v-textarea v-model="nuevaIncidencia.descripcion" label="Descripción de la incidencia"></v-textarea>
           <v-select v-model="nuevaIncidencia.submarinoSeleccionado" label="Submarino" :items="submarinos.map((submarino) => submarino.nom_sub)
-      " item-text="text" item-value="value"></v-select>
+            " item-text="text" item-value="value"></v-select>
 
           <v-select v-model="nuevaIncidencia.tipo" :items="['Actualización software', 'Reparación']"
             label="Tipo"></v-select>
@@ -156,12 +156,14 @@ import {
   getReports
 } from "@/services/connectionManager.js";
 import { useAppStore } from "@/store/app";
+import io from "socket.io-client";
+
 
 export default {
   computed: {
     // Filtrar la lista de incidencias según el filtro actual
     incidenciasFiltradas() {
-      let incidenciasFiltradas = this.listaItems;
+      let incidenciasFiltradas = this.incidencias;
 
       if (this.filtroPrioridad) {
         incidenciasFiltradas = incidenciasFiltradas.filter(
@@ -185,7 +187,7 @@ export default {
       listaEnviar: [],
       reportes: [],
       reporteSeleccionado: [],
-      listaItems: [],
+      incidencias: [],
       ordenFecha: {
         campo: null,
         direccion: null,
@@ -240,6 +242,8 @@ export default {
       descripcionSeleccionada: "",
       idIncidenciaEditando: null,
       dialogReport: false,
+      socket: null,
+
     };
   },
   methods: {
@@ -256,6 +260,9 @@ export default {
     // GUARDAR LA INCIDENCIA
     async guardarIncidencia() {
       const store = useAppStore();
+      const idEmpresa = store.getUserEmpresa;  // Supongamos que esto te da el ID directamente
+
+      const hasIdEmpresa = idEmpresa !== null;
       // Validar que todos los campos obligatorios estén llenos
       const submarino = this.submarinos.find(
         (submarinos) => submarinos.nom_sub === this.nuevaIncidencia.submarinoSeleccionado
@@ -290,7 +297,7 @@ export default {
 
       //console.log(submarino);
 
-      this.listaItems.push({
+      this.incidencias.push({
         Asunto: this.nuevaIncidencia.nombre,
         descripcion: this.nuevaIncidencia.descripcion,
         Autor: this.nomCompleto,
@@ -315,8 +322,26 @@ export default {
         id
       );
 
+
+      const dataToSend = {
+        listaEnviar: this.listaEnviar,
+        hasIdEmpresa: hasIdEmpresa, //Si hasId es true es que tiene una empresa seleccionada si es false es admin sin empresa elegida
+        id, id
+      };
+      this.socket.emit('insertarIncidencia', dataToSend, (response) => {
+        if (response.status === 200) {
+          window.alert('Incidencia insertada correctamente')
+        } else {
+          window.alert('Error al insertar la incidencia')
+        }
+      });
+
+      this.socket.on("incidenciaResult", (result) => {
+        this.incidencias = result;
+        console.log("Incidencias para la empresa:", this.incidencias);
+      });
+
       //console.log(this.listaEnviar);
-      await insertIncidencia(this.listaEnviar);
 
       // Limpiar el formulario y cerrar el diálogo
       this.nuevaIncidencia.nombre = "";
@@ -390,7 +415,7 @@ export default {
         this.ordenFecha.direccion = "asc";
       }
 
-      this.listaItems.sort((a, b) => {
+      this.incidencias.sort((a, b) => {
         const orderFactor = this.ordenFecha.direccion === "asc" ? 1 : -1;
         return orderFactor * (new Date(a[campo]) - new Date(b[campo]));
       });
@@ -488,7 +513,6 @@ export default {
           this.idIncidenciaEditando
         );
 
-        this.getIncidencia();
 
         // Cerrar el diálogo de edición
         this.dialogoEdicionVisible = false;
@@ -530,26 +554,6 @@ export default {
       this.dialogDescripcion = true;
     },
 
-    // SELECT INCIDENCIA
-    async getIncidencia() {
-      const store = useAppStore();
-      const userEmpresa = store.getUserEmpresa;
-      try {
-        if (userEmpresa === null || userEmpresa === "null") {
-          this.listaItems = await getIncidencias();
-          console.log(this.listaItems);
-        } else {
-          this.listaItems = await selectIncidenciasEmpresa(userEmpresa);
-          console.log(this.listaItems);
-        }
-      } catch (error) {
-        console.error("Error fetching incidencias:", error);
-      }
-
-
-      // console.log(this.listaItems);
-    },
-
     async getReportes() {
       try {
         this.reportes = await getReports();
@@ -562,11 +566,43 @@ export default {
   },
   //CONSOLA
   created() {
-    console.log("CREADO");
-    this.getSubmarino();
-    this.getIncidencia();
-    this.getReportes();
+    this.socket = io("http://localhost:3169/");
+    const store = useAppStore();
+    const userEmpresa = store.getUserEmpresa;
+
+    const fetchItems = async () => {
+      try {
+        if (userEmpresa === null || userEmpresa === 'null') {
+          this.socket.on("selectIncidencia", (inc) => {
+            this.incidencias = inc;
+            console.log(this.incidencias);
+          });
+        } else {
+          // Aseguramos que el ID de la empresa se envíe correctamente
+          this.socket.emit("selectIncidenciaEmpresa", { idEmpresa: userEmpresa });
+
+          // Manejar la respuesta para incidencias específicas de la empresa
+          this.socket.on("incidenciaResult", (result) => {
+            this.incidencias = result;
+            console.log("Incidencias para la empresa:", this.incidencias);
+          });
+        }
+      } catch (error) {
+        console.error('Error al obtener las incidencias:', error);
+      }
+    };
+
+    fetchItems(); // Asegúrate de llamar a la función para iniciar el proceso
+    fetchItems().then(() => {
+      console.log("CREADO");
+      this.getSubmarino();
+      this.getReportes();
+    });
   },
+
+
+
+
   mounted() {
     console.log("MONTADO");
   },
