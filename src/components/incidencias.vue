@@ -63,7 +63,7 @@
                 <v-icon @click="editarIncidencia(index, item.id_incidencia)">mdi-pencil</v-icon>
               </td>
               <td style="border: none; margin-left: ">
-                
+
                 <v-icon @click="reportIncidencia(item.id_incidencia)">mdi-history</v-icon>
               </td>
             </tr>
@@ -156,6 +156,8 @@ import {
   getReports
 } from "@/services/connectionManager.js";
 import { useAppStore } from "@/store/app";
+import io from "socket.io-client";
+
 
 export default {
   computed: {
@@ -240,6 +242,8 @@ export default {
       descripcionSeleccionada: "",
       idIncidenciaEditando: null,
       dialogReport: false,
+      socket: null,
+
     };
   },
   methods: {
@@ -530,26 +534,6 @@ export default {
       this.dialogDescripcion = true;
     },
 
-    // SELECT INCIDENCIA
-    async getIncidencia() {
-      const store = useAppStore();
-      const userEmpresa = store.getUserEmpresa;
-      try {
-        if (userEmpresa === null || userEmpresa === "null") {
-          this.listaItems = await getIncidencias();
-          console.log(this.listaItems);
-        } else {
-          this.listaItems = await selectIncidenciasEmpresa(userEmpresa);
-          console.log(this.listaItems);
-        }
-      } catch (error) {
-        console.error("Error fetching incidencias:", error);
-      }
-
-
-      // console.log(this.listaItems);
-    },
-
     async getReportes() {
       try {
         this.reportes = await getReports();
@@ -562,11 +546,34 @@ export default {
   },
   //CONSOLA
   created() {
-    console.log("CREADO");
-    this.getSubmarino();
-    this.getIncidencia();
-    this.getReportes();
+    this.socket = io("http://localhost:3169/");
+    const store = useAppStore();
+    const userEmpresa = store.getUserEmpresa;
+
+    const fetchItems = async () => {
+      try {
+        if (userEmpresa === null || userEmpresa === 'null') {
+          this.socket.on("selectIncidencia", async (inc) => {
+            this.reportes = inc;
+            console.log(this.reportes);
+          });
+        } else {
+          this.listaItems = await selectIncidenciasEmpresa(userEmpresa);
+        }
+        console.log(this.listaItems);
+      } catch (error) {
+        console.error('Error al obtener las incidencias:', error);
+      }
+    };
+
+    fetchItems().then(() => {
+      console.log("CREADO");
+      this.getSubmarino();
+      this.getIncidencia();
+      this.getReportes();
+    });
   },
+
   mounted() {
     console.log("MONTADO");
   },
