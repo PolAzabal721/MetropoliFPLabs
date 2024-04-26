@@ -199,11 +199,13 @@
             <v-row>
               <v-col cols="6">
                 <h3>Rutinas</h3>
-                <v-checkbox v-for="rutina in rutinas.rutinas" :key="rutina.id"
-                  :label="`${rutina.nombre} - ${rutina.repetir}`"
-                  :v-model="estaRutinaAsignada(rutina, submarinoSeleccionado)"
-                  @change="() => toggleAsignacionRutina(rutina, submarinoSeleccionado)" :disabled="!rutina.disponible">
-                </v-checkbox>
+                <div v-for="rutina in rutinas.rutinas" :key="rutina.id" style="margin: 10px;" class="my-2">
+                  <input type="checkbox" class="checkbox-personalizado"
+                    :checked="estaRutinaAsignada(rutina, submarinoSeleccionado)"
+                    @change="() => toggleAsignacionRutina(rutina, submarinoSeleccionado)"
+                    :disabled="!rutina.disponible">
+                  <label style="margin-left: 5px;">{{ `${rutina.nombre} - ${rutina.repetir}` }}</label>
+                </div>
               </v-col>
             </v-row>
           </v-card-text>
@@ -239,7 +241,7 @@ import {
   updateRutinasMongo,
   insertarIdSubmarino,
   insertarIdRutinaEnSubmarino,
-  eliminarIdActividad,
+  eliminarIdRutinaDeSubmarino,
   eliminarIdSubmarino
 } from "@/services/connectionManager.js";
 import { useAppStore } from "@/store/app";
@@ -389,38 +391,43 @@ export default {
       return fechas;
     },
 
-    // ASIGNAR Y QUITAR RUTINA
+    // ASIGNAR Y QUITAR RUTINA    
     toggleAsignacionRutina(rutina, submarino) {
-      const index = rutina.submarinos.indexOf(submarino.id_sub);
-      if (index === -1) { // Si la rutina no está ya asignada a este submarino
+      const asignada = this.estaRutinaAsignada(rutina, submarino);
+      if (!asignada) {
         if (confirm("¿Deseas asignar esta rutina al submarino?")) {
-          if (!this.validarSolapamientos(rutina, submarino.id_sub)) {
+          if (this.validarSolapamientos(rutina, submarino.id_sub)) {
+            // No hay solapamientos, puedes proceder a asignar
+            rutina.submarinos.push(submarino.id_sub);
+            this.actualizarBaseDeDatosRutina(rutina, submarino);
+          } else {
+            // Hay solapamientos, muestra un mensaje y no hagas nada
             alert("La asignación de la rutina se solapa con otras actividades o no respeta el intervalo de descanso requerido.");
-            return; // Asegurarse de salir si hay solapamiento
           }
-          rutina.submarinos.push(submarino.id_sub); // Asigna la rutina si no hay solapamiento
-          this.actualizarBaseDeDatosRutina(rutina, submarino);
         }
-      } else { // Si ya está asignada y se desea desvincular
+      } else {
         if (confirm("¿Deseas desvincular esta rutina del submarino?")) {
-          rutina.submarinos.splice(index, 1); // Desvincula la rutina
+          const index = rutina.submarinos.indexOf(submarino.id_sub);
+          rutina.submarinos.splice(index, 1);
           this.actualizarBaseDeDatosRutinaEliminar(rutina, submarino);
         }
       }
-      this.actualizarDisponibilidad(submarino.id_sub); // Actualiza la disponibilidad de tareas y rutinas basada en las asignaciones actuales
+      // Luego de manejar la lógica de asignación/desvinculación, actualiza la disponibilidad
+      this.actualizarDisponibilidad(submarino.id_sub);
     },
 
     // INSERTAR IDS
     async actualizarBaseDeDatosRutina(rutina, submarino) {
-      console.log("ID AREA " + this.areaEncontradaID + " ID rutina " + rutina.id + " Id sub: " + submarino.id_sub);
+      //console.log("ID AREA " + this.areaEncontradaID + " ID rutina " + rutina.id + " Id sub: " + submarino.id_sub);
       await insertarIdSubmarino(this.areaEncontradaID, rutina.id, submarino.id_sub);
       await insertarIdRutinaEnSubmarino(this.areaEncontradaID, rutina.id, submarino.id_sub);
     },
 
     // ELIMINAR IDS
     async actualizarBaseDeDatosRutinaEliminar(rutina, submarino) {
-      // await eliminarIdSubmarino(this.areaEncontradaID, rutina.id, submarino.id_sub);
-      //await eliminarIdActividad();
+      //console.log("ID AREA " + this.areaEncontradaID + " ID rutina " + rutina.id + " Id sub: " + submarino.id_sub);
+      await eliminarIdSubmarino(this.areaEncontradaID, rutina.id, submarino.id_sub);
+      await eliminarIdRutinaDeSubmarino(this.areaEncontradaID, rutina.id, submarino.id_sub);
     },
 
     // ACTUALIZAR LA DISPO DE ACTIVIDADES
@@ -445,35 +452,8 @@ export default {
 
     // VERIFICAR COMO HA DE ESTAR EL CHECK
     estaRutinaAsignada(rutina, submarino) {
-      if (!rutina || !submarino || !rutina.submarinos || !submarino.actividades) {
-        return false; // Retorna falso si alguno de los necesarios no está definido.
-      }
-      const submarinoEnRutina = rutina.submarinos.includes(submarino.id_sub);
-      const rutinaEnSubmarino = submarino.actividades.includes(rutina.id);
-      return submarinoEnRutina && rutinaEnSubmarino;
+      return rutina.submarinos.includes(submarino.id_sub);
     },
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
     // VER SI HAY SUBMARINOS EN ESE AREA
     actualizarSubmarinos() {
@@ -496,6 +476,7 @@ export default {
       );
     },
 
+    // ASIGNAR SUBMARINOS A UN AREA
     async asignarSubmarinos() {
       const submarinosSeleccionados = this.submarinosDisponibles.filter(
         (sub) => sub.selected
@@ -1078,8 +1059,6 @@ export default {
 
       return true;
     }
-
-
   },
   //
   computed: {
@@ -1120,6 +1099,59 @@ import DefaultBar from "@/layouts/default/AppBar.vue";
 </script>
 
 <style scoped>
+/* Estilo base para el checkbox */
+.checkbox-personalizado {
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  appearance: none;
+  background-color: #fff;
+  border: 2px solid #d1d3d4;
+  padding: 9px;
+  border-radius: 4px;
+  display: inline-block;
+  position: relative;
+  vertical-align: middle;
+  cursor: pointer;
+  margin-right: 8px;
+  transition: background-color 0.2s, border-color 0.2s;
+}
+
+/* Estilo cuando el checkbox está marcado */
+.checkbox-personalizado:checked {
+  background-color: #5f6368;
+  /* Gris oscuro para mayor contraste */
+  border-color: #5f6368;
+}
+
+/* Estilo para la marca de verificación dentro del checkbox */
+.checkbox-personalizado:checked::after {
+  content: '✔';
+  position: absolute;
+  top: -2px;
+  /* Ajusta estos valores según necesites */
+  left: 5px;
+  color: #fff;
+}
+
+/* Animación para la aparición de la marca de verificación */
+.checkbox-personalizado::after {
+  transition: opacity 0.2s;
+  opacity: 0;
+}
+
+.checkbox-personalizado:checked::after {
+  opacity: 1;
+}
+
+/* Estilo para el texto al lado del checkbox */
+.checkbox-label {
+  font-size: 16px;
+  /* Tamaño adecuado para legibilidad */
+  color: #333;
+  /* Color oscuro para texto */
+  vertical-align: middle;
+}
+
 .estado-desactivado {
   box-shadow: 0 0 8px red;
 }

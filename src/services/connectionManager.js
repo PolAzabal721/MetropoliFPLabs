@@ -639,7 +639,7 @@ export async function editSubEmpresa(id_empresa, id_sub, autorenovable) {
     }
 }
 
-
+//----------------------- AÑADIR Y ELIMINAR IDS (EMPAREJA LAS TAREAS CON SUBMARINOS) -----------------------//
 // INSERTAR ID SUBMARINO A LA TAREA
 export async function insertarIdSubmarino(areaId, rutinaId, idSubmarino) {
     try {
@@ -648,7 +648,7 @@ export async function insertarIdSubmarino(areaId, rutinaId, idSubmarino) {
             headers: {
                 'Content-Type': 'application/json'
             },
-            body: JSON.stringify({areaId, rutinaId, idSubmarino })
+            body: JSON.stringify({ areaId, rutinaId, idSubmarino })
         });
 
         if (!response.ok) {
@@ -664,6 +664,29 @@ export async function insertarIdSubmarino(areaId, rutinaId, idSubmarino) {
     }
 }
 
+// ELIMINAR ID SUBMARINO DE LA TAREA
+export async function eliminarIdSubmarino(areaId, rutinaId, idSubmarino) {
+    try {
+        const response = await fetch('http://localhost:3169/eliminarIdSubmarino', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ areaId, rutinaId, idSubmarino })
+        });
+
+        if (!response.ok) {
+            const errorMessage = await response.text();
+            throw new Error(`Error al eliminar la ID del submarino: ${errorMessage}`);
+        }
+
+        const responseData = await response.json();
+        return responseData;
+    } catch (error) {
+        console.error('Error en la comunicación:', error.message);
+        throw error;
+    }
+}
 
 // AÑADIR ID RUTINA AL SUBMARINO
 export async function insertarIdRutinaEnSubmarino(areaId, rutinaId, submarinoId) {
@@ -689,21 +712,20 @@ export async function insertarIdRutinaEnSubmarino(areaId, rutinaId, submarinoId)
     }
 }
 
-
-//
-export async function eliminarIdActividad() {
+// ELIMINAR ID RUTINA DE LAS ACTIVIDADES DEL SUBMARINO
+export async function eliminarIdRutinaDeSubmarino(areaId, rutinaId, submarinoId) {
     try {
-        const response = await fetch('http://localhost:3169/editSubEmpresa', {
+        const response = await fetch('http://localhost:3169/eliminarIdRutinaDeSubmarino', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'
             },
-            body: JSON.stringify({ id_empresa: id_empresa, id_sub: id_sub, autorenovable: autorenovable })
+            body: JSON.stringify({ areaId, rutinaId, submarinoId })
         });
 
         if (!response.ok) {
             const errorMessage = await response.text();
-            throw new Error(`Error al agregar sub a empresa: ${errorMessage}`);
+            throw new Error(`Error al eliminar la rutina de las actividades del submarino: ${errorMessage}`);
         }
 
         const responseData = await response.json();
@@ -714,26 +736,4 @@ export async function eliminarIdActividad() {
     }
 }
 
-//
-export async function eliminarIdSubmarino() {
-    try {
-        const response = await fetch('http://localhost:3169/eliminarIdSubmarino', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({ id_empresa: id_empresa, id_sub: id_sub, autorenovable: autorenovable })
-        });
-
-        if (!response.ok) {
-            const errorMessage = await response.text();
-            throw new Error(`Error al agregar sub a empresa: ${errorMessage}`);
-        }
-
-        const responseData = await response.json();
-        return responseData;
-    } catch (error) {
-        console.error('Error en la comunicación:', error.message);
-        throw error;
-    }
-}
+//----------------------------------------------------------------------------------------------------------//
