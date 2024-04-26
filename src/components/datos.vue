@@ -218,6 +218,8 @@ export default {
       this.submarinoSeleccionado = null;
       this.seleccionado = false;
     },
+
+    //ESTO ES PARA PROBAR EL SOCKET EMIR
     enviarMovimientos() {
       const fechaActual = new Date().toISOString().slice(0, 10); // YYYY-MM-DD
       
