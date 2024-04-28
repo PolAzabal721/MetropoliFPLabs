@@ -2,7 +2,6 @@
   <default-bar />
   <v-layout class="rounded rounded-md">
     <v-main>
-
       <v-row style="margin: 25px;">
         <!-- Columna izquierda (submarinos) -->
         <v-col cols="12" sm="3">
@@ -13,7 +12,7 @@
             </v-toolbar>
             <v-container>
               <v-row>
-                <v-col v-for="submarino in submarinosDisponibles" :key="submarino.id" cols="12">
+                <v-col v-for="submarino in submarinosDisponibles" :key="submarino.id_sub" cols="12">
                   <v-checkbox v-model="submarino.selected" :label="submarino.nom_sub"></v-checkbox>
                 </v-col>
               </v-row>
@@ -309,7 +308,8 @@ export default {
       mostrarColumnaDerecha: false,
       dialogTarea: false,
       showDialogEdicionTarea: false,
-      minDate: new Date().toISOString().substr(0, 10)
+      minDate: new Date().toISOString().substr(0, 10),
+      seleccionSubmarinos: {}
     };
   },
   methods: {
@@ -478,56 +478,44 @@ export default {
 
     // ASIGNAR SUBMARINOS A UN AREA
     async asignarSubmarinos() {
-      const submarinosSeleccionados = this.submarinosDisponibles.filter(
-        (sub) => sub.selected
-      );
+      const submarinosSeleccionados = this.submarinosDisponibles.filter(sub => sub.selected);
 
-      // Verificar duración de batería antes de asignar
-      const duracionTotal = submarinosSeleccionados.reduce(
-        (total, sub) => total + sub.duracionBateria,
-        0
-      );
+      // Limpiar la selección para evitar duplicados en futuras asignaciones
+      this.submarinosDisponibles.forEach(sub => sub.selected = false);
 
-      if (duracionTotal > this.duracionMaximaPorTurno) {
-        console.error(
-          "Error: La duración total de la batería supera el límite por turno."
-        );
-        return;
-      }
+      // Lista temporal para guardar nuevos submarinos asignados
+      let nuevosSubmarinosAsignados = [];
 
-      // Actualizar submarinosAsignados y submarinosDisponibles
-      this.submarinosAsignados = [
-        ...this.submarinosAsignados,
-        ...submarinosSeleccionados,
-      ];
-      this.submarinosDisponibles = this.submarinosDisponibles.filter(
-        (sub) => !sub.selected
-      );
-
-      //console.log(this.areaEncontrada._id);
-
-      for (let i = 0; i < this.submarinosAsignados.length; i++) {
-        try {
-          await updateAreaSub(
-            this.areaEncontrada._id,
-            this.submarinosAsignados[i].id_sub
-          );
-          this.submarinosAsignados[i].id_area = this.areaEncontrada._id;
-        } catch (error) {
-          console.error("Error al actualizar submarinos:", error);
-          // Manejar el error según tus necesidades
+      // Asignar área a cada submarino seleccionado y preparar para actualizar en backend
+      for (let sub of submarinosSeleccionados) {
+        // Verificar si el submarino ya está asignado para evitar duplicados
+        if (!this.submarinosAsignados.some(asignado => asignado.id_sub === sub.id_sub)) {
+          sub.id_area = this.areaEncontrada._id; // Asignar el ID del área al submarino
+          nuevosSubmarinosAsignados.push(sub);   // Añadir a la lista temporal de nuevos asignados
+          try {
+            await updateAreaSub(this.areaEncontrada._id, sub.id_sub); // Actualizar en backend
+          } catch (error) {
+            console.error("Error al actualizar submarinos:", error);
+          }
         }
       }
+
+      // Filtrar submarinos asignados para incluir solo aquellos en la área específica
+      this.submarinosAsignados = this.submarinosAsignados
+        .filter(sub => sub.id_area === this.areaEncontrada._id)
+        .concat(nuevosSubmarinosAsignados);
+
+      // Actualizar submarinos disponibles removiendo los que ya fueron asignados
+      this.submarinosDisponibles = this.submarinosDisponibles.filter(sub => !sub.id_area);
+
       try {
-        //console.log(this.areaEncontrada._id);
         // Realizar la llamada para actualizar los submarinos asignados en el backend
         await updateSubmarino(
           this.areaEncontrada._id,
           this.submarinosAsignados
         );
       } catch (error) {
-        console.error("Error al actualizar submarinos:", error);
-        // Manejar el error según tus necesidades
+        console.error("Error al actualizar submarinos en el backend:", error);
       }
     },
 
@@ -549,17 +537,12 @@ export default {
         (sub) => sub !== submarino
       );
       this.submarinosDisponibles.push(submarino);
-      console.log(
-        "Submarino desvinculado de",
-        this.areaEncontrada._id,
-        submarino
-      );
 
       try {
         await deleteSubMongo(this.areaEncontrada._id, submarino.id_sub);
         await deleteAreaSub(submarino.id_sub);
       } catch (err) {
-
+        console.error("Error al desvincular el submarino:", error);
       }
       this.getSubmarino();
     },
@@ -783,10 +766,8 @@ export default {
         const submarinos = await getSubmarinos(userEmpresa);
 
         // Filtrar submarinos disponibles excluyendo los ya asignados
-        this.submarinosDisponibles = submarinos.filter(submarino => {
-          // Verificar si el submarino no está asignado en ninguna área
-          return !this.submarinosAsignados.find(asignado => asignado.id_sub === submarino.id_sub);
-        });
+        this.submarinosDisponibles = submarinos.filter(submarino => !submarino.id_area);
+        this.submarinosAsignados = submarinos.filter(submarino => submarino.id_area);
       } catch (error) {
         console.error("Error fetching submarinos:", error);
       }
