@@ -44,7 +44,7 @@
           <!-- Mostrar solo si 'mostrarColumnaDerecha' es verdadero -->
           <v-row v-if="mostrarColumnaDerecha">
             <!-- Opciones para submarinos -->
-            <v-col>
+            <v-col class="text-center">
               <v-btn @click="crearRutina">Actividades de los submarinos</v-btn>
 
               <!-- Lista submarinos -->
@@ -56,7 +56,7 @@
                     <v-card-title class="text-center">
                       {{ submarino.nom_sub }}
                     </v-card-title>
-                    <v-card-text>
+                    <v-card-text class="text-left">
                       <p>Estado: {{ submarino.estado_sub }}</p>
                       <p>Ubicación: {{ submarino.ruta }}</p>
                     </v-card-text>
