@@ -261,6 +261,7 @@ export default {
     async guardarIncidencia() {
       const store = useAppStore();
       const idEmpresa = store.getUserEmpresa;  // Supongamos que esto te da el ID directamente
+      const idUser = store.getUserID;
 
       const hasIdEmpresa = idEmpresa !== null;
       // Validar que todos los campos obligatorios estén llenos
@@ -326,7 +327,8 @@ export default {
       const dataToSend = {
         listaEnviar: this.listaEnviar,
         hasIdEmpresa: hasIdEmpresa, //Si hasId es true es que tiene una empresa seleccionada si es false es admin sin empresa elegida
-        id, id
+        id: id,
+        idUser: idUser 
       };
       this.socket.emit('insertarIncidencia', dataToSend, (response) => {
         if (response.status === 200) {
@@ -351,6 +353,7 @@ export default {
       this.nuevaIncidencia.prioridad = "";
       this.nuevaIncidencia.submarinoSeleccionado = null;
       this.dialogoVisible = false;
+      this.listaEnviar = [];
     },
 
     // FORMATO DE LA FECHA DE INICIO

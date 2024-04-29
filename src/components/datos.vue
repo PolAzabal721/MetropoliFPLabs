@@ -38,8 +38,12 @@
             <v-card class="mx-auto" height="800" width="400">
               <v-card-text class="vCardText marg text-center">
                 <h2>Historial de moviments</h2>
-                <v-select v-model="opcionSeleccionada" :items="opciones" label="Seleccionar opción"></v-select>
-                <v-btn @click="enviarMovimientos">Enviar</v-btn>
+                <div>
+                  <v-btn v-if="movimientoSub.length > 0" v-for="opcion in opciones" :key="opcion"
+                    @click="filtrarMovimientos(opcion)" class="ma-2">
+                    {{ opcion }}
+                  </v-btn>
+                </div>
               </v-card-text>
               <v-card-text class="vCardText" ref="movimientosList">
                 <v-container fluid>
@@ -219,32 +223,56 @@ export default {
       this.seleccionado = false;
     },
 
-    //ESTO ES PARA PROBAR EL SOCKET EMIR
-    enviarMovimientos() {
-      const fechaActual = new Date().toISOString().slice(0, 10); // YYYY-MM-DD
-      
-      const movimiento = {
-        detalle: this.opcionSeleccionada,
-        fecha: fechaActual,
-      };// Opción seleccionada
-      console.log("Movimiento a enviar:", movimiento);
-      const idSubmarino = this.submarinoSeleccionado.id_sub; // ID del submarino
+    filtrarMovimientos(opcion) {
+      this.opcionSeleccionada = opcion;
+      console.log("Opción seleccionada para filtrado:", this.opcionSeleccionada);
 
-      const datos = {
-        movimiento: movimiento,
-        idSubmarino: idSubmarino,
-      };
+      // Aseguramos que movimientos exista y tenga contenido
+      if (this.movimientos && this.movimientos.length > 0) {
+        // Filtramos los movimientos basándonos en la opción seleccionada
+        this.movimientoSub = this.movimientos.map(mov => {
+          // Creamos un nuevo array de submovimientos que solo incluye los que coinciden con la opción seleccionada
+          const subMovimientosFiltrados = mov.movimientos_sub.filter(subMov => subMov.detalle === opcion);
 
-      this.socket.emit('addMovimientos', datos, (respuesta) => {
-        if (respuesta.success) {
-          console.log('Movimiento añadido y movimientos actualizados.');
-        } else if (respuesta.info) {
-          console.log('No se realizó ninguna actualización.');
-        } else if (respuesta.error) {
-          console.error('Error al enviar datos:', respuesta.error);
-        }
-      });
-    },
+          // Usamos el nuevo array de submovimientos en lugar del original
+          return { ...mov, movimientos_sub: subMovimientosFiltrados };
+        }).filter(mov => mov.movimientos_sub.length > 0);
+      } else {
+        // Si no hay movimientos o la lista está vacía, aseguramos que movimientoSub también esté vacío
+        this.movimientoSub = [];
+      }
+
+      console.log("Movimientos filtrados:", this.movimientoSub);
+    }
+
+
+
+    // //ESTO ES PARA PROBAR EL SOCKET EMIR
+    // enviarMovimientos() {
+    //   const fechaActual = new Date().toISOString().slice(0, 10); // YYYY-MM-DD
+
+    //   const movimiento = {
+    //     detalle: this.opcionSeleccionada,
+    //     fecha: fechaActual,
+    //   };// Opción seleccionada
+    //   console.log("Movimiento a enviar:", movimiento);
+    //   const idSubmarino = this.submarinoSeleccionado.id_sub; // ID del submarino
+
+    //   const datos = {
+    //     movimiento: movimiento,
+    //     idSubmarino: idSubmarino,
+    //   };
+
+    //   this.socket.emit('addMovimientos', datos, (respuesta) => {
+    //     if (respuesta.success) {
+    //       console.log('Movimiento añadido y movimientos actualizados.');
+    //     } else if (respuesta.info) {
+    //       console.log('No se realizó ninguna actualización.');
+    //     } else if (respuesta.error) {
+    //       console.error('Error al enviar datos:', respuesta.error);
+    //     }
+    //   });
+    // },
   },
   watch: {
     // Vigila los cambios en 'movimientos' y actualiza 'movimientoSub'
