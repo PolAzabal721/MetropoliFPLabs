@@ -314,18 +314,31 @@ export default {
   },
   methods: {
     validarSolapamientos(nuevaActividad, submarino) {
-      let actividadesAsignadas = [
-        ...this.rutinas.rutinas.filter(r => r.submarinos.includes(submarino))
-      ];
+      const actividadesAsignadas = this.rutinas.rutinas.filter(rutina => rutina.submarinos.includes(submarino));
 
-      let repeticionesNuevaActividad = this.generarRepeticionesTotales(nuevaActividad);
+      const repeticionesNuevaActividad = this.generarRepeticionesTotales(nuevaActividad);
 
-      for (let nuevaRep of repeticionesNuevaActividad) {
-        for (let act of actividadesAsignadas) {
+      console.log("Repeticiones de la nueva actividad:", repeticionesNuevaActividad);
+
+      for (const nuevaRep of repeticionesNuevaActividad) {
+        for (const act of actividadesAsignadas) {
           if (nuevaActividad.id === act.id) continue; // Ignora la comparación consigo mismo
-          let repeticionesExistente = this.generarRepeticionesTotales(act);
-          for (let existenteRep of repeticionesExistente) {
-            if (!(nuevaRep.fechaHoraFin <= existenteRep.fechaHoraInicio || nuevaRep.fechaHoraInicio >= existenteRep.fechaHoraFin)) {
+
+          const repeticionesExistente = this.generarRepeticionesTotales(act);
+
+          console.log("Repeticiones de la actividad existente:", repeticionesExistente);
+
+          for (const existenteRep of repeticionesExistente) {
+            const nuevaInicio = nuevaRep.fechaHoraInicio.getTime();
+            const nuevaFin = nuevaRep.fechaHoraFin.getTime();
+            const existenteInicio = existenteRep.fechaHoraInicio.getTime();
+            const existenteFin = existenteRep.fechaHoraFin.getTime();
+
+            console.log("Comparando fechas:");
+            console.log("Nueva actividad:", nuevaInicio, nuevaFin);
+            console.log("Actividad existente:", existenteInicio, existenteFin);
+
+            if (!(nuevaInicio >= existenteFin || nuevaFin <= existenteInicio)) {
               alert(`Solapamiento detectado entre ${nuevaActividad.nombre} y ${act.nombre}`);
               return false;
             }
@@ -334,6 +347,7 @@ export default {
       }
       return true;
     },
+
 
     generarRepeticionesTotales(actividad) {
       if (actividad.tipo === 'Tarea') {
@@ -348,33 +362,40 @@ export default {
       let fechas = [];
       let fechaInicio = new Date(actividad.fechaHoraInicio);
       let fechaFin = new Date(actividad.fechaHoraFin);
-      let duracion = fechaFin.getTime() - fechaInicio.getTime();
 
-      switch (repetir) {
-        case 'Diariamente':
-          for (let i = 0; i < 365; i++) {
-            let nuevaFechaInicio = new Date(fechaInicio.getTime() + i * 86400000);
-            let nuevaFechaFin = new Date(nuevaFechaInicio.getTime() + duracion);
-            fechas.push({ fechaHoraInicio: nuevaFechaInicio, fechaHoraFin: nuevaFechaFin });
-          }
-          break;
-        case 'Semanalmente':
-          for (let i = 0; i < 52; i++) {
-            let nuevaFechaInicio = new Date(fechaInicio.getTime() + i * 604800000);
-            let nuevaFechaFin = new Date(nuevaFechaInicio.getTime() + duracion);
-            fechas.push({ fechaHoraInicio: nuevaFechaInicio, fechaHoraFin: nuevaFechaFin });
-          }
-          break;
-        case 'Mensualmente':
-          for (let i = 0; i < 12; i++) {
-            let nuevaFechaInicio = new Date(fechaInicio.getFullYear(), fechaInicio.getMonth() + i, fechaInicio.getDate(), fechaInicio.getHours(), fechaInicio.getMinutes());
-            let nuevaFechaFin = new Date(nuevaFechaInicio.getTime() + duracion);
-            fechas.push({ fechaHoraInicio: nuevaFechaInicio, fechaHoraFin: nuevaFechaFin });
-          }
-          break;
+      if (repetir === 'No repetir') {
+        fechas.push({ fechaHoraInicio: fechaInicio, fechaHoraFin: fechaFin });
+      } else {
+        let duracion = fechaFin.getTime() - fechaInicio.getTime();
+
+        switch (repetir) {
+          case 'Diariamente':
+            for (let i = 0; i < 365; i++) {
+              let nuevaFechaInicio = new Date(fechaInicio.getTime() + i * 86400000);
+              let nuevaFechaFin = new Date(nuevaFechaInicio.getTime() + duracion);
+              fechas.push({ fechaHoraInicio: nuevaFechaInicio, fechaHoraFin: nuevaFechaFin });
+            }
+            break;
+          case 'Semanalmente':
+            for (let i = 0; i < 52; i++) {
+              let nuevaFechaInicio = new Date(fechaInicio.getTime() + i * 604800000);
+              let nuevaFechaFin = new Date(nuevaFechaInicio.getTime() + duracion);
+              fechas.push({ fechaHoraInicio: nuevaFechaInicio, fechaHoraFin: nuevaFechaFin });
+            }
+            break;
+          case 'Mensualmente':
+            for (let i = 0; i < 12; i++) {
+              let nuevaFechaInicio = new Date(fechaInicio.getFullYear(), fechaInicio.getMonth() + i, fechaInicio.getDate(), fechaInicio.getHours(), fechaInicio.getMinutes());
+              let nuevaFechaFin = new Date(nuevaFechaInicio.getTime() + duracion);
+              fechas.push({ fechaHoraInicio: nuevaFechaInicio, fechaHoraFin: nuevaFechaFin });
+            }
+            break;
+        }
       }
+
       return fechas;
     },
+
 
     // CALCULAR REPES TAREAS
     generarRepeticionesDiarias(actividad) {
@@ -478,6 +499,13 @@ export default {
 
     // ASIGNAR SUBMARINOS A UN AREA
     async asignarSubmarinos() {
+      // Verificar si hay un área seleccionada
+      if (!this.areaEncontrada || !this.areaEncontrada._id) {
+        // Mostrar alerta si no hay área seleccionada
+        alert("Debes seleccionar un área antes de poder añadir submarinos.");
+        return; // Terminar la ejecución del método si no hay área seleccionada
+      }
+
       const submarinosSeleccionados = this.submarinosDisponibles.filter(sub => sub.selected);
 
       // Limpiar la selección para evitar duplicados en futuras asignaciones
