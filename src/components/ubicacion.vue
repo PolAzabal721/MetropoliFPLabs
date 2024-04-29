@@ -18,21 +18,13 @@
 </template>
 
 <script>
-import { socket, state } from "../services/socket";
 import "leaflet/dist/leaflet.css";
 import "leaflet/dist/leaflet.js";
 import L from "leaflet";
 
 export default {
-  mounted() {
-    // Change the title when the component is mounted
-    document.title = "Sea Shepherd - Ubicació";
-
-    // Change the favicon when the component is mounted
-    this.changeFavicon("@/assets/logo2.svg");
-  },
   data() {
-    return {};
+    
   },
 
   // METODOS
@@ -65,19 +57,7 @@ export default {
 
   //
   computed: {
-    estado() {
-      return state.connected;
-    },
-
-    // VER EL MAPA LATITUD
-    mapeadoLatitud() {
-      return state.latitud;
-    },
-
-    // VER EL MAPA LONGITUD
-    mapeadoLongitud() {
-      return state.longitud;
-    },
+ 
   },
 
   //CONSOLA
@@ -87,7 +67,11 @@ export default {
 
   mounted() {
     console.log("MONTADO");
+    // Change the title when the component is mounted
+    document.title = "Sea Shepherd - Ubicació";
 
+    // Change the favicon when the component is mounted
+    this.changeFavicon("@/assets/logo2.svg");
     this.initMap();
   },
 
@@ -100,5 +84,4 @@ export default {
 import DefaultBar from "@/layouts/default/AppBar.vue";
 </script>
 
-<style>
-</style>
+<style></style>

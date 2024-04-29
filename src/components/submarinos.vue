@@ -478,6 +478,13 @@ export default {
 
     // ASIGNAR SUBMARINOS A UN AREA
     async asignarSubmarinos() {
+      // Verificar si hay un área seleccionada
+      if (!this.areaEncontrada || !this.areaEncontrada._id) {
+        // Mostrar alerta si no hay área seleccionada
+        alert("Debes seleccionar un área antes de poder añadir submarinos.");
+        return; // Terminar la ejecución del método si no hay área seleccionada
+      }
+
       const submarinosSeleccionados = this.submarinosDisponibles.filter(sub => sub.selected);
 
       // Limpiar la selección para evitar duplicados en futuras asignaciones
