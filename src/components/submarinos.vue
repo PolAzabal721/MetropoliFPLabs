@@ -396,7 +396,6 @@ export default {
       return fechas;
     },
 
-
     // CALCULAR REPES TAREAS
     generarRepeticionesDiarias(actividad) {
       let fechas = [];

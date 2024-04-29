@@ -27,11 +27,11 @@
         <v-col cols="12" sm="6">
           <v-select v-model="nombreLugarBusqueda" :items="areas.map(area => area.nombreArea)" label="Seleccionar Área"
             @change="actualizarSubmarinos"></v-select>
-          <v-select v-model="filtroTarea" :items="tareasDisponibles" label="Filtrar por Tarea/Rutina"
-            @change="filtrarSubmarinosPorTarea"></v-select>
-          <v-autocomplete v-model="submarinoSeleccionado" :items="submarinosDisponibles" item-text="nom_sub"
-            item-value="id_sub" label="Seleccionar Submarino" @change="filtrarSubmarinosPorSubmarino"></v-autocomplete>
+
+          <v-select v-model="filtroTarea" :items="tareasDisponibles" label="Filtrar por Tarea/Rutina"></v-select>
           <v-btn @click="buscarArea" :disabled="!nombreLugarBusqueda">Buscar</v-btn>
+          <v-btn @click="filtrarSubmarinosPorTarea" color="blue" dark>Filtrar por Tarea</v-btn>
+
           <v-card class="mx-auto slidecontainer" max-height="500" max-width="550">
             <div id="mapaSelect" style="height: 500px; width: 550px"></div>
           </v-card>
@@ -71,7 +71,8 @@ import "leaflet-draw/dist/leaflet.draw-src.js";
 
 import {
   fetchAreas,
-  getSubmarinos
+  getSubmarinos,
+  selectRutinas
 } from "@/services/connectionManager.js";
 import { useAppStore } from "@/store/app";
 import { ref } from "vue";
@@ -95,14 +96,61 @@ export default {
       seleccionSubmarinos: {},
       nombreLugarBusqueda: '',
       submarinosFueraDelAgua: [],
-      submarinosSumergidos: []
+      submarinosSumergidos: [],
+      rutinas: [],
+      filtroTarea: null,
+      tareasDisponibles: [],
     };
   },
   methods: {
-    // Define the missing method
-    filtrarSubmarinosPorSubmarino() {
-      // Implementation depends on what you want to do with the selected submarine
-      console.log("Submarino seleccionado:", this.submarinoSeleccionado);
+    tareasDisponible() {
+      if (this.rutinas && this.rutinas.length > 0) {
+        this.tareasDisponibles = this.rutinas.map(rutina => rutina.nombre); // Usa los nombres de las rutinas para el v-select
+      } else {
+        this.tareasDisponibles = [];
+        console.log("No hay rutinas disponibles o no se ha seleccionado un área.");
+      }
+    },
+
+    // Calcular y devolver el valor de filtroTarea
+    filtrarSubmarinosPorTarea() {
+      console.log("Filtro de tarea seleccionado:", this.filtroTarea);
+
+      if (!this.filtroTarea) {
+        // Si no se ha seleccionado una tarea, mostrar todos los submarinos asignados
+        this.submarinosAsignados = this.submarinos.filter(sub => sub.id_area === this.areaEncontradaID);
+        console.log("Mostrando todos los submarinos en el área seleccionada:", this.submarinosAsignados);
+      } else {
+        // Encontrar la tarea seleccionada por nombre para obtener su ID
+        const tareaSeleccionada = this.rutinas.find(tarea => tarea.nombre === this.filtroTarea);
+        console.log("Tarea seleccionada encontrada:", tareaSeleccionada);
+
+        if (tareaSeleccionada) {
+          // Filtrar los submarinos que tienen esta tarea asignada en su array 'actividades'
+          this.submarinosAsignados = this.submarinos.filter(submarino =>
+            submarino.actividades && submarino.actividades.includes(tareaSeleccionada.id)
+          );
+          console.log("Submarinos filtrados que tienen la tarea asignada:", this.submarinosAsignados);
+        } else {
+          // Si no se encuentra la tarea, mostrar todos los submarinos en el área
+          this.submarinosAsignados = this.submarinos.filter(submarino => submarino.id_area === this.areaEncontradaID);
+          console.log("Tarea no encontrada, mostrando todos los submarinos en el área:", this.submarinosAsignados);
+        }
+      }
+    },
+
+    // Definir la lógica para filtrar submarinos por tarea
+    filtrarSubmarinosPorTarea() {
+      if (!this.filtroTarea) {
+        // Si no se ha seleccionado una tarea, mostrar todos los submarinos
+        this.submarinosAsignados = this.submarinos.filter(sub => sub.id_area === this.areaEncontradaID);
+        return;
+      }
+
+      // Filtrar los submarinos según la tarea seleccionada
+      this.submarinosAsignados = this.submarinos.filter(submarino =>
+        submarino.tareas.some(tarea => tarea.nombre === this.filtroTarea)
+      );
     },
 
     // Updates the classification of submarines based on their status
@@ -113,22 +161,27 @@ export default {
 
     // VER SI HAY SUBMARINOS EN ESE AREA
     actualizarSubmarinos() {
-      // Verificar si hay un área seleccionada
       if (!this.areaEncontrada) {
-        // Limpiar submarinos asignados si no hay un área seleccionada
+        // Clear assigned submarines if no area is selected
         this.submarinosAsignados = [];
         this.submarinosDisponibles = [];
+        this.submarinosFueraDelAgua = [];
+        this.submarinosSumergidos = [];
         return;
       }
 
-      // Filtrar submarinos asignados por el área seleccionada
-      this.submarinosAsignados = this.submarinosAsignados.filter(
-        submarino => submarino.id_area === this.areaEncontrada._id
+      // Filter assigned submarines by the selected area
+      this.submarinosAsignados = this.submarinos.filter(
+        submarino => submarino.id_area === this.areaEncontradaID
       );
 
-      // Filtrar submarinos disponibles por áreas diferentes a la seleccionada
-      this.submarinosDisponibles = this.submarinosDisponibles.filter(
-        submarino => submarino.id_area !== this.areaEncontrada._id
+      // Update submarines not in water and submerged based on the selected area
+      this.submarinosFueraDelAgua = this.submarinosAsignados.filter(sub => !sub.estadoMarino);
+      this.submarinosSumergidos = this.submarinosAsignados.filter(sub => sub.estadoMarino);
+
+      // Filter available submarines by different areas to the selected one
+      this.submarinosDisponibles = this.submarinos.filter(
+        submarino => submarino.id_area !== this.areaEncontradaID
       );
     },
 
@@ -147,35 +200,35 @@ export default {
 
     // BUSCAR AREA + CARGAR SUBMARINSO ASIGNADOS
     async buscarArea() {
-      const areaEncontrada = this.areas.find(
-        (area) => area.nombreArea === this.nombreLugarBusqueda
-      );
+      const areaEncontrada = this.areas.find(area => area.nombreArea === this.nombreLugarBusqueda);
 
-      if (areaEncontrada && areaEncontrada.coordenadas) {
-        //mostrar la colum derecha
-        this.mostrarColumnaDerecha = true;
-
-        // Cargar coordenadas en mapaSelect
-        this.cargarCoordenadasEnMapaSelect(areaEncontrada.coordenadas);
+      if (areaEncontrada) {
         this.areaEncontrada = areaEncontrada;
         this.areaEncontradaID = areaEncontrada._id;
-        this.nombreExistente = areaEncontrada.nombreArea;
+        this.mostrarColumnaDerecha = true;
 
-        // Mover submarinos disponibles a submarinos asignados
-        const submarinosDisponiblesEnArea = this.submarinosDisponibles.filter(
-          submarino => submarino.id_area === this.areaEncontradaID
-        );
+        await this.selectRutinas();
+        this.actualizarSubmarinos();
 
-        this.submarinosAsignados.push(...submarinosDisponiblesEnArea);
-        this.submarinosDisponibles = this.submarinosDisponibles.filter(
-          submarino => submarino.id_area !== this.areaEncontradaID
-        );
-
+        this.cargarCoordenadasEnMapaSelect(areaEncontrada.coordenadas);
+      } else {
+        this.tareasDisponibles = [];
+        console.error("Área seleccionada no encontrada o sin tareas disponibles.");
       }
+    },
 
-      this.actualizarSubmarinos();
-
-      this.getSubmarino();
+    // HACER SELECT A RUTINAS
+    async selectRutinas() {
+      //console.log("Buscando rutinas para el área ID:", this.areaEncontradaID);
+      try {
+        const response = await selectRutinas(this.areaEncontradaID);
+        // console.log("Rutinas obtenidas:", response);
+        this.rutinas = response.rutinas;
+        this.tareasDisponible(); // Llama aquí después de asegurar que `this.rutinas` está actualizado.
+      } catch (error) {
+        console.error("Error fetching rutinas:", error);
+        this.rutinas = []; // Asegúrate de resetear las rutinas si hay un error
+      }
     },
 
     // SELECT A TODOS LOS SUBMARINOS
