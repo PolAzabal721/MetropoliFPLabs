@@ -227,12 +227,16 @@ export default {
       this.opcionSeleccionada = opcion;
       console.log("Opción seleccionada para filtrado:", this.opcionSeleccionada);
 
-      // Aquí aseguramos que movimientos exista y tenga contenido
+      // Aseguramos que movimientos exista y tenga contenido
       if (this.movimientos && this.movimientos.length > 0) {
         // Filtramos los movimientos basándonos en la opción seleccionada
-        this.movimientoSub = this.movimientoSub.filter(mov =>
-          mov.movimientos_sub[0].detalle === opcion
-        );
+        this.movimientoSub = this.movimientos.map(mov => {
+          // Creamos un nuevo array de submovimientos que solo incluye los que coinciden con la opción seleccionada
+          const subMovimientosFiltrados = mov.movimientos_sub.filter(subMov => subMov.detalle === opcion);
+
+          // Usamos el nuevo array de submovimientos en lugar del original
+          return { ...mov, movimientos_sub: subMovimientosFiltrados };
+        }).filter(mov => mov.movimientos_sub.length > 0);
       } else {
         // Si no hay movimientos o la lista está vacía, aseguramos que movimientoSub también esté vacío
         this.movimientoSub = [];
