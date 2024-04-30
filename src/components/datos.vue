@@ -11,7 +11,7 @@
               </v-card-title>
               <v-card-text class="text-center">
                 <select class="select" v-model="submarinoSeleccionado" @change="avanzar">
-                  <option disabled value="Selecciona un submarino">Selecciona un submarino</option>
+                  <option disabled value="">Selecciona un submarino</option>
                   <option v-for="submarino in submarinos" :value="submarino">
                     {{ submarino.nom_sub }}
                   </option>
@@ -37,10 +37,11 @@
           <v-col cols="6">
             <v-card class="mx-auto" height="800" width="400">
               <v-card-text class="vCardText marg text-center">
-                <h2>Historial de moviments</h2>
+                <h2>Historial de movimientos</h2>
                 <div>
                   <v-btn v-if="movimientoSub.length > 0" v-for="opcion in opciones" :key="opcion"
-                    @click="filtrarMovimientos(opcion)" class="ma-2">
+                    @click="filtrarMovimientos(opcion)" class="filtro-btn"
+                    :class="{ 'btn-active': opcionSeleccionada === opcion }">
                     {{ opcion }}
                   </v-btn>
                 </div>
@@ -65,8 +66,21 @@
                               </v-list-item>
                             </v-list-item>
                           </v-list-item>
+                          <v-list-item v-else-if="movimientos.length > 0">
+                            <v-list-item v-for="(mov, index) in movimientos" :key="index">
+                              <v-list-item v-for="(movimiento, indexMov) in mov.movimientos_sub" :key="indexMov">
+                                <v-list-item class="message">
+                                  <v-list-item-text>
+                                    <span :class="getColor(movimiento.detalle)">
+                                      {{ movimiento.fecha }} - {{ movimiento.detalle }}
+                                    </span>
+                                  </v-list-item-text>
+                                </v-list-item>
+                              </v-list-item>
+                            </v-list-item>
+                          </v-list-item>
                           <v-list-item v-else>
-                            <v-list-item-title>No hi ha moviments</v-list-item-title>
+                            <v-list-item-title>No hay movimientos</v-list-item-title>
                           </v-list-item>
                         </v-list>
                       </div>
@@ -220,30 +234,28 @@ export default {
     },
     limpiarSeleccion() {
       this.submarinoSeleccionado = null;
+      this.movimientoSub = [];
       this.seleccionado = false;
     },
 
     filtrarMovimientos(opcion) {
-      this.opcionSeleccionada = opcion;
-      console.log("Opción seleccionada para filtrado:", this.opcionSeleccionada);
-
-      // Aseguramos que movimientos exista y tenga contenido
-      if (this.movimientos && this.movimientos.length > 0) {
-        // Filtramos los movimientos basándonos en la opción seleccionada
+      // Verificar si la opción ya estaba seleccionada
+      if (this.opcionSeleccionada === opcion) {
+        // Si estaba seleccionada, desmarcar
+        this.opcionSeleccionada = null;
+        this.movimientoSub = this.movimientos; // Restablecer a todos los movimientos
+      } else {
+        // Si no estaba seleccionada, marcar y filtrar
+        this.opcionSeleccionada = opcion;
         this.movimientoSub = this.movimientos.map(mov => {
-          // Creamos un nuevo array de submovimientos que solo incluye los que coinciden con la opción seleccionada
           const subMovimientosFiltrados = mov.movimientos_sub.filter(subMov => subMov.detalle === opcion);
-
-          // Usamos el nuevo array de submovimientos en lugar del original
           return { ...mov, movimientos_sub: subMovimientosFiltrados };
         }).filter(mov => mov.movimientos_sub.length > 0);
-      } else {
-        // Si no hay movimientos o la lista está vacía, aseguramos que movimientoSub también esté vacío
-        this.movimientoSub = [];
       }
-
+      console.log("Opción seleccionada para filtrado:", this.opcionSeleccionada);
       console.log("Movimientos filtrados:", this.movimientoSub);
     }
+
 
 
 
@@ -295,6 +307,23 @@ import DefaultBar from "@/layouts/default/AppBar.vue";
 </script>
 
 <style>
+
+.filtro-btn {
+  margin-right: 8px;
+  margin-bottom: 8px;
+  border-radius: 12px;
+  margin-top: 10.5px;
+  padding: 8px 8px;
+  /* Ajusta el padding según tu preferencia para el tamaño de los botones */
+  font-size: 12px;
+  /* Ajusta el tamaño de la letra según tu preferencia */
+  color: #888;
+  /* Cambia el color a gris o el tono deseado */
+  background-color: #f0f0f0;
+  /* Cambia el color de fondo si es necesario */
+  border: 1px solid #ccc;
+  /* Añade un borde para resaltar el botón */
+}
 /* Estilos para el v-card-text */
 .vCardText {
   font-family: Arial, sans-serif;
@@ -390,5 +419,12 @@ import DefaultBar from "@/layouts/default/AppBar.vue";
 
 .morado {
   color: rgb(89, 0, 255);
+}
+
+.btn-active {
+  background-color: #3569b6;
+  /* Color azul claro para indicar activo */
+  color: white;
+  /* Texto blanco para contraste */
 }
 </style>
