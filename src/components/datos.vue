@@ -39,7 +39,7 @@
               <v-card-text class="vCardText marg text-center">
                 <h2>Historial de movimientos</h2>
                 <div>
-                  <v-btn v-if="movimientoSub.length > 0" v-for="opcion in opciones" :key="opcion"
+                  <v-btn v-if="movimientoSub" v-for="opcion in opciones" :key="opcion"
                     @click="filtrarMovimientos(opcion)" class="filtro-btn"
                     :class="{ 'btn-active': opcionSeleccionada === opcion }">
                     {{ opcion }}
@@ -247,7 +247,9 @@ export default {
       if (this.opcionSeleccionada === opcion) {
         // Si estaba seleccionada, desmarcar
         this.opcionSeleccionada = null;
-        this.movimientoSub = this.movimientos; // Restablecer a todos los movimientos
+        this.movimientoSub = this.movimientos.filter(mov =>
+            mov.idSubmarino === this.submarinoSeleccionado.id_sub
+        );
       } else {
         // Si no estaba seleccionada, marcar y filtrar
         this.opcionSeleccionada = opcion;
