@@ -231,11 +231,14 @@ export default {
       this.movimientoSub = this.movimientos.filter(mov =>
         mov.idSubmarino === this.submarinoSeleccionado.id_sub
       );
+      this.opcionSeleccionada = null
+
       console.log("Movimientos filtrados:", this.movimientoSub);
     },
     limpiarSeleccion() {
       this.submarinoSeleccionado = null;
       this.movimientoSub = [];
+      this.opcionSeleccionada = null
       this.seleccionado = false;
     },
 
@@ -260,7 +263,7 @@ export default {
 
 
 
-    // //ESTO ES PARA PROBAR EL SOCKET EMIR
+    // //ESTO ES PARA PROBAR EL SOCKET EMIT
     // enviarMovimientos() {
     //   const fechaActual = new Date().toISOString().slice(0, 10); // YYYY-MM-DD
 
