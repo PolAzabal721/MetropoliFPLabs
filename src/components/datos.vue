@@ -67,7 +67,7 @@
                             </v-list-item>
                           </v-list-item>
                           <v-list-item v-else-if="movimientos.length > 0">
-                            <v-list-item v-for="(mov, index) in movimientos" :key="index">
+                            <!-- <v-list-item v-for="(mov, index) in movimientos" :key="index">
                               <v-list-item v-for="(movimiento, indexMov) in mov.movimientos_sub" :key="indexMov">
                                 <v-list-item class="message">
                                   <v-list-item-text>
@@ -77,7 +77,8 @@
                                   </v-list-item-text>
                                 </v-list-item>
                               </v-list-item>
-                            </v-list-item>
+                            </v-list-item> -->
+                            No hay movimientos
                           </v-list-item>
                           <v-list-item v-else>
                             <v-list-item-title>No hay movimientos</v-list-item-title>
@@ -247,7 +248,7 @@ export default {
       } else {
         // Si no estaba seleccionada, marcar y filtrar
         this.opcionSeleccionada = opcion;
-        this.movimientoSub = this.movimientos.map(mov => {
+        this.movimientoSub = this.movimientoSub.map(mov => {
           const subMovimientosFiltrados = mov.movimientos_sub.filter(subMov => subMov.detalle === opcion);
           return { ...mov, movimientos_sub: subMovimientosFiltrados };
         }).filter(mov => mov.movimientos_sub.length > 0);
@@ -426,5 +427,6 @@ import DefaultBar from "@/layouts/default/AppBar.vue";
   /* Color azul claro para indicar activo */
   color: white;
   /* Texto blanco para contraste */
+  border: 5px #3569b6
 }
 </style>
