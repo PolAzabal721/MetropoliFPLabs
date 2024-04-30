@@ -72,6 +72,7 @@ import "leaflet-draw/dist/leaflet.draw-src.js";
 import {
   fetchAreas,
   getSubmarinos,
+  selectSubmarinosMongo,
   selectRutinas
 } from "@/services/connectionManager.js";
 import { useAppStore } from "@/store/app";
@@ -114,50 +115,35 @@ export default {
 
     // Calcular y devolver el valor de filtroTarea
     filtrarSubmarinosPorTarea() {
-      console.log("Filtro de tarea seleccionado:", this.filtroTarea);
+  console.log("Filtro de tarea seleccionado:", this.filtroTarea);
 
-      if (!this.filtroTarea) {
-        // Si no se ha seleccionado una tarea, mostrar todos los submarinos asignados
-        this.submarinosAsignados = this.submarinos.filter(sub => sub.id_area === this.areaEncontradaID);
-        console.log("Mostrando todos los submarinos en el área seleccionada:", this.submarinosAsignados);
-      } else {
-        // Encontrar la tarea seleccionada por nombre para obtener su ID
-        const tareaSeleccionada = this.rutinas.find(tarea => tarea.nombre === this.filtroTarea);
-        console.log("Tarea seleccionada encontrada:", tareaSeleccionada);
+  if (!this.filtroTarea) {
+    this.submarinosAsignados = this.submarinos.filter(sub => sub.id_area === this.areaEncontradaID);
+  } else {
+    const tareaSeleccionada = this.rutinas.find(tarea => tarea.nombre === this.filtroTarea);
+    if (tareaSeleccionada) {
+      this.submarinosAsignados = this.submarinos.filter(submarino => {
+        return submarino.actividades && submarino.actividades.includes(tareaSeleccionada.id);
+      });
+    } else {
+      this.submarinosAsignados = [];
+    }
+  }
 
-        if (tareaSeleccionada) {
-          // Filtrar los submarinos que tienen esta tarea asignada en su array 'actividades'
-          this.submarinosAsignados = this.submarinos.filter(submarino =>
-            submarino.actividades && submarino.actividades.includes(tareaSeleccionada.id)
-          );
-          console.log("Submarinos filtrados que tienen la tarea asignada:", this.submarinosAsignados);
-        } else {
-          // Si no se encuentra la tarea, mostrar todos los submarinos en el área
-          this.submarinosAsignados = this.submarinos.filter(submarino => submarino.id_area === this.areaEncontradaID);
-          console.log("Tarea no encontrada, mostrando todos los submarinos en el área:", this.submarinosAsignados);
-        }
-      }
-    },
+  // Asegúrate de que los cambios sean detectados por Vue
+  this.submarinosAsignados = [...this.submarinosAsignados];
+  this.clasificarSubmarinos(); // Actualiza la clasificación de submarinos
+},
 
-    // Definir la lógica para filtrar submarinos por tarea
-    filtrarSubmarinosPorTarea() {
-      if (!this.filtroTarea) {
-        // Si no se ha seleccionado una tarea, mostrar todos los submarinos
-        this.submarinosAsignados = this.submarinos.filter(sub => sub.id_area === this.areaEncontradaID);
-        return;
-      }
+   // Función para clasificar submarinos una vez filtrados
+clasificarSubmarinos() {
+  this.submarinosFueraDelAgua = this.submarinos.filter(sub => !sub.estadoMarino);
+  this.submarinosSumergidos = this.submarinos.filter(sub => sub.estadoMarino);
 
-      // Filtrar los submarinos según la tarea seleccionada
-      this.submarinosAsignados = this.submarinos.filter(submarino =>
-        submarino.tareas.some(tarea => tarea.nombre === this.filtroTarea)
-      );
-    },
-
-    // Updates the classification of submarines based on their status
-    clasificarSubmarinos() {
-      this.submarinosFueraDelAgua = this.submarinos.filter(sub => !sub.estadoMarino);
-      this.submarinosSumergidos = this.submarinos.filter(sub => sub.estadoMarino);
-    },
+  // Asegura la reactividad en Vue, si es necesario
+  this.submarinosFueraDelAgua = [...this.submarinosFueraDelAgua];
+  this.submarinosSumergidos = [...this.submarinosSumergidos];
+},
 
     // VER SI HAY SUBMARINOS EN ESE AREA
     actualizarSubmarinos() {
@@ -198,7 +184,7 @@ export default {
       }
     },
 
-    // BUSCAR AREA + CARGAR SUBMARINSO ASIGNADOS
+    // BUSCAR AREA + CARGAR SUBMARINOS ASIGNADOS
     async buscarArea() {
       const areaEncontrada = this.areas.find(area => area.nombreArea === this.nombreLugarBusqueda);
 
@@ -207,8 +193,16 @@ export default {
         this.areaEncontradaID = areaEncontrada._id;
         this.mostrarColumnaDerecha = true;
 
+        // Limpiar los datos antes de cargar nuevos submarinos
+        this.submarinos = [];
+        this.submarinosAsignados = [];
+        this.submarinosFueraDelAgua = [];
+        this.submarinosSumergidos = [];
+        this.submarinosDisponibles = [];
+
         await this.selectRutinas();
-        this.actualizarSubmarinos();
+        await this.getSubmarinoMongo(); // Llama a getSubmarinoMongo después de limpiar los arrays
+        await this.actualizarSubmarinos(); // Reclasifica y actualiza las listas de submarinos según el área seleccionada
 
         this.cargarCoordenadasEnMapaSelect(areaEncontrada.coordenadas);
       } else {
@@ -216,6 +210,7 @@ export default {
         console.error("Área seleccionada no encontrada o sin tareas disponibles.");
       }
     },
+
 
     // HACER SELECT A RUTINAS
     async selectRutinas() {
@@ -242,6 +237,32 @@ export default {
         this.clasificarSubmarinos(); // Classify submarines after fetching
       } catch (error) {
         console.error("Error fetching submarinos:", error);
+      }
+    },
+
+    // SELECT A TODOS LOS SUBMARINOS DE MONGO
+    async getSubmarinoMongo() {
+      if (!this.areaEncontradaID) {
+        console.error("No area ID found. Please select an area first.");
+        return;
+      }
+
+      try {
+        const response = await selectSubmarinosMongo(this.areaEncontradaID);
+        //console.log("Respuesta completa de getSubmarinoMongo:", response);
+
+        // Acceder a la propiedad 'Submarino' y verificar que es un arreglo
+        if (response && Array.isArray(response.Submarino)) {
+          this.submarinos = response.Submarino;
+          this.clasificarSubmarinos(); // Clasifica los submarinos después de la actualización
+          //console.log("Submarinos fetched and classified for area ID:", this.areaEncontradaID);
+        } else {
+          console.error("Expected an array but got:", typeof response.Submarino);
+          this.submarinos = []; // Asegúrate de que submarinos sigue siendo un arreglo
+        }
+      } catch (error) {
+        console.error("Error fetching submarinos from Mongo:", error);
+        this.submarinos = []; // Reiniciar en caso de error
       }
     },
 

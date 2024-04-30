@@ -735,5 +735,21 @@ export async function eliminarIdRutinaDeSubmarino(areaId, rutinaId, submarinoId)
         throw error;
     }
 }
+//----------------------------------------------------------------------------------------------------------//
 
+//----------------------- SELECT SUBMARINOS MONGO -----------------------//
+ 
+// SELECT SUBMARINO DE MONGO (SOLO LOS QUE ESTAN ASIGNADOS A UN AREA)
+export async function selectSubmarinosMongo(areaId) {
+    const url = `http://localhost:3169/selectSubmarinosMongo/${areaId}`;
+
+    try {
+        const response = await fetch(url);
+        const data = await response.json();
+        return data;
+    } catch (error) {
+        console.error('Error selecting rutinas:', error);
+        throw new Error('Error selecting rutinas');
+    }
+}
 //----------------------------------------------------------------------------------------------------------//
