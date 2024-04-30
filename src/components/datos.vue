@@ -247,20 +247,30 @@ export default {
       if (this.opcionSeleccionada === opcion) {
         // Si estaba seleccionada, desmarcar
         this.opcionSeleccionada = null;
-        this.movimientoSub = this.movimientos.filter(mov =>
-            mov.idSubmarino === this.submarinoSeleccionado.id_sub
-        );
       } else {
-        // Si no estaba seleccionada, marcar y filtrar
+        // Si no estaba seleccionada, marcar
         this.opcionSeleccionada = opcion;
-        this.movimientoSub = this.movimientoSub.map(mov => {
-          const subMovimientosFiltrados = mov.movimientos_sub.filter(subMov => subMov.detalle === opcion);
+      }
+
+      // Filtrar los movimientos según la opción seleccionada
+      if (this.opcionSeleccionada) {
+        this.movimientoSub = this.movimientos.filter(mov =>
+          mov.idSubmarino === this.submarinoSeleccionado.id_sub
+        ).map(mov => {
+          const subMovimientosFiltrados = mov.movimientos_sub.filter(subMov => subMov.detalle === this.opcionSeleccionada);
           return { ...mov, movimientos_sub: subMovimientosFiltrados };
         }).filter(mov => mov.movimientos_sub.length > 0);
+      } else {
+        // Si no hay opción seleccionada, mostrar todos los movimientos
+        this.movimientoSub = this.movimientos.filter(mov =>
+          mov.idSubmarino === this.submarinoSeleccionado.id_sub
+        );
       }
+
       console.log("Opción seleccionada para filtrado:", this.opcionSeleccionada);
       console.log("Movimientos filtrados:", this.movimientoSub);
     }
+
 
 
 
@@ -313,7 +323,6 @@ import DefaultBar from "@/layouts/default/AppBar.vue";
 </script>
 
 <style>
-
 .filtro-btn {
   margin-right: 8px;
   margin-bottom: 8px;
@@ -330,6 +339,7 @@ import DefaultBar from "@/layouts/default/AppBar.vue";
   border: 1px solid #ccc;
   /* Añade un borde para resaltar el botón */
 }
+
 /* Estilos para el v-card-text */
 .vCardText {
   font-family: Arial, sans-serif;
