@@ -13,10 +13,12 @@
             <v-container>
               <v-row>
                 <v-col v-for="submarino in submarinosFueraDelAgua" :key="submarino.id_sub" cols="12">
-                  <v-card :color="submarino.enReparacion ? 'red' : 'grey lighten-2'">
+                  <v-card @click="mostrarUbicacionSubmarino(submarino.id_sub)"
+                    :color="submarino.enReparacion ? 'red' : 'grey lighten-2'">
                     <v-card-title>{{ submarino.nom_sub }}</v-card-title>
                     <v-card-text>Estado: {{ submarino.estado_sub }}</v-card-text>
                   </v-card>
+
                 </v-col>
               </v-row>
             </v-container>
@@ -43,7 +45,7 @@
 
           <!-- btn para filtar tarea -->
           <v-btn style="margin-left: 15px;" @click="filtrarSubmarinosPorTarea"
-            :disabled="!nombreLugarBusqueda || !filtroTarea || filtroTarea === ''"
+            :disabled="!nombreLugarBusqueda || !filtroTarea || filtroTarea === null"
             :color="tareaSeleccionada ? 'red' : 'blue'">
             {{ tareaSeleccionada ? 'Limpiar Filtro' : 'Filtrar por Tarea' }}
           </v-btn>
@@ -124,9 +126,124 @@ export default {
       filtroAplicado: false,
       areaSeleccionada: false,
       tareaSeleccionada: false,
+      estadoAnteriorMapa: {
+        area: null,
+        tarea: null,
+        submarinos: [],
+      },
+      tareaSeleccionadaAntes: null,
+
     };
   },
   methods: {
+    // GUARDAMOS EL ESTADO DEL MAPA ANTES DE SELECCIONAR UN SUB
+    guardarEstadoActualMapa() {
+      if (!this.estadoAnteriorMapa.area && this.areaEncontrada) {
+        this.estadoAnteriorMapa.area = this.areaEncontrada;
+        this.estadoAnteriorMapa.submarinos = [...this.submarinosAsignados];
+      }
+
+      if (!this.estadoAnteriorMapa.tarea && this.tareaSeleccionada) {
+        this.estadoAnteriorMapa.tarea = this.filtroTarea;
+      }
+    },
+
+    // MOSTRAR UBI AL SELECCIONAR UN SUBMARINO
+    mostrarUbicacionSubmarino(idSub) {
+      if (this.submarinoSeleccionado === idSub) {
+        // Volver al estado anterior
+        this.restaurarEstadoMapa();
+        this.submarinoSeleccionado = null;
+        // Restaurar la tarea seleccionada solo si no es null
+        if (this.tareaSeleccionadaAntes !== null) {
+          this.filtroTarea = this.tareaSeleccionadaAntes;
+          this.filtrarSubmarinosPorTarea();
+          this.tareaSeleccionadaAntes = null;
+        }
+      } else {
+        // Almacenar la tarea seleccionada antes de cambiarla
+        this.tareaSeleccionadaAntes = this.filtroTarea;
+
+        this.submarinoSeleccionado = idSub;
+        this.guardarEstadoActualMapa();
+        const ubicaciones = this.ubicacionesSubmarinos[idSub];
+
+        const mapaActivo = this.mapa || this.mapaGlobal;
+        this.limpiarMapa(mapaActivo);
+
+        const polyline = L.polyline(ubicaciones, { color: 'red' }).addTo(mapaActivo);
+        mapaActivo.fitBounds(polyline.getBounds());
+      }
+    },
+    /*
+mostrarUbicacionSubmarino(idSub) {
+  if (this.submarinoSeleccionado === idSub) {
+    // Volver al estado anterior
+    this.restaurarEstadoMapa();
+    this.submarinoSeleccionado = null;
+    // Restaurar la tarea seleccionada si existe
+    if (this.tareaSeleccionadaAntes) {
+      this.filtroTarea = this.tareaSeleccionadaAntes;
+      this.filtrarSubmarinosPorTarea();
+      this.tareaSeleccionadaAntes = null;
+    }
+  } else {
+    // Almacenar la tarea seleccionada antes de cambiarla
+    this.tareaSeleccionadaAntes = this.filtroTarea;
+
+    this.submarinoSeleccionado = idSub;
+    // Verificar si el mapa global ya está inicializado
+    if (!this.mapaGlobal) {
+      // Si no está inicializado, inicializarlo
+      this.initMapaGlobal();
+    } else {
+      // Si ya está inicializado, limpiar el mapa antes de mostrar la ubicación del submarino
+      this.limpiarMapa(this.mapaGlobal);
+    }
+    
+    const ubicaciones = this.ubicacionesSubmarinos[idSub];
+    // Agregar marcadores al mapa global
+    // Tu lógica para agregar marcadores al mapa global aquí
+  }
+},
+
+    */
+
+    // RESTAURAMOS EL ESTADO DEL MAPA
+    restaurarEstadoMapa() {
+      const { area, tarea, submarinos } = this.estadoAnteriorMapa;
+      if (area) {
+        this.areaEncontrada = area;
+        this.submarinosAsignados = submarinos;
+        this.cargarCoordenadasEnMapaSelect(area.coordenadas);
+      }
+
+      if (tarea) {
+        this.filtroTarea = tarea;
+        this.filtrarSubmarinosPorTarea();
+      }
+
+      // Limpiar el estado anterior
+      this.estadoAnteriorMapa = {
+        area: null,
+        tarea: null,
+        submarinos: [],
+      };
+
+    },
+
+    // LIMPIAR EL MAPA DE 1 SUB SOLO
+    limpiarMapa(mapaActivo) {
+      if (mapaActivo) {
+        mapaActivo.eachLayer(layer => {
+          // Asegúrate de no eliminar la capa de tiles base
+          if (layer instanceof L.Marker || layer instanceof L.Polyline) {
+            mapaActivo.removeLayer(layer);
+          }
+        });
+      }
+    },
+
     // BUSCAR LAS TAREAS DISPONIBLES
     tareasDisponible() {
       if (this.rutinas && this.rutinas.length > 0) {
@@ -146,6 +263,7 @@ export default {
         this.limpiarMapaSelect();
         this.cargarCoordenadasEnMapaSelect(this.areaEncontrada.coordenadas);
         this.tareaSeleccionada = false;
+        this.filtroTarea = null;
       } else {
         const tareaSeleccionada = this.rutinas.find(tarea => tarea.nombre === this.filtroTarea);
         if (tareaSeleccionada) {
@@ -234,8 +352,10 @@ export default {
         this.limpiarMapaNoSelect();
         this.destruitMapaSelect();
         this.tareaSeleccionada = false;
-        this.filtroTarea = '';
+        this.filtroTarea = null;
 
+        const mapaActivo = this.mapa || this.mapaGlobal;
+        this.limpiarMapa(mapaActivo);
         // Volver a cargar todos los submarinos
         await this.getSubmarino();
         this.clasificarSubmarinos();
@@ -529,11 +649,14 @@ export default {
 
     // CARGAR COODS EN EL MAPA GLOBAL
     cargarCoordenadasEnMapaGlobal(coordenadas) {
-      // Limpiar el mapa
-      this.limpiarMapaGlobal();
-
-      // Inicializar el mapa y el control de dibujo
-      this.initMapaGlobal();
+  // Verificar si el mapa global ya está inicializado
+  if (!this.mapaGlobal) {
+    // Si no está inicializado, inicializarlo
+    this.initMapaGlobal();
+  } else {
+    // Si ya está inicializado, limpiar el mapa antes de cargar nuevas coordenadas
+    this.limpiarMapa(this.mapaGlobal);
+  }
       this.drawControl.addTo(this.mapaGlobal);
     },
 
