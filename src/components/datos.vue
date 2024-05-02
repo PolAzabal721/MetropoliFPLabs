@@ -39,11 +39,11 @@
               <v-card-text class="vCardText marg text-center">
                 <h2>Historial de movimientos</h2>
                 <div>
-                  <v-btn v-if="movimientoSub" v-for="opcion in opciones" :key="opcion"
-                    @click="filtrarMovimientos(opcion)" class="filtro-btn"
-                    :class="{ 'btn-active': opcionSeleccionada === opcion }">
+                  <v-btn v-for="opcion in opciones" :key="opcion" @click="toggleOpcion(opcion)" class="filtro-btn"
+                    :class="{ 'btn-active': opcionesSeleccionadas.includes(opcion) }">
                     {{ opcion }}
                   </v-btn>
+
                 </div>
               </v-card-text>
               <v-card-text class="vCardText" ref="movimientosList">
@@ -66,7 +66,7 @@
                               </v-list-item>
                             </v-list-item>
                           </v-list-item>
-                          <v-list-item v-else-if="movimientos.length > 0">
+                          <v-list-item v-else-if="movimientoSub === null">
                             <!-- <v-list-item v-for="(mov, index) in movimientos" :key="index">
                               <v-list-item v-for="(movimiento, indexMov) in mov.movimientos_sub" :key="indexMov">
                                 <v-list-item class="message">
@@ -78,7 +78,6 @@
                                 </v-list-item>
                               </v-list-item>
                             </v-list-item> -->
-                            No hay movimientos
                           </v-list-item>
                           <v-list-item v-else>
                             <v-list-item-title>No hay movimientos</v-list-item-title>
@@ -108,7 +107,7 @@ export default {
   //192.168.205.140
   data() {
     return {
-      opciones: ['Inmersión', 'Ascenso', 'En rutina', 'Llegada a destino', 'EMERGENCIA', 'Home', 'En camino a destino'],
+      opciones: ['Home', 'Camino a casa', 'En rutina', 'En camino a destino', 'Inmersión', 'Ascenso', 'EMERGENCIA'],
       opcionSeleccionada: null,
       submarinos: [],
       movimientos: [],
@@ -117,6 +116,17 @@ export default {
       nombreSubmarino: "",
       socket: null,
       seleccionado: false,
+      combinacionesOpciones: {
+        'Inmersión': [],
+        'Ascenso': [],
+        'EMERGENCIA': [],
+        'Home': ['EMERGENCIA'],
+        'Camino a casa': ['EMERGENCIA', 'Inmersión', 'Ascenso'],
+        'En rutina': ['Inmersión', 'Ascenso', 'EMERGENCIA'],
+        'En camino a destino': ['EMERGENCIA', 'Inmersión', 'Ascenso']
+      },
+      opcionesSeleccionadas: []
+
     };
   },
 
@@ -186,7 +196,7 @@ export default {
           return 'verde-claro';
         case 'En rutina':
           return 'negro';
-        case 'Llegada a destino':
+        case 'Camino a casa':
           return 'azul-oscuro';
         case 'EMERGENCIA':
           return 'rojo';
@@ -238,41 +248,63 @@ export default {
     limpiarSeleccion() {
       this.submarinoSeleccionado = null;
       this.movimientoSub = [];
-      this.opcionSeleccionada = null
+      this.opcionesSeleccionadas = []
       this.seleccionado = false;
     },
 
-    filtrarMovimientos(opcion) {
-      // Verificar si la opción ya estaba seleccionada
-      if (this.opcionSeleccionada === opcion) {
-        // Si estaba seleccionada, desmarcar
-        this.opcionSeleccionada = null;
+
+    toggleOpcion(opcion) {
+      const grupoRestringido = ['Home', 'Camino a casa', 'En rutina', 'En camino a destino'];
+      const indice = this.opcionesSeleccionadas.indexOf(opcion);
+
+      if (indice !== -1) {
+        // Si la opción ya está seleccionada, simplemente la quitamos
+        this.opcionesSeleccionadas.splice(indice, 1);
       } else {
-        // Si no estaba seleccionada, marcar
-        this.opcionSeleccionada = opcion;
+        // Verificamos si la opción pertenece al grupo restringido
+        if (grupoRestringido.includes(opcion)) {
+          // Remover otras opciones del grupo restringido que ya estén seleccionadas
+          this.opcionesSeleccionadas = this.opcionesSeleccionadas.filter(op => !grupoRestringido.includes(op));
+        }
+
+        // Verificamos si las opciones seleccionadas actuales son compatibles con la nueva opción
+        const opcionesCompatibles = this.opcionesSeleccionadas.filter(op =>
+          this.combinacionesOpciones[op].includes(opcion) || this.combinacionesOpciones[opcion].includes(op)
+        );
+
+        // Si no hay opciones compatibles o si no hay opciones seleccionadas, reiniciamos las opciones seleccionadas
+        if (opcionesCompatibles.length === 0 && this.opcionesSeleccionadas.length > 0) {
+          this.opcionesSeleccionadas = [opcion];
+        } else {
+          // Si es compatible, solo añadimos la nueva opción
+          this.opcionesSeleccionadas.push(opcion);
+        }
       }
 
-      // Filtrar los movimientos según la opción seleccionada
-      if (this.opcionSeleccionada) {
+      this.actualizarMovimientos();
+    },
+
+
+
+    actualizarMovimientos() {
+      if (this.opcionesSeleccionadas.length === 0) {
+        this.movimientoSub = this.movimientos.filter(mov => mov.idSubmarino === this.submarinoSeleccionado.id_sub);
+      } else {
+        // Filtrar los movimientos según las opciones seleccionadas
         this.movimientoSub = this.movimientos.filter(mov =>
-          mov.idSubmarino === this.submarinoSeleccionado.id_sub
+          mov.idSubmarino === this.submarinoSeleccionado.id_sub &&
+          mov.movimientos_sub.some(subMov => this.opcionesSeleccionadas.includes(subMov.detalle))
         ).map(mov => {
-          const subMovimientosFiltrados = mov.movimientos_sub.filter(subMov => subMov.detalle === this.opcionSeleccionada);
+          const subMovimientosFiltrados = mov.movimientos_sub.filter(subMov =>
+            this.opcionesSeleccionadas.includes(subMov.detalle)
+          );
           return { ...mov, movimientos_sub: subMovimientosFiltrados };
         }).filter(mov => mov.movimientos_sub.length > 0);
-      } else {
-        // Si no hay opción seleccionada, mostrar todos los movimientos
-        this.movimientoSub = this.movimientos.filter(mov =>
-          mov.idSubmarino === this.submarinoSeleccionado.id_sub
-        );
       }
 
-      console.log("Opción seleccionada para filtrado:", this.opcionSeleccionada);
+      console.log("Opciones seleccionadas para filtrado:", this.opcionesSeleccionadas);
       console.log("Movimientos filtrados:", this.movimientoSub);
-    }
-
-
-
+    },
 
 
     // //ESTO ES PARA PROBAR EL SOCKET EMIT
