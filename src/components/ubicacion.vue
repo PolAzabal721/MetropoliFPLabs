@@ -27,16 +27,28 @@
         <v-col cols="12" sm="6">
 
           <!-- Selector de Área -->
-          <v-select v-model="nombreLugarBusqueda" :items="['Ninguno', ...areas.map(area => area.nombreArea)]"
-            label="Seleccionar Área" @change="actualizarSubmarinos"></v-select>
+          <v-select v-model="nombreLugarBusqueda" :items="[...areas.map(area => area.nombreArea)]"
+            label="Seleccionar Área" @change="actualizarSubmarinos" :disabled="areaSeleccionada">
+          </v-select>
 
           <!-- Selector de Tarea/Rutina -->
-          <v-select v-model="filtroTarea" :items="['Ninguno', ...tareasDisponibles]" label="Filtrar por Tarea/Rutina"
-            @change="filtrarSubmarinosPorTarea"></v-select>
+          <v-select v-model="filtroTarea" :items="[...tareasDisponibles]" label="Filtrar por Tarea/Rutina"
+            @change="filtrarSubmarinosPorTarea" :disabled="!areaSeleccionada || tareaSeleccionada">
+          </v-select>
 
-          <v-btn @click="buscarArea" :disabled="!nombreLugarBusqueda">Buscar</v-btn>
-          <v-btn style="margin-left: 15px;" @click="filtrarSubmarinosPorTarea" color="blue" dark>Filtrar por
-            Tarea</v-btn>
+          <!-- btn para filtrar area -->
+          <v-btn @click="buscarArea" :disabled="!nombreLugarBusqueda" :color="areaSeleccionada ? 'red' : 'blue'" dark>
+            {{ areaSeleccionada ? 'Limpiar Área' : 'Buscar' }}
+          </v-btn>
+
+          <!-- btn para filtar tarea -->
+          <v-btn style="margin-left: 15px;" @click="filtrarSubmarinosPorTarea"
+            :disabled="!nombreLugarBusqueda || !filtroTarea || filtroTarea === ''"
+            :color="tareaSeleccionada ? 'red' : 'blue'">
+            {{ tareaSeleccionada ? 'Limpiar Filtro' : 'Filtrar por Tarea' }}
+          </v-btn>
+
+
 
           <v-card style="margin-top: 20px;" class="mx-auto slidecontainer" max-height="700" max-width="850">
             <div id="mapaSelect" style="height: 700px; width: 850px"></div>
@@ -82,7 +94,6 @@ import {
   selectRutinas
 } from "@/services/connectionManager.js";
 import { useAppStore } from "@/store/app";
-import { ref } from "vue";
 
 export default {
   data() {
@@ -109,14 +120,17 @@ export default {
       filtroTarea: null,
       tareasDisponibles: [],
       ubicacionesSubmarinos: {},
-      socket: null
+      socket: null,
+      filtroAplicado: false,
+      areaSeleccionada: false,
+      tareaSeleccionada: false,
     };
   },
   methods: {
     // BUSCAR LAS TAREAS DISPONIBLES
     tareasDisponible() {
       if (this.rutinas && this.rutinas.length > 0) {
-        this.tareasDisponibles = this.rutinas.map(rutina => rutina.nombre); // Usa los nombres de las rutinas para el v-select
+        this.tareasDisponibles = this.rutinas.map(rutina => rutina.nombre);
       } else {
         this.tareasDisponibles = [];
         console.log("No hay rutinas disponibles o no se ha seleccionado un área.");
@@ -125,10 +139,13 @@ export default {
 
     // Calcular y devolver el valor de filtroTarea
     filtrarSubmarinosPorTarea() {
-      if (this.filtroTarea === 'Ninguno' || !this.filtroTarea) {
-        this.filtroTarea = null;
+      if (this.tareaSeleccionada) {
+        this.filtroAplicado = false;
         this.submarinosAsignados = this.submarinos.filter(sub => sub.id_area === this.areaEncontradaID);
         this.clasificarSubmarinosPorRutina();
+        this.limpiarMapaSelect();
+        this.cargarCoordenadasEnMapaSelect(this.areaEncontrada.coordenadas);
+        this.tareaSeleccionada = false;
       } else {
         const tareaSeleccionada = this.rutinas.find(tarea => tarea.nombre === this.filtroTarea);
         if (tareaSeleccionada) {
@@ -136,13 +153,11 @@ export default {
             return submarino.actividades && submarino.actividades.includes(tareaSeleccionada.id);
           });
           this.clasificarSubmarinosPorRutina();
-          // Filtrar submarinos según la tarea seleccionada
-          let submarinosFiltrados = this.submarinos.filter(sub => sub.tareas && sub.tareas.includes(tareaSeleccionada));
-
-          // Dibujar el mapa con los submarinos filtrados
           if (this.areaEncontrada && this.areaEncontrada.coordenadas) {
-            this.dibujarMapaPorTarea(this.areaEncontrada.coordenadas, submarinosFiltrados);
+            this.dibujarMapaPorTarea(this.areaEncontrada.coordenadas, this.submarinosAsignados);
           }
+          this.filtroAplicado = true;
+          this.tareaSeleccionada = true;
         } else {
           this.submarinosAsignados = [];
         }
@@ -208,46 +223,63 @@ export default {
 
     // BUSCAR AREA + CARGAR SUBMARINOS ASIGNADOS
     async buscarArea() {
-      const areaEncontrada = this.areas.find(area => area.nombreArea === this.nombreLugarBusqueda);
-
-      if (areaEncontrada) {
-        this.limpiarMapaGlobal();
-        this.areaEncontrada = areaEncontrada;
-        this.areaEncontradaID = areaEncontrada._id;
-        this.mostrarColumnaDerecha = true;
-
-        // Limpiar los datos antes de cargar nuevos submarinos
-        this.submarinos = [];
+      if (this.areaSeleccionada) {
+        // Proceso para limpiar la selección del área
+        this.nombreLugarBusqueda = '';
+        this.areaSeleccionada = false;
         this.submarinosAsignados = [];
         this.submarinosFueraDelAgua = [];
         this.submarinosSumergidos = [];
         this.submarinosDisponibles = [];
-
-        await this.selectRutinas();
-        await this.getSubmarinoMongo(); // Llama a getSubmarinoMongo después de limpiar los arrays
-        await this.actualizarSubmarinos(); // Reclasifica y actualiza las listas de submarinos según el área seleccionada
-
-        this.cargarCoordenadasEnMapaSelect(areaEncontrada.coordenadas);
-      } else {
-        // Restablecer el estado de la aplicación a su estado inicial si no se encuentra el área
-        this.areaEncontrada = null;
-        this.areaEncontradaID = null;
-        this.mostrarColumnaDerecha = false;
-        this.tareasDisponibles = [];
-
-        // Limpiar el mapa
         this.limpiarMapaNoSelect();
+        this.destruitMapaSelect();
+        this.tareaSeleccionada = false;
+        this.filtroTarea = '';
 
         // Volver a cargar todos los submarinos
         await this.getSubmarino();
         this.clasificarSubmarinos();
+        this.initMapaGlobal();
+      } else {
+        const areaEncontrada = this.areas.find(area => area.nombreArea === this.nombreLugarBusqueda);
 
-        // Establecer el filtro de tarea en "Ninguno" cuando no se encuentra el área
-        this.filtroTarea = 'Ninguno';
+        if (areaEncontrada) {
+          this.limpiarMapaGlobal();
+          this.areaEncontrada = areaEncontrada;
+          this.areaEncontradaID = areaEncontrada._id;
+          this.mostrarColumnaDerecha = true;
 
-        // Ahora reintroduce el mapa global si es necesario
-        this.destruitMapaSelect();
+          // Limpiar los datos antes de cargar nuevos submarinos
+          this.submarinos = [];
+          this.submarinosAsignados = [];
+          this.submarinosFueraDelAgua = [];
+          this.submarinosSumergidos = [];
+          this.submarinosDisponibles = [];
 
+          await this.selectRutinas();
+          await this.getSubmarinoMongo(); // Llama a getSubmarinoMongo después de limpiar los arrays
+          await this.actualizarSubmarinos(); // Reclasifica y actualiza las listas de submarinos según el área seleccionada
+
+          this.cargarCoordenadasEnMapaSelect(areaEncontrada.coordenadas);
+          this.areaSeleccionada = true;
+        } else {
+          // Restablecer el estado de la aplicación a su estado inicial si no se encuentra el área
+          this.areaEncontrada = null;
+          this.areaEncontradaID = null;
+          this.mostrarColumnaDerecha = false;
+          this.tareasDisponibles = [];
+
+          // Limpiar el mapa
+          this.limpiarMapaNoSelect();
+
+          // Volver a cargar todos los submarinos
+          await this.getSubmarino();
+          this.clasificarSubmarinos();
+
+          // Ahora reintroduce el mapa global si es necesario
+          this.destruitMapaSelect();
+          this.areaSeleccionada = false;
+        }
       }
     },
 
@@ -382,23 +414,16 @@ export default {
     },
 
     // DIBUJAR SUBS FILTRADOS POR TAREA
-    dibujarMapaPorTarea(coordenadas, submarinosFiltrados) {
-      //console.log("Coordenadas:", coordenadas);
+    dibujarMapaPorTarea(coordenadas, submarinosAsignados) {
       // Limpiar cualquier contenido previo en el mapa
-      this.limpiarMapaNoSelect();
+      this.limpiarMapaSelect();
 
       // Inicializar el mapa si aún no ha sido creado
       if (!this.mapa) {
-        this.mapa = L.map('mapaSelect', {
-          center: [41.38879, 2.15899], // Coordenadas centrales genéricas, ajustar según sea necesario
-          zoom: 11
-        });
-        L.tileLayer('https://cartodb-basemaps-{s}.global.ssl.fastly.net/rastertiles/voyager/{z}/{x}/{y}.png', {
-          maxZoom: 19
-        }).addTo(this.mapa);
+        this.initMapaSelect();
       }
 
-      // Dibujar el área
+      // Dibujar el área y los submarinos filtrados
       if (coordenadas) {
         const geoJsonLayer = L.geoJSON({
           type: "Feature",
@@ -408,22 +433,19 @@ export default {
           },
         }).addTo(this.mapa);
 
-        // Update the map view
-        this.mapa.fitBounds(geoJsonLayer.getBounds())
+        // Ajustar la vista del mapa para enfocar el área
+        this.mapa.fitBounds(geoJsonLayer.getBounds());
       }
 
-      // Dibujar los submarinos filtrados por la tarea seleccionada
-      submarinosFiltrados.forEach(submarino => {
+      // Dibujar solo los submarinos asignados a la tarea seleccionada
+      submarinosAsignados.forEach(submarino => {
         if (this.ubicacionesSubmarinos[submarino.id_sub]) {
           let latlngs = this.ubicacionesSubmarinos[submarino.id_sub];
           let polyline = L.polyline(latlngs, { color: 'red' }).addTo(this.mapa);
           this.mapa.fitBounds(polyline.getBounds());
         }
       });
-
-
     },
-
     // LIMPIAR EL MAPA
     limpiarMapaSelect() {
       if (this.mapa) {
@@ -439,6 +461,7 @@ export default {
 
         // Destruir el mapa
         this.mapa.remove();
+        this.mapa = null; // Reiniciar el objeto mapa
       }
     },
 
@@ -450,10 +473,7 @@ export default {
           this.mapa.removeControl(this.drawControl);
         }
 
-        // Remover todas las capas del mapa
-        this.mapa.eachLayer((layer) => {
-          this.mapa.removeLayer(layer);
-        });
+
       }
     },
 
