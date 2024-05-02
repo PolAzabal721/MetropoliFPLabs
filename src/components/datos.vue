@@ -4,7 +4,8 @@
     <v-main style="height: 100vh">
       <v-container fluid>
         <v-row>
-          <v-col cols="6">
+          <!-- Submarino Info -->
+          <v-col cols="5">
             <v-card class="mx-5" max-width="800">
               <v-card-title class="text-center">
                 <h2>Selecciona un submarino</h2>
@@ -12,81 +13,76 @@
               <v-card-text class="text-center">
                 <select class="select" v-model="submarinoSeleccionado" @change="avanzar">
                   <option disabled value="">Selecciona un submarino</option>
-                  <option v-for="submarino in submarinos" :value="submarino">
+                  <option v-for="submarino in submarinos" :key="submarino.id" :value="submarino">
                     {{ submarino.nom_sub }}
                   </option>
                 </select>
                 <span class="icon" @click="limpiarSeleccion">
-                  <i class="mdi mdi-close mdi-24px miEstiloIcon"></i>
+                  <i class="mdi mdi-close mdi-24px"></i>
                 </span>
               </v-card-text>
             </v-card>
-            <v-card class="mx-5" height="600" width="800" style="margin-top: 10px">
+            <v-card class="mx-5" height="680" width="800" style="margin-top: 10px">
               <v-card-text class="vCardText">
                 <div v-if="seleccionado">
-                  <p><b>Nom del robot:</b> {{ submarinoSeleccionado.nom_sub }}</p>
-                  <p><b>Estat del robot:</b> {{ motor }}</p>
-                  <p><b>Estat de la càmera:</b> {{ camara }}</p>
-                  <p><b>Última connexió:</b> {{ ultimaConexion }}</p>
-                  <p><b>Temps encès:</b> {{ msToTime(timeON) }}</p>
+                  <p><b>Nombre del robot:</b> {{ submarinoSeleccionado.nom_sub }}</p>
+                  <p><b>Estado del robot:</b> {{ motor }}</p>
+                  <p><b>Estado de la cámara:</b> {{ camara }}</p>
+                  <p><b>Última conexión:</b> {{ ultimaConexion }}</p>
+                  <p><b>Tiempo encendido:</b> {{ msToTime(timeON) }}</p>
                   <p><b>Rutina en curso:</b> {{ movimientoSub[0]?.rutina }}</p>
                 </div>
               </v-card-text>
             </v-card>
           </v-col>
-          <v-col cols="6">
+
+          <!-- Opciones -->
+          <v-col cols="3" style="margin-left: 50px;">
+            <v-card class="mx-auto" height="300" width="350">
+              <v-card-text class="vCardText marg text-center">
+                <h2>Opciones</h2>
+                <v-btn v-for="opcion in opciones" :key="opcion" @click="toggleOpcion(opcion)" class="filtro-btn"
+                  :class="{ 'btn-active': opcionesSeleccionadas.includes(opcion) }">
+                  {{ opcion }}
+                </v-btn>
+              </v-card-text>
+            </v-card>
+          </v-col>
+
+          <!-- Historial de Movimientos -->
+          <v-col cols="3">
             <v-card class="mx-auto" height="800" width="400">
               <v-card-text class="vCardText marg text-center">
                 <h2>Historial de movimientos</h2>
-                <div>
-                  <v-btn v-for="opcion in opciones" :key="opcion" @click="toggleOpcion(opcion)" class="filtro-btn"
-                    :class="{ 'btn-active': opcionesSeleccionadas.includes(opcion) }">
-                    {{ opcion }}
-                  </v-btn>
-
-                </div>
-              </v-card-text>
-              <v-card-text class="vCardText" ref="movimientosList">
-                <v-container fluid>
-                  <v-row>
-                    <v-col>
-                      <div class="scroll-container">
-                        <v-list>
-                          <v-list-item v-if="movimientoSub.length > 0">
-                            <v-list-item v-for="(subMovimiento, index) in movimientoSub" :key="index">
-                              <v-list-item v-for="(movimiento, indexMov) in subMovimiento.movimientos_sub"
-                                :key="indexMov">
-                                <v-list-item class="message">
-                                  <v-list-item-text>
-                                    <span :class="getColor(movimiento.detalle)">
-                                      {{ movimiento.fecha }} - {{ movimiento.detalle }}
-                                    </span>
-                                  </v-list-item-text>
+                <v-card-text class="vCardText" ref="movimientosList">
+                  <v-container fluid>
+                    <v-row>
+                      <v-col>
+                        <div class="scroll-container">
+                          <v-list>
+                            <v-list-item v-if="movimientoSub.length > 0">
+                              <v-list-item v-for="(subMovimiento, index) in movimientoSub" :key="index">
+                                <v-list-item v-for="(movimiento, indexMov) in subMovimiento.movimientos_sub"
+                                  :key="indexMov">
+                                  <v-list-item class="message">
+                                    <v-list-item-text>
+                                      <span :class="getColor(movimiento.detalle)">
+                                        {{ movimiento.fecha }} - {{ movimiento.detalle }}
+                                      </span>
+                                    </v-list-item-text>
+                                  </v-list-item>
                                 </v-list-item>
                               </v-list-item>
                             </v-list-item>
-                          </v-list-item>
-                          <v-list-item v-else-if="movimientoSub === null">
-                            <!-- <v-list-item v-for="(mov, index) in movimientos" :key="index">
-                              <v-list-item v-for="(movimiento, indexMov) in mov.movimientos_sub" :key="indexMov">
-                                <v-list-item class="message">
-                                  <v-list-item-text>
-                                    <span :class="getColor(movimiento.detalle)">
-                                      {{ movimiento.fecha }} - {{ movimiento.detalle }}
-                                    </span>
-                                  </v-list-item-text>
-                                </v-list-item>
-                              </v-list-item>
-                            </v-list-item> -->
-                          </v-list-item>
-                          <v-list-item v-else>
-                            <v-list-item-title>No hay movimientos</v-list-item-title>
-                          </v-list-item>
-                        </v-list>
-                      </div>
-                    </v-col>
-                  </v-row>
-                </v-container>
+                            <v-list-item v-else>
+                              <v-list-item-title>No hay movimientos</v-list-item-title>
+                            </v-list-item>
+                          </v-list>
+                        </div>
+                      </v-col>
+                    </v-row>
+                  </v-container>
+                </v-card-text>
               </v-card-text>
             </v-card>
           </v-col>
@@ -95,6 +91,8 @@
     </v-main>
   </v-layout>
 </template>
+
+
 
 
 <script>
@@ -435,7 +433,8 @@ import DefaultBar from "@/layouts/default/AppBar.vue";
 .icon {
   position: absolute;
   top: 65%;
-  right: 200px;
+  right: 160px;
+  
   size: 20px;
   transform: translateY(-50%);
   cursor: pointer;
