@@ -73,6 +73,7 @@ import "leaflet-draw/dist/leaflet.draw.css";
 import "leaflet-draw/dist/leaflet.draw";
 import "leaflet-draw/dist/leaflet.draw-src";
 import "leaflet-draw/dist/leaflet.draw-src.js";
+import io from "socket.io-client";
 
 import {
   fetchAreas,
@@ -95,6 +96,7 @@ export default {
       submarinosDisponibles: [],
       submarinos: [],
       mapa: null,
+      mapaGlobal: null,
       areaEncontrada: null,
       areaEncontradaID: null,
       mapaInicializado: false,
@@ -106,6 +108,8 @@ export default {
       rutinas: [],
       filtroTarea: null,
       tareasDisponibles: [],
+      ubicacionesSubmarinos: {},
+      socket: null
     };
   },
   methods: {
@@ -132,6 +136,13 @@ export default {
             return submarino.actividades && submarino.actividades.includes(tareaSeleccionada.id);
           });
           this.clasificarSubmarinosPorRutina();
+          // Filtrar submarinos según la tarea seleccionada
+          let submarinosFiltrados = this.submarinos.filter(sub => sub.tareas && sub.tareas.includes(tareaSeleccionada));
+
+          // Dibujar el mapa con los submarinos filtrados
+          if (this.areaEncontrada && this.areaEncontrada.coordenadas) {
+            this.dibujarMapaPorTarea(this.areaEncontrada.coordenadas, submarinosFiltrados);
+          }
         } else {
           this.submarinosAsignados = [];
         }
@@ -200,6 +211,7 @@ export default {
       const areaEncontrada = this.areas.find(area => area.nombreArea === this.nombreLugarBusqueda);
 
       if (areaEncontrada) {
+        this.limpiarMapaGlobal();
         this.areaEncontrada = areaEncontrada;
         this.areaEncontradaID = areaEncontrada._id;
         this.mostrarColumnaDerecha = true;
@@ -229,7 +241,13 @@ export default {
         // Volver a cargar todos los submarinos
         await this.getSubmarino();
         this.clasificarSubmarinos();
-        console.error("Área seleccionada no encontrada o sin tareas disponibles.");
+
+        // Establecer el filtro de tarea en "Ninguno" cuando no se encuentra el área
+        this.filtroTarea = 'Ninguno';
+
+        // Ahora reintroduce el mapa global si es necesario
+        this.destruitMapaSelect();
+
       }
     },
 
@@ -287,7 +305,7 @@ export default {
       }
     },
 
-    // INICIO Y CONFIG DEL MAPA
+    // INICIO Y CONFIG DEL MAPA DE SUBS FILTRADOS POR AREA
     initMapaSelect() {
       this.mapa = L.map("mapaSelect").setView([41.38879, 2.15899], 11);
       L.tileLayer(
@@ -336,11 +354,11 @@ export default {
       this.drawControl.addTo(this.mapa);
 
       // Dibujar el área en el mapa
-      this.dibujarAreaEnMapa(coordenadas);
+      this.dibujarAreaEnMapa(coordenadas, this.submarinosAsignados);
     },
 
-    // DIBUJAR COODS EN EL MAPA
-    dibujarAreaEnMapa(coordenadas) {
+    // DIBUJAR COODS + SUBS EN EL MAPA
+    dibujarAreaEnMapa(coordenadas, submarinosAsignados) {
       //console.log("Coordenadas:", coordenadas);
 
       // Create a GeoJSON layer and add it to the map
@@ -352,8 +370,58 @@ export default {
         },
       }).addTo(this.mapa);
 
+      submarinosAsignados.forEach(submarino => {
+        if (this.ubicacionesSubmarinos[submarino.id_sub]) {
+          let latlngs = this.ubicacionesSubmarinos[submarino.id_sub];
+          let polyline = L.polyline(latlngs, { color: 'red' }).addTo(this.mapa);
+          this.mapa.fitBounds(polyline.getBounds());
+        }
+      });
       // Update the map view
       this.mapa.fitBounds(geoJsonLayer.getBounds());
+    },
+
+    // DIBUJAR SUBS FILTRADOS POR TAREA
+    dibujarMapaPorTarea(coordenadas, submarinosFiltrados) {
+      //console.log("Coordenadas:", coordenadas);
+      // Limpiar cualquier contenido previo en el mapa
+      this.limpiarMapaNoSelect();
+
+      // Inicializar el mapa si aún no ha sido creado
+      if (!this.mapa) {
+        this.mapa = L.map('mapaSelect', {
+          center: [41.38879, 2.15899], // Coordenadas centrales genéricas, ajustar según sea necesario
+          zoom: 11
+        });
+        L.tileLayer('https://cartodb-basemaps-{s}.global.ssl.fastly.net/rastertiles/voyager/{z}/{x}/{y}.png', {
+          maxZoom: 19
+        }).addTo(this.mapa);
+      }
+
+      // Dibujar el área
+      if (coordenadas) {
+        const geoJsonLayer = L.geoJSON({
+          type: "Feature",
+          geometry: {
+            type: "Polygon",
+            coordinates: coordenadas,
+          },
+        }).addTo(this.mapa);
+
+        // Update the map view
+        this.mapa.fitBounds(geoJsonLayer.getBounds())
+      }
+
+      // Dibujar los submarinos filtrados por la tarea seleccionada
+      submarinosFiltrados.forEach(submarino => {
+        if (this.ubicacionesSubmarinos[submarino.id_sub]) {
+          let latlngs = this.ubicacionesSubmarinos[submarino.id_sub];
+          let polyline = L.polyline(latlngs, { color: 'red' }).addTo(this.mapa);
+          this.mapa.fitBounds(polyline.getBounds());
+        }
+      });
+
+
     },
 
     // LIMPIAR EL MAPA
@@ -386,8 +454,6 @@ export default {
         this.mapa.eachLayer((layer) => {
           this.mapa.removeLayer(layer);
         });
-
-  
       }
     },
 
@@ -396,6 +462,69 @@ export default {
       this.actualizarDisponibilidad(submarino.id_sub);
       this.dialogoSubmarinoVisible = true;
     },
+
+    // DESTRUIR MAPA DE AREAS Y CARGAR EL GLOBAL
+    destruitMapaSelect() {
+      if (this.mapa) {
+        this.mapa.remove();
+        this.mapa = null;
+        // Ahora reintroduce el mapa global si es necesario
+        this.initMapaGlobal();
+        this.dibujarRutasSubmarinos();
+      }
+    },
+
+    // DIBUJAR TODAS LAS RUTAS EN EL MAPA GLOBAL
+    dibujarRutasSubmarinos() {
+      if (!this.mapaGlobal) {
+        console.error("El mapa global no está inicializado");
+        return;
+      }
+      Object.keys(this.ubicacionesSubmarinos).forEach(idSub => {
+        let latlngs = this.ubicacionesSubmarinos[idSub];
+        let polyline = L.polyline(latlngs, { color: 'red' }).addTo(this.mapaGlobal);
+        this.mapaGlobal.fitBounds(polyline.getBounds());
+      });
+    },
+
+    // MAPA INICIAL DONDE SE VEN TODAS LAS UBIS DE LOS SUBS
+    initMapaGlobal() {
+      if (!this.mapaGlobal) {
+        this.mapaGlobal = L.map('mapaSelect', {
+          center: [41.38879, 2.15899], // Centro inicial del mapa
+          zoom: 10, // Nivel de zoom inicial configurado a 13
+          maxZoom: 19 // Establece el máximo zoom permitido a 19
+        });
+        L.tileLayer('https://cartodb-basemaps-{s}.global.ssl.fastly.net/rastertiles/voyager/{z}/{x}/{y}.png', {
+          maxZoom: 19
+        }).addTo(this.mapaGlobal);
+        this.mapaGlobal.whenReady(() => {
+          this.mapaGlobal.setZoom(13);
+        });
+        // Otras configuraciones y controles pueden ser añadidos aquí
+      } else {
+        console.log("El mapa global ya está inicializado.");
+      }
+    },
+
+    // CARGAR COODS EN EL MAPA GLOBAL
+    cargarCoordenadasEnMapaGlobal(coordenadas) {
+      // Limpiar el mapa
+      this.limpiarMapaGlobal();
+
+      // Inicializar el mapa y el control de dibujo
+      this.initMapaGlobal();
+      this.drawControl.addTo(this.mapaGlobal);
+    },
+
+    // LIMPIAR EL MAPA GLOBAL
+    limpiarMapaGlobal() {
+      if (this.mapaGlobal) {
+        this.mapaGlobal.remove(); // Esto destruirá la instancia del mapa y limpiará el contenedor
+        this.mapaGlobal = null; // Reinicia la referencia a null para una nueva inicialización
+      }
+    },
+
   },
   //
   computed: {
@@ -409,10 +538,30 @@ export default {
   //CONSOLA
   created() {
     console.log("CREADO");
+    this.socket = io("http://localhost:3169/");
+    this.socket.on("SelectUbicacionSubmarinos", (data) => {
+      this.ubicacionesSubmarinos = {};
+      data.forEach(ubicacion => {
+        if (!this.ubicacionesSubmarinos[ubicacion.idSub]) {
+          this.ubicacionesSubmarinos[ubicacion.idSub] = [];
+        }
+        ubicacion.ubicacions.forEach(u => {
+          // Asegúrate de que 'u.coordenadas' es un array y tiene al menos dos elementos
+          //console.log("Datos de ubicación recibidos:", u);
+          if (Array.isArray(u.coordenadas) && u.coordenadas.length >= 2) {
+            let lat = u.coordenadas[0].lat; // Acceso a la latitud
+            let lon = u.coordenadas[1].lon; // Acceso a la longitud
+            this.ubicacionesSubmarinos[ubicacion.idSub].push([lat, lon]);
+          }
+        });
+      });
+      this.dibujarRutasSubmarinos();
+    });
   },
 
   mounted() {
     console.log("MONTADO");
+    this.initMapaGlobal();
     this.getAreas();
     this.getSubmarino();
   },
