@@ -13,7 +13,8 @@
             <v-container>
               <v-row>
                 <v-col v-for="submarino in submarinosFueraDelAgua" :key="submarino.id_sub" cols="12">
-                  <v-card @click="mostrarUbicacionSubmarino(submarino.id_sub)"
+                  <v-card
+                    @click="mostrarUbicacionSubmarino(submarino.id_sub) || mostrarUbicacionSubmarinoSinFiltros(submarino.id_sub)"
                     :color="submarino.enReparacion ? 'red' : 'grey lighten-2'">
                     <v-card-title>{{ submarino.nom_sub }}</v-card-title>
                     <v-card-text>Estado: {{ submarino.estado_sub }}</v-card-text>
@@ -49,8 +50,6 @@
             :color="tareaSeleccionada ? 'red' : 'blue'">
             {{ tareaSeleccionada ? 'Limpiar Filtro' : 'Filtrar por Tarea' }}
           </v-btn>
-
-
 
           <v-card style="margin-top: 20px;" class="mx-auto slidecontainer" max-height="700" max-width="850">
             <div id="mapaSelect" style="height: 700px; width: 850px"></div>
@@ -150,64 +149,131 @@ export default {
 
     // MOSTRAR UBI AL SELECCIONAR UN SUBMARINO
     mostrarUbicacionSubmarino(idSub) {
-      if (this.submarinoSeleccionado === idSub) {
-        // Volver al estado anterior
-        this.restaurarEstadoMapa();
-        this.submarinoSeleccionado = null;
-        // Restaurar la tarea seleccionada solo si no es null
-        if (this.tareaSeleccionadaAntes !== null) {
-          this.filtroTarea = this.tareaSeleccionadaAntes;
-          this.filtrarSubmarinosPorTarea();
-          this.tareaSeleccionadaAntes = null;
+      if (this.areaSeleccionada || this.tareaSeleccionada) {
+
+        if (this.submarinoSeleccionado === idSub) {
+          // Volver al estado anterior
+          this.restaurarEstadoMapa();
+          this.submarinoSeleccionado = null;
+          // Restaurar la tarea seleccionada solo si no es null
+          if (this.tareaSeleccionadaAntes !== null) {
+            this.filtroTarea = this.tareaSeleccionadaAntes;
+            this.filtrarSubmarinosPorTarea();
+            this.tareaSeleccionadaAntes = null;
+          }
+        } else {
+          // Almacenar la tarea seleccionada antes de cambiarla
+          this.tareaSeleccionadaAntes = this.filtroTarea;
+
+          this.submarinoSeleccionado = idSub;
+          this.guardarEstadoActualMapa();
+          const ubicaciones = this.ubicacionesSubmarinos[idSub];
+
+          const mapaActivo = this.mapa || this.mapaGlobal;
+          this.limpiarMapa(mapaActivo);
+
+          const polyline = L.polyline(ubicaciones, { color: 'red' }).addTo(mapaActivo);
+          mapaActivo.fitBounds(polyline.getBounds());
         }
-      } else {
-        // Almacenar la tarea seleccionada antes de cambiarla
-        this.tareaSeleccionadaAntes = this.filtroTarea;
-
-        this.submarinoSeleccionado = idSub;
-        this.guardarEstadoActualMapa();
-        const ubicaciones = this.ubicacionesSubmarinos[idSub];
-
-        const mapaActivo = this.mapa || this.mapaGlobal;
-        this.limpiarMapa(mapaActivo);
-
-        const polyline = L.polyline(ubicaciones, { color: 'red' }).addTo(mapaActivo);
-        mapaActivo.fitBounds(polyline.getBounds());
       }
     },
-    /*
-mostrarUbicacionSubmarino(idSub) {
-  if (this.submarinoSeleccionado === idSub) {
-    // Volver al estado anterior
-    this.restaurarEstadoMapa();
-    this.submarinoSeleccionado = null;
-    // Restaurar la tarea seleccionada si existe
-    if (this.tareaSeleccionadaAntes) {
-      this.filtroTarea = this.tareaSeleccionadaAntes;
-      this.filtrarSubmarinosPorTarea();
-      this.tareaSeleccionadaAntes = null;
-    }
-  } else {
-    // Almacenar la tarea seleccionada antes de cambiarla
-    this.tareaSeleccionadaAntes = this.filtroTarea;
 
-    this.submarinoSeleccionado = idSub;
-    // Verificar si el mapa global ya está inicializado
-    if (!this.mapaGlobal) {
-      // Si no está inicializado, inicializarlo
-      this.initMapaGlobal();
-    } else {
-      // Si ya está inicializado, limpiar el mapa antes de mostrar la ubicación del submarino
-      this.limpiarMapa(this.mapaGlobal);
-    }
-    
-    const ubicaciones = this.ubicacionesSubmarinos[idSub];
-    // Agregar marcadores al mapa global
-    // Tu lógica para agregar marcadores al mapa global aquí
-  }
-},
+    // MOSTRAR SUBS SIN FILTROS APLICADOS
+    mostrarUbicacionSubmarinoSinFiltros(idSub) {
+      console.log(this.areaSeleccionada);
+      console.log(this.tareaSeleccionada);
+      // Solo ejecutar si no hay filtros de área o tarea activos
+      if (!this.areaSeleccionada && !this.tareaSeleccionada) {
+        if (this.submarinoSeleccionado === idSub) {
+          // Deseleccionar el submarino y limpiar/restaurar el mapa
+          this.limpiarMapaGlobal();
 
-    */
+          this.restaurarEstadoMapaSinFiltros(true); // Pasamos true para indicar que deseleccionamos
+          this.submarinoSeleccionado = null;
+        } else {
+          // Seleccionar un nuevo submarino y mostrar su ubicación
+          this.submarinoSeleccionado = idSub;
+          this.guardarEstadoActualMapaSinFiltros();
+          const ubicaciones = this.ubicacionesSubmarinos[idSub];
+
+          const mapaActivo = this.mapa || this.mapaGlobal;
+          this.limpiarMapaSinFiltros(mapaActivo);
+
+          const polyline = L.polyline(ubicaciones, { color: 'red' }).addTo(mapaActivo);
+          mapaActivo.fitBounds(polyline.getBounds());
+        }
+      }
+    },
+
+    // GUARDAR ESTADO MAPA SIN FILTROS
+    guardarEstadoActualMapaSinFiltros() {
+      if (!this.estadoAnteriorMapa.area && this.areaEncontrada) {
+        this.estadoAnteriorMapa.area = this.areaEncontrada;
+        this.estadoAnteriorMapa.submarinos = [...this.submarinosAsignados];
+      }
+
+      if (!this.estadoAnteriorMapa.tarea && this.tareaSeleccionada) {
+        this.estadoAnteriorMapa.tarea = this.filtroTarea;
+      }
+    },
+
+    // RESTAURAR MAPA ANTERIOR
+    restaurarEstadoMapaSinFiltros(deseleccionar = false) {
+      const { area, tarea, submarinos } = this.estadoAnteriorMapa;
+      if (deseleccionar) {
+        // Si estamos deseleccionando, limpiar el mapa y cargar el mapa global
+        this.limpiarMapaGlobal();
+        this.initMapaGlobal(); // Asegúrate de que esta función configura adecuadamente el mapa global
+      } else {
+        // Restaurar el estado previo
+        if (area) {
+          this.areaEncontrada = area;
+          this.submarinosAsignados = submarinos;
+          this.cargarCoordenadasEnMapaGlobal();
+        }
+
+        if (tarea) {
+          this.filtroTarea = tarea;
+          this.filtrarSubmarinosPorTarea();
+        }
+      }
+
+      // Limpiar el estado anterior
+      this.estadoAnteriorMapa = {
+        area: null,
+        tarea: null,
+        submarinos: [],
+      };
+    },
+
+    // LIMPIAR EL MAPA SIN FILTROS
+    limpiarMapaSinFiltros(mapaActivo) {
+      if (mapaActivo) {
+        mapaActivo.eachLayer(layer => {
+          // Asegúrate de no eliminar la capa de tiles base
+          if (layer instanceof L.Marker || layer instanceof L.Polyline) {
+            mapaActivo.removeLayer(layer);
+          }
+        });
+      }
+    },
+
+    // LIMPIAR EL MAPA GLOBAL Y REDIBUJAR LAS RUTAS (ESTA REPETIDA PERO NO BORRAR, NO VA EL COD SIN ESTO)
+    limpiarMapaGlobal() {
+      if (this.mapaGlobal) {
+        this.mapaGlobal.eachLayer(layer => {
+          if (layer instanceof L.Polyline) {
+            this.mapaGlobal.removeLayer(layer); // Elimina solo las polilíneas
+          }
+        });
+
+        this.dibujarRutasSubmarinos(); // Redibuja las rutas después de limpiar
+      } else {
+        // Si el mapa no existe, lo inicializamos de nuevo
+        this.initMapaGlobal();
+        this.dibujarRutasSubmarinos();
+      }
+    },
 
     // RESTAURAMOS EL ESTADO DEL MAPA
     restaurarEstadoMapa() {
@@ -620,11 +686,18 @@ mostrarUbicacionSubmarino(idSub) {
         console.error("El mapa global no está inicializado");
         return;
       }
+
+      let bounds = new L.LatLngBounds();
       Object.keys(this.ubicacionesSubmarinos).forEach(idSub => {
         let latlngs = this.ubicacionesSubmarinos[idSub];
         let polyline = L.polyline(latlngs, { color: 'red' }).addTo(this.mapaGlobal);
         this.mapaGlobal.fitBounds(polyline.getBounds());
+        bounds.extend(polyline.getBounds())
       });
+
+      if (bounds.isValid()) {
+        this.mapaGlobal.fitBounds(bounds, { padding: [50, 50] }); // Ajustar el mapa para mostrar todos los límites con un padding
+      }
     },
 
     // MAPA INICIAL DONDE SE VEN TODAS LAS UBIS DE LOS SUBS
@@ -648,23 +721,27 @@ mostrarUbicacionSubmarino(idSub) {
     },
 
     // CARGAR COODS EN EL MAPA GLOBAL
-    cargarCoordenadasEnMapaGlobal(coordenadas) {
-  // Verificar si el mapa global ya está inicializado
-  if (!this.mapaGlobal) {
-    // Si no está inicializado, inicializarlo
-    this.initMapaGlobal();
-  } else {
-    // Si ya está inicializado, limpiar el mapa antes de cargar nuevas coordenadas
-    this.limpiarMapa(this.mapaGlobal);
-  }
+    cargarCoordenadasEnMapaGlobal() {
+      // Verificar si el mapa global ya está inicializado
+      if (!this.mapaGlobal) {
+        // Si no está inicializado, inicializarlo
+        this.initMapaGlobal();
+      } else {
+        // Si ya está inicializado, limpiar el mapa antes de cargar nuevas coordenadas
+        this.limpiarMapaGlobal(this.mapaGlobal);
+      }
       this.drawControl.addTo(this.mapaGlobal);
     },
 
-    // LIMPIAR EL MAPA GLOBAL
+    // LIMPIAR EL MAPA GLOBAL (ESTA REPETIDA PERO NO BORRAR, NO VA EL COD SIN ESTO)
     limpiarMapaGlobal() {
       if (this.mapaGlobal) {
         this.mapaGlobal.remove(); // Esto destruirá la instancia del mapa y limpiará el contenedor
         this.mapaGlobal = null; // Reinicia la referencia a null para una nueva inicialización
+      } else {
+        // Si el mapa no existe, lo inicializamos de nuevo
+        this.initMapaGlobal();
+        this.dibujarRutasSubmarinos();
       }
     },
 
@@ -699,7 +776,7 @@ mostrarUbicacionSubmarino(idSub) {
         });
       });
       this.dibujarRutasSubmarinos();
-    });
+    })
   },
 
   mounted() {
