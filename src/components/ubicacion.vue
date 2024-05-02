@@ -25,21 +25,27 @@
 
         <!-- Center Column for Map and Filters -->
         <v-col cols="12" sm="6">
-          <v-select v-model="nombreLugarBusqueda" :items="areas.map(area => area.nombreArea)" label="Seleccionar Área"
-            @change="actualizarSubmarinos"></v-select>
 
-          <v-select v-model="filtroTarea" :items="tareasDisponibles" label="Filtrar por Tarea/Rutina"></v-select>
+          <!-- Selector de Área -->
+          <v-select v-model="nombreLugarBusqueda" :items="['Ninguno', ...areas.map(area => area.nombreArea)]"
+            label="Seleccionar Área" @change="actualizarSubmarinos"></v-select>
+
+          <!-- Selector de Tarea/Rutina -->
+          <v-select v-model="filtroTarea" :items="['Ninguno', ...tareasDisponibles]" label="Filtrar por Tarea/Rutina"
+            @change="filtrarSubmarinosPorTarea"></v-select>
+
           <v-btn @click="buscarArea" :disabled="!nombreLugarBusqueda">Buscar</v-btn>
-          <v-btn @click="filtrarSubmarinosPorTarea" color="blue" dark>Filtrar por Tarea</v-btn>
+          <v-btn style="margin-left: 15px;" @click="filtrarSubmarinosPorTarea" color="blue" dark>Filtrar por
+            Tarea</v-btn>
 
-          <v-card class="mx-auto slidecontainer" max-height="500" max-width="550">
-            <div id="mapaSelect" style="height: 500px; width: 550px"></div>
+          <v-card style="margin-top: 20px;" class="mx-auto slidecontainer" max-height="700" max-width="850">
+            <div id="mapaSelect" style="height: 700px; width: 850px"></div>
           </v-card>
         </v-col>
 
         <!-- Right Column for Submerged Submarines -->
         <v-col cols="12" sm="3">
-          <v-row v-if="mostrarColumnaDerecha">
+          <v-row>
             <v-col class="text-center">
               <h3>Submarinos Sumergidos</h3>
               <v-row>
@@ -53,7 +59,6 @@
             </v-col>
           </v-row>
         </v-col>
-
       </v-row>
     </v-main>
   </v-layout>
@@ -104,6 +109,7 @@ export default {
     };
   },
   methods: {
+    // BUSCAR LAS TAREAS DISPONIBLES
     tareasDisponible() {
       if (this.rutinas && this.rutinas.length > 0) {
         this.tareasDisponibles = this.rutinas.map(rutina => rutina.nombre); // Usa los nombres de las rutinas para el v-select
@@ -115,35 +121,40 @@ export default {
 
     // Calcular y devolver el valor de filtroTarea
     filtrarSubmarinosPorTarea() {
-  console.log("Filtro de tarea seleccionado:", this.filtroTarea);
+      if (this.filtroTarea === 'Ninguno' || !this.filtroTarea) {
+        this.filtroTarea = null;
+        this.submarinosAsignados = this.submarinos.filter(sub => sub.id_area === this.areaEncontradaID);
+        this.clasificarSubmarinosPorRutina();
+      } else {
+        const tareaSeleccionada = this.rutinas.find(tarea => tarea.nombre === this.filtroTarea);
+        if (tareaSeleccionada) {
+          this.submarinosAsignados = this.submarinos.filter(submarino => {
+            return submarino.actividades && submarino.actividades.includes(tareaSeleccionada.id);
+          });
+          this.clasificarSubmarinosPorRutina();
+        } else {
+          this.submarinosAsignados = [];
+        }
+      }
+    },
 
-  if (!this.filtroTarea) {
-    this.submarinosAsignados = this.submarinos.filter(sub => sub.id_area === this.areaEncontradaID);
-  } else {
-    const tareaSeleccionada = this.rutinas.find(tarea => tarea.nombre === this.filtroTarea);
-    if (tareaSeleccionada) {
-      this.submarinosAsignados = this.submarinos.filter(submarino => {
-        return submarino.actividades && submarino.actividades.includes(tareaSeleccionada.id);
-      });
-    } else {
-      this.submarinosAsignados = [];
-    }
-  }
+    // Clasificación de submarinos por su estado marino después de aplicar el filtro de tareas
+    clasificarSubmarinosPorRutina() {
+      this.submarinosFueraDelAgua = this.submarinosAsignados.filter(sub => !sub.estadoMarino);
+      this.submarinosSumergidos = this.submarinosAsignados.filter(sub => sub.estadoMarino);
+    },
 
-  // Asegúrate de que los cambios sean detectados por Vue
-  this.submarinosAsignados = [...this.submarinosAsignados];
-  this.clasificarSubmarinos(); // Actualiza la clasificación de submarinos
-},
+    // Función para clasificar submarinos
+    clasificarSubmarinos() {
+      this.submarinosFueraDelAgua = this.submarinos.filter(sub => !sub.estadoMarino).slice();
+      this.submarinosSumergidos = this.submarinos.filter(sub => sub.estadoMarino).slice();
+      //console.log("Submarinos fuera del agua actualizados:", this.submarinosFueraDelAgua);
+      //console.log("Submarinos sumergidos actualizados:", this.submarinosSumergidos);
 
-   // Función para clasificar submarinos una vez filtrados
-clasificarSubmarinos() {
-  this.submarinosFueraDelAgua = this.submarinos.filter(sub => !sub.estadoMarino);
-  this.submarinosSumergidos = this.submarinos.filter(sub => sub.estadoMarino);
-
-  // Asegura la reactividad en Vue, si es necesario
-  this.submarinosFueraDelAgua = [...this.submarinosFueraDelAgua];
-  this.submarinosSumergidos = [...this.submarinosSumergidos];
-},
+      // Asegura la reactividad en Vue, si es necesario
+      this.submarinosFueraDelAgua = [...this.submarinosFueraDelAgua];
+      this.submarinosSumergidos = [...this.submarinosSumergidos];
+    },
 
     // VER SI HAY SUBMARINOS EN ESE AREA
     actualizarSubmarinos() {
@@ -206,11 +217,21 @@ clasificarSubmarinos() {
 
         this.cargarCoordenadasEnMapaSelect(areaEncontrada.coordenadas);
       } else {
+        // Restablecer el estado de la aplicación a su estado inicial si no se encuentra el área
+        this.areaEncontrada = null;
+        this.areaEncontradaID = null;
+        this.mostrarColumnaDerecha = false;
         this.tareasDisponibles = [];
+
+        // Limpiar el mapa
+        this.limpiarMapaNoSelect();
+
+        // Volver a cargar todos los submarinos
+        await this.getSubmarino();
+        this.clasificarSubmarinos();
         console.error("Área seleccionada no encontrada o sin tareas disponibles.");
       }
     },
-
 
     // HACER SELECT A RUTINAS
     async selectRutinas() {
@@ -350,6 +371,23 @@ clasificarSubmarinos() {
 
         // Destruir el mapa
         this.mapa.remove();
+      }
+    },
+
+    // LIMPIAR MAPA AL SELECCIONAR NINGUNO
+    limpiarMapaNoSelect() {
+      if (this.mapa) {
+        // Remover el control de dibujo antes de destruir el mapa
+        if (this.drawControl) {
+          this.mapa.removeControl(this.drawControl);
+        }
+
+        // Remover todas las capas del mapa
+        this.mapa.eachLayer((layer) => {
+          this.mapa.removeLayer(layer);
+        });
+
+  
       }
     },
 
