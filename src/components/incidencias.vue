@@ -91,12 +91,12 @@
 
         <v-list>
           <v-list-item v-for="(reporte, index) in reporteSeleccionado" :key="index">
-            <v-list-item-content>
+            <v-list-item>
               <v-list-item-title>{{ reporte.fecha_report }}</v-list-item-title>
               <v-list-item-subtitle>{{ reporte.mensaje }}</v-list-item-subtitle>
               <v-list-item-subtitle>{{ reporte.solucionado }}</v-list-item-subtitle>
 
-            </v-list-item-content>
+            </v-list-item>
           </v-list-item>
         </v-list>
 
@@ -115,7 +115,7 @@
           <v-text-field v-model="nuevaIncidencia.nombre" label="Asunto de la incidencia"></v-text-field>
           <v-textarea v-model="nuevaIncidencia.descripcion" label="Descripción de la incidencia"></v-textarea>
           <v-select v-model="nuevaIncidencia.submarinoSeleccionado" label="Submarino" :items="submarinos.map((submarino) => submarino.nom_sub)
-            " item-text="text" item-value="value"></v-select>
+      " item-text="text" item-value="value"></v-select>
 
           <v-select v-model="nuevaIncidencia.tipo" :items="['Actualización software', 'Reparación']"
             label="Tipo"></v-select>
@@ -328,9 +328,17 @@ export default {
         listaEnviar: this.listaEnviar,
         hasIdEmpresa: hasIdEmpresa, //Si hasId es true es que tiene una empresa seleccionada si es false es admin sin empresa elegida
         id: id,
-        idUser: idUser 
+        idUser: idUser
       };
       this.socket.emit('insertarIncidencia', dataToSend, (response) => {
+        if (response.status === 200) {
+          window.alert('Incidencia insertada correctamente')
+        } else {
+          window.alert('Error al insertar la incidencia')
+        }
+      });
+
+      this.socket.emit('SelectReports', id, (response) => {
         if (response.status === 200) {
           window.alert('Incidencia insertada correctamente')
         } else {
@@ -590,6 +598,19 @@ export default {
             console.log("Incidencias para la empresa:", this.incidencias);
           });
         }
+
+        // Agregar escucha para el evento de actualización de incidencias
+        this.socket.on("ResultUpdateInci", (jsonEnviar) => {
+          console.log("Actualización recibida para incidencias:", jsonEnviar);
+          // Aquí puedes implementar lógica para actualizar las incidencias visibles
+          // Por ejemplo, buscar la incidencia por ID y actualizar su estado y asignado
+          const index = this.incidencias.findIndex(inc => inc.id_incidencia === jsonEnviar.id_incidencia);
+          if (index !== -1) {
+            this.incidencias[index].asignado = jsonEnviar.asignado;
+            this.incidencias[index].estado = jsonEnviar.newEstado;
+          }
+        });
+
       } catch (error) {
         console.error('Error al obtener las incidencias:', error);
       }
@@ -602,6 +623,7 @@ export default {
       this.getReportes();
     });
   },
+
 
 
 
