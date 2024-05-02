@@ -598,6 +598,19 @@ export default {
             console.log("Incidencias para la empresa:", this.incidencias);
           });
         }
+
+        // Agregar escucha para el evento de actualización de incidencias
+        this.socket.on("ResultUpdateInci", (jsonEnviar) => {
+          console.log("Actualización recibida para incidencias:", jsonEnviar);
+          // Aquí puedes implementar lógica para actualizar las incidencias visibles
+          // Por ejemplo, buscar la incidencia por ID y actualizar su estado y asignado
+          const index = this.incidencias.findIndex(inc => inc.id_incidencia === jsonEnviar.id_incidencia);
+          if (index !== -1) {
+            this.incidencias[index].asignado = jsonEnviar.asignado;
+            this.incidencias[index].estado = jsonEnviar.newEstado;
+          }
+        });
+
       } catch (error) {
         console.error('Error al obtener las incidencias:', error);
       }
@@ -610,6 +623,7 @@ export default {
       this.getReportes();
     });
   },
+
 
 
 

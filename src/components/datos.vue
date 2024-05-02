@@ -398,10 +398,10 @@ import DefaultBar from "@/layouts/default/AppBar.vue";
 }
 
 .message {
-  padding: 0.5rem 1rem;
-  background-color: #efefef;
-  border-radius: 8px;
-  margin-bottom: 8px;
+  padding: 0.5rem 1rem !important;
+  background-color: #efefef !important;
+  border-radius: 8px !important;
+  margin-bottom: 8px !important;
   display: block;
   /* Cambiar de inline-block a block */
   white-space: normal;
