@@ -318,7 +318,7 @@ export default {
 
       const repeticionesNuevaActividad = this.generarRepeticionesTotales(nuevaActividad);
 
-      console.log("Repeticiones de la nueva actividad:", repeticionesNuevaActividad);
+      //console.log("Repeticiones de la nueva actividad:", repeticionesNuevaActividad);
 
       for (const nuevaRep of repeticionesNuevaActividad) {
         for (const act of actividadesAsignadas) {
@@ -326,17 +326,13 @@ export default {
 
           const repeticionesExistente = this.generarRepeticionesTotales(act);
 
-          console.log("Repeticiones de la actividad existente:", repeticionesExistente);
+          //console.log("Repeticiones de la actividad existente:", repeticionesExistente);
 
           for (const existenteRep of repeticionesExistente) {
             const nuevaInicio = nuevaRep.fechaHoraInicio.getTime();
             const nuevaFin = nuevaRep.fechaHoraFin.getTime();
             const existenteInicio = existenteRep.fechaHoraInicio.getTime();
             const existenteFin = existenteRep.fechaHoraFin.getTime();
-
-            console.log("Comparando fechas:");
-            console.log("Nueva actividad:", nuevaInicio, nuevaFin);
-            console.log("Actividad existente:", existenteInicio, existenteFin);
 
             if (!(nuevaInicio >= existenteFin || nuevaFin <= existenteInicio)) {
               alert(`Solapamiento detectado entre ${nuevaActividad.nombre} y ${act.nombre}`);
