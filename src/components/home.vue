@@ -61,8 +61,7 @@
                         </v-card-item>
                         <v-card-text>
                             Aquest projecte és creat amb la finalitat de presentar-ho al concurs metrópolis. Tots els
-                            fons han sigut obtinguts per la nostra part (els 5 integrants) i amb la "donació" d'alguns
-                            items per part del nostre professor Pol. El projecte tracta de crear
+                            fons han sigut obtinguts per la nostra part (els 5 integrants). El projecte tracta de crear
                             un robot capaç de moure's per l'aigua, recollir i processar dades de la costa litoral
                             mitjançant processos com el reconeixement de diferents espècies marines amb una càmara
                             amb Intel·ligència Artificial. Sempre amb la finalitat de millorar l'ecosistema del litoral
@@ -72,22 +71,7 @@
                     </v-card>
                 </v-col>
             </v-row>
-            <v-row class="mb-12">
-            </v-row>
-            <v-row class="mb-12">
-            </v-row>
-            <v-row class="mb-12">
-            </v-row>
-            <v-row class="mb-12">
-            </v-row>
-            <v-row class="mb-12">
-            </v-row>
-            <v-row class="mb-12">
-            </v-row>
-            <v-row class="mb-12">
-            </v-row>
-            <v-row class="mb-12">
-            </v-row>
+           
         </v-container>
     </v-layout>
 </template>
