@@ -523,6 +523,33 @@ export default {
           incidenciaSeleccionada.prioridad,
           this.idIncidenciaEditando
         );
+        const id = this.idIncidenciaEditando
+
+        const dataToSend = {
+          nombre: incidenciaSeleccionada.nombre,
+          descripcion: incidenciaSeleccionada.descripcion,
+          prioridad: incidenciaSeleccionada.prioridad,
+          id: id
+      };
+
+        this.socket.emit('updateIncidencia', dataToSend, (response) => {
+        if (response.status === 200) {
+        } else {
+          window.alert('Error al insertar la incidencia')
+        }
+      });
+
+      this.socket.emit('SelectReports', id, (response) => {
+        if (response.status === 200) {
+        } else {
+          window.alert('Error al insertar la incidencia')
+        }
+      });
+
+      this.socket.on("incidenciaResult", (result) => {
+        this.incidencias = result;
+        console.log("Incidencias para la empresa:", this.incidencias);
+      });
 
 
         // Cerrar el diálogo de edición
