@@ -180,8 +180,8 @@ export default {
 
     // MOSTRAR SUBS SIN FILTROS APLICADOS
     mostrarUbicacionSubmarinoSinFiltros(idSub) {
-      console.log(this.areaSeleccionada);
-      console.log(this.tareaSeleccionada);
+      // console.log(this.areaSeleccionada);
+      // console.log(this.tareaSeleccionada);
       // Solo ejecutar si no hay filtros de área o tarea activos
       if (!this.areaSeleccionada && !this.tareaSeleccionada) {
         if (this.submarinoSeleccionado === idSub) {
@@ -422,10 +422,13 @@ export default {
 
         const mapaActivo = this.mapa || this.mapaGlobal;
         this.limpiarMapa(mapaActivo);
+        this.limpiarMapaGlobal();
+
         // Volver a cargar todos los submarinos
+        this.initMapaGlobal();
         await this.getSubmarino();
         this.clasificarSubmarinos();
-        this.initMapaGlobal();
+        this.dibujarRutasSubmarinos();
       } else {
         const areaEncontrada = this.areas.find(area => area.nombreArea === this.nombreLugarBusqueda);
 
@@ -457,10 +460,12 @@ export default {
 
           // Limpiar el mapa
           this.limpiarMapaNoSelect();
+          this.limpiarMapaGlobal();
 
           // Volver a cargar todos los submarinos
           await this.getSubmarino();
           this.clasificarSubmarinos();
+          this.dibujarRutasSubmarinos();
 
           // Ahora reintroduce el mapa global si es necesario
           this.destruitMapaSelect();
@@ -632,6 +637,7 @@ export default {
         }
       });
     },
+
     // LIMPIAR EL MAPA
     limpiarMapaSelect() {
       if (this.mapa) {
@@ -661,12 +667,6 @@ export default {
 
 
       }
-    },
-
-    abrirDialogoSubmarino(submarino) {
-      this.submarinoSeleccionado = submarino;
-      this.actualizarDisponibilidad(submarino.id_sub);
-      this.dialogoSubmarinoVisible = true;
     },
 
     // DESTRUIR MAPA DE AREAS Y CARGAR EL GLOBAL
@@ -738,6 +738,7 @@ export default {
       if (this.mapaGlobal) {
         this.mapaGlobal.remove(); // Esto destruirá la instancia del mapa y limpiará el contenedor
         this.mapaGlobal = null; // Reinicia la referencia a null para una nueva inicialización
+
       } else {
         // Si el mapa no existe, lo inicializamos de nuevo
         this.initMapaGlobal();
