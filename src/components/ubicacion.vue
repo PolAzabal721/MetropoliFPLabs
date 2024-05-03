@@ -688,12 +688,22 @@ export default {
         return;
       }
 
+      // this.limpiarMapaGlobal();  // Asegúrate de limpiar el mapa antes de añadir nuevas rutas
+
       let bounds = new L.LatLngBounds();
+      console.log("Submarinos disponibles:", this.submarinos);
       Object.keys(this.ubicacionesSubmarinos).forEach(idSub => {
-        let latlngs = this.ubicacionesSubmarinos[idSub];
-        let polyline = L.polyline(latlngs, { color: '#122C34'}).addTo(this.mapaGlobal);
-        this.mapaGlobal.fitBounds(polyline.getBounds());
-        bounds.extend(polyline.getBounds())
+        // Aquí aplicamos el filtro para asegurarnos de que solo mostramos los submarinos de la empresa correcta
+        if (this.submarinos.find(sub => sub.id === idSub && sub.empresa === userEmpresa)) {
+          console.log("Verificando submarino con ID:", idSub);
+
+          console.log("Submarino encontrado y válido para la empresa:", userEmpresa);
+
+          let latlngs = this.ubicacionesSubmarinos[idSub];
+          let polyline = L.polyline(latlngs, { color: '#122C34' }).addTo(this.mapaGlobal);
+          this.mapaGlobal.fitBounds(polyline.getBounds());
+          bounds.extend(polyline.getBounds());
+        }
       });
 
       if (bounds.isValid()) {
