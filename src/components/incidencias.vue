@@ -481,6 +481,9 @@ export default {
 
     // GUARDAR Y HACER UPDATE
     async guardarEdicionIncidencia() {
+
+      const store = useAppStore();
+      const idEmpresa = store.getUserEmpresa;
       // Verificar que el índice de edición esté definido
       if (this.indiceEdicion !== null) {
         // Validar que todos los campos obligatorios estén llenos
@@ -517,19 +520,14 @@ export default {
         incidenciaSeleccionada.descripcion = this.edicionIncidencia.descripcion;
         incidenciaSeleccionada.prioridad = this.edicionIncidencia.prioridad;
 
-        await updateIncidencias(
-          incidenciaSeleccionada.nombre,
-          incidenciaSeleccionada.descripcion,
-          incidenciaSeleccionada.prioridad,
-          this.idIncidenciaEditando
-        );
         const id = this.idIncidenciaEditando
 
         const dataToSend = {
           nombre: incidenciaSeleccionada.nombre,
           descripcion: incidenciaSeleccionada.descripcion,
           prioridad: incidenciaSeleccionada.prioridad,
-          id: id
+          id: id,
+          id_empresa: idEmpresa
       };
 
         this.socket.emit('updateIncidencia', dataToSend, (response) => {
