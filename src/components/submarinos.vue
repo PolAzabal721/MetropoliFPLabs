@@ -1,6 +1,6 @@
 <template>
   <default-bar />
-  <v-layout class="rounded rounded-md">
+  <v-layout class="rounded rounded-md" style="background-color: #EFEFEF;">
     <v-main>
       <v-row style="margin: 25px;">
         <!-- Columna izquierda (submarinos) -->

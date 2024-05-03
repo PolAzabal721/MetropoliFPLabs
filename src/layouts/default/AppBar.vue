@@ -185,7 +185,8 @@
   /* Estilos del select según tus preferencias */
   padding: 5px;
   border-radius: 5px;
-  border: 2px solid #333;
+  border: 2px solid white;
+  color: white;
   /* Añade bordes */
 }
 </style>

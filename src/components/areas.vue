@@ -1,6 +1,6 @@
 <template>
   <default-bar />
-  <v-layout class="rounded rounded-md">
+  <v-layout class="rounded rounded-md"  style="background-color: #EFEFEF;">
     <v-container fluid>
       <!-- MAPA PRINCIPAL -->
       <v-card class="mx-auto" height="800" width="800">

@@ -1,7 +1,7 @@
 <template>
       <default-bar />
 
-    <v-layout class="rounded rounded-md">
+    <v-layout class="rounded rounded-md"  style="background-color: #EFEFEF;">
 
        
 <!-- Barra lateral con archivos o grabaciones anteriores -->

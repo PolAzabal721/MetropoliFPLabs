@@ -1,479 +1,483 @@
 <template>
   <default-bar />
-  <v-container fluid fill-height>
-    <v-row>
-      <!-- Gráfico a la izquierda -->
-      <v-col cols="12" md="6">
-        <v-card style="max-width: 900px; max-height: auto; margin-top: 25px">
-          <!-- Gráfico de empresas por plan -->
-          <v-card width="900" height="450">
-            <canvas id="empresasPorPlan"></canvas>
+  <v-layout style="background-color: #EFEFEF;">
+    <v-container fluid fill-height>
+      <v-row>
+        <!-- Gráfico a la izquierda -->
+        <v-col cols="12" md="6">
+          <v-card style="max-width: 900px; max-height: auto; margin-top: 25px">
+            <!-- Gráfico de empresas por plan -->
+            <v-card width="900" height="450">
+              <canvas id="empresasPorPlan"></canvas>
+            </v-card>
+
+            <!-- Gráfico de empresas por ciudad -->
+            <v-card style="margin-top: 30px;" width="900" height="450">
+              <canvas ref="barChartByCity"></canvas>
+            </v-card>
+
+            <!-- Gráfico de empresas por provincia  -->
+            <v-card style="margin-top: 30px;" width="900" height="450">
+              <canvas ref="barChartByProvince"></canvas>
+            </v-card>
+
           </v-card>
+        </v-col>
 
-          <!-- Gráfico de empresas por ciudad -->
-          <v-card style="margin-top: 30px;" width="900" height="450">
-            <canvas ref="barChartByCity"></canvas>
-          </v-card>
+        <!-- Lista de clientes a la derecha -->
+        <v-col cols="12" md="6">
 
-          <!-- Gráfico de empresas por provincia  -->
-          <v-card style="margin-top: 30px;" width="900" height="450">
-            <canvas ref="barChartByProvince"></canvas>
-          </v-card>
+          <div style="display: flex; flex-direction: column;">
 
-        </v-card>
-      </v-col>
+            <!-- CLIENTES -->
+            <v-card max-width="1000" height="auto" width="auto" style="background-color: rgb(189, 236, 255);">
 
-      <!-- Lista de clientes a la derecha -->
-      <v-col cols="12" md="6">
-
-        <div style="display: flex; flex-direction: column;">
-
-          <!-- CLIENTES -->
-          <v-card max-width="1000" height="auto" width="auto" style="background-color: rgb(189, 236, 255);">
-
-            <!-- Contenedor para el botón y el campo de búsqueda -->
-            <div style="
+              <!-- Contenedor para el botón y el campo de búsqueda -->
+              <div style="
               display: flex;
               justify-content: space-between;
               align-items: center;
               margin-left: 15px;
             ">
 
-              <!-- Botón para crear empresa -->
-              <v-btn color="primary" @click="abrirModalCrearEmpresa">Crear Empresa</v-btn>
+                <!-- Botón para crear empresa -->
+                <v-btn color="primary" @click="abrirModalCrearEmpresa">Crear Empresa</v-btn>
 
-              <!-- Campo de búsqueda -->
-              <div class="search-wrapper">
-                <input class="search-input" type="text" v-model="filtroEmpresa" placeholder=" Buscar cliente" />
+                <!-- Campo de búsqueda -->
+                <div class="search-wrapper">
+                  <input class="search-input" type="text" v-model="filtroEmpresa" placeholder=" Buscar cliente" />
+                </div>
               </div>
-            </div>
 
-            <!-- Mostrar lista de clientes filtrada -->
-            <v-card v-for="(empresa, index) in clientesFiltrados" :key="index"
-              style="margin: 15px; width: auto; height: auto">
-              <v-row align="center">
-                <v-col>
-                  <p style="margin: 20px; margin-right: 200px;">
-                    {{ empresa.nom_empresa }}
-                  </p>
-                </v-col>
-              </v-row>
-              <!-- BTN para eliminar clientes -->
-              <v-btn icon @click="eliminarCliente(empresa)" style="position: absolute; right: 10px; bottom: 10px">
-                <v-icon>mdi-delete</v-icon>
-              </v-btn>
-              <!-- Botón para editar empresa -->
-              <v-btn icon @click="editarEmpresa(empresa)" style="position: absolute; right: 70px; bottom: 10px">
-                <v-icon>mdi-pencil</v-icon>
-              </v-btn>
+              <!-- Mostrar lista de clientes filtrada -->
+              <v-card v-for="(empresa, index) in clientesFiltrados" :key="index"
+                style="margin: 15px; width: auto; height: auto">
+                <v-row align="center">
+                  <v-col>
+                    <p style="margin: 20px; margin-right: 200px;">
+                      {{ empresa.nom_empresa }}
+                    </p>
+                  </v-col>
+                </v-row>
+                <!-- BTN para eliminar clientes -->
+                <v-btn icon @click="eliminarCliente(empresa)" style="position: absolute; right: 10px; bottom: 10px">
+                  <v-icon>mdi-delete</v-icon>
+                </v-btn>
+                <!-- Botón para editar empresa -->
+                <v-btn icon @click="editarEmpresa(empresa)" style="position: absolute; right: 70px; bottom: 10px">
+                  <v-icon>mdi-pencil</v-icon>
+                </v-btn>
 
-              <!-- Botón para ver todos los datos de las empresas -->
-              <v-btn icon @click="mostrarDatosEmpresa(empresa)" style="position: absolute; right: 130px; bottom: 10px">
-                <v-icon>mdi-eye</v-icon>
-              </v-btn>
-            </v-card>
-
-
-            <!-- EDITAR EMPRESA -->
-            <v-dialog v-model="mostrarModalEditarEmpresa" max-width="820" max-height="700">
-              <v-card width="auto" height="auto">
-                <v-card-title>Editar Empresa</v-card-title>
-                <v-card-text>
-                  <form>
-                    <!-- NOMBRE + TEL -->
-                    <div style="
-                      display: flex;
-                      flex-direction: row;
-                      justify-content: space-between;
-                    ">
-                      <div style="width: 48%">
-                        <label>Nombre: </label>
-                        <input v-model="empresaEditada.nombre" required class="bordered-input"
-                          style="height: auto; width: 300px" maxlength="30" />
-                      </div>
-                      <div style="width: 48%">
-                        <label>Teléfono: </label>
-
-                        <!-- Campo para el número de teléfono -->
-                        <input v-model="empresaEditada.telefono" required class="bordered-input" type="tel"
-                          @input="filtrarNumeros" maxlength="15" />
-                      </div>
-                    </div>
-
-                    <!-- PROVINCIA + CIUDAD -->
-                    <div style="
-                      display: flex;
-                      flex-direction: row;
-                      justify-content: space-between;
-                      margin-top: 15px;
-                    ">
-                      <!-- Provincia y CIUDAD -->
-                      <div style="width: 48%;">
-                        <label>Provincia: </label>
-                        <input v-model="empresaEditada.provincia" required class="bordered-input"
-                          style="height: auto; width: 290px" maxlength="45" />
-                      </div>
-                      <div style="width: 48%">
-                        <label>Ciudad: </label>
-                        <input v-model="empresaEditada.ciudad" required class="bordered-input"
-                          style="height: auto; width: 270px" maxlength="45" />
-                      </div>
-                    </div>
-
-                    <!-- Direccion -->
-                    <div style="margin-top: 15px">
-                      <label>Dirección: </label>
-                      <v-textarea v-model="empresaEditada.nombre_calle" required class="bordered-input"
-                        style="height: auto; width: 653px" maxlength="245"></v-textarea>
-                    </div>
-
-                    <!-- CORREO + PLAN DE SUSCRIPCION -->
-                    <div style="
-                      display: flex;
-                      flex-direction: row;
-                      justify-content: space-between;
-                      margin-top: 15px;
-                    ">
-                      <div style="width: 48%">
-                        <label>Correo Electrónico: </label>
-                        <input v-model="empresaEditada.correo" required class="bordered-input"
-                          style="height: auto; width: 220px" type="email" />
-                      </div>
-                      <div style="width: 48%">
-                        <label>Plan de Suscripción: </label>
-                        <select v-model="empresaEditada.plan" required class="bordered-input"
-                          style="height: auto; width: 173px">
-                          <option v-for="plan in planes" :value="plan.id">{{ plan.nombre }}</option>
-                        </select>
-                      </div>
-                      <div style="width: 48%">
-                        <label>Auto-renovable: </label>
-                        <input type="checkbox" v-model="empresaEditada.autorenovable" />
-                        <!-- Muestra el valor de autorenovable para verificar -->
-                      </div>
-
-                    </div>
-
-                    <!-- SITIO WEB -->
-                    <div style="margin-top: 15px">
-                      <label>Sitio Web: </label>
-                      <input v-model="empresaEditada.sitioWeb" required class="bordered-input"
-                        style="height: auto; width: 653px" maxlength="250" type="url" />
-                    </div>
-                  </form>
-                </v-card-text>
-                <v-card-actions>
-                  <v-btn color="primary" @click="guardarEdicionEmpresa">Guardar</v-btn>
-                  <v-btn color="error" @click="cancelarEdicionEmpresa">Cancelar</v-btn>
-                </v-card-actions>
+                <!-- Botón para ver todos los datos de las empresas -->
+                <v-btn icon @click="mostrarDatosEmpresa(empresa)"
+                  style="position: absolute; right: 130px; bottom: 10px">
+                  <v-icon>mdi-eye</v-icon>
+                </v-btn>
               </v-card>
-            </v-dialog>
 
 
-            <!-- CREAR EMPRESA -->
-            <v-dialog v-model="mostrarModalCrear" max-width="820" max-height="700">
-              <v-card width="auto" height="auto">
-                <v-card-title>Crear Empresa</v-card-title>
-                <v-card-text>
-                  <form>
-                    <!-- NOMBRE + TEL -->
-                    <div style="
+              <!-- EDITAR EMPRESA -->
+              <v-dialog v-model="mostrarModalEditarEmpresa" max-width="820" max-height="700">
+                <v-card width="auto" height="auto">
+                  <v-card-title>Editar Empresa</v-card-title>
+                  <v-card-text>
+                    <form>
+                      <!-- NOMBRE + TEL -->
+                      <div style="
                       display: flex;
                       flex-direction: row;
                       justify-content: space-between;
                     ">
-                      <!-- NOPMBRE y TELEFONO -->
-                      <div style="width: 48%">
-                        <label>Nombre: </label>
-                        <input v-model="nuevaEmpresa.nombre" required class="bordered-input"
-                          style="height: auto; width: 300px" maxlength="30" />
-                      </div>
-                      <div style="width: 48%">
-                        <label>Teléfono: </label>
-                        <input v-model="nuevaEmpresa.telefono" required class="bordered-input" @input="filtrarNumeros"
-                          type="tel" pattern="[0-9]*" maxlength="15" />
-                      </div>
-                    </div>
+                        <div style="width: 48%">
+                          <label>Nombre: </label>
+                          <input v-model="empresaEditada.nombre" required class="bordered-input"
+                            style="height: auto; width: 300px" maxlength="30" />
+                        </div>
+                        <div style="width: 48%">
+                          <label>Teléfono: </label>
 
-                    <!-- PROVINCIA + CIUDAD -->
-                    <div style="
-                      display: flex;
-                      flex-direction: row;
-                      justify-content: space-between;
-                      margin-top: 15px;
-                    ">
-                      <!-- Provincia y CIUDAD -->
-                      <div style="width: 48%;">
-                        <label>Provincia: </label>
-                        <input v-model="nuevaEmpresa.provincia" required class="bordered-input"
-                          style="height: auto; width: 290px" maxlength="45" />
+                          <!-- Campo para el número de teléfono -->
+                          <input v-model="empresaEditada.telefono" required class="bordered-input" type="tel"
+                            @input="filtrarNumeros" maxlength="15" />
+                        </div>
                       </div>
-                      <div style="width: 48%">
-                        <label>Ciudad: </label>
-                        <input v-model="nuevaEmpresa.ciudad" required class="bordered-input"
-                          style="height: auto; width: 270px" maxlength="45" />
-                      </div>
-                    </div>
 
-                    <!-- Dirección -->
-                    <div style="margin-top: 15px">
-                      <label>Dirección: </label>
-                      <v-textarea v-model="nuevaEmpresa.nombre_calle" required class="bordered-input"
-                        style="height: auto; width: 653px" maxlength="245"></v-textarea>
-                    </div>
-
-                    <!-- Correo electrónico + Plan de suscripción -->
-                    <div style="
+                      <!-- PROVINCIA + CIUDAD -->
+                      <div style="
                       display: flex;
                       flex-direction: row;
                       justify-content: space-between;
                       margin-top: 15px;
                     ">
-                      <div style="width: 48%">
-                        <label>Correo Electrónico: </label>
-                        <input v-model="nuevaEmpresa.correo" required class="bordered-input"
-                          style="height: auto; width: 220px" type="email" />
+                        <!-- Provincia y CIUDAD -->
+                        <div style="width: 48%;">
+                          <label>Provincia: </label>
+                          <input v-model="empresaEditada.provincia" required class="bordered-input"
+                            style="height: auto; width: 290px" maxlength="45" />
+                        </div>
+                        <div style="width: 48%">
+                          <label>Ciudad: </label>
+                          <input v-model="empresaEditada.ciudad" required class="bordered-input"
+                            style="height: auto; width: 270px" maxlength="45" />
+                        </div>
                       </div>
-                      <div style="width: 48%">
-                        <label>Plan de Suscripción: </label>
-                        <select v-model="nuevaEmpresa.plan" required class="bordered-input"
-                          style="height: auto; width: 173px">
-                          <option v-for="plan in planes" :value="plan.id">{{ plan.nombre }}</option>
-                        </select>
+
+                      <!-- Direccion -->
+                      <div style="margin-top: 15px">
+                        <label>Dirección: </label>
+                        <v-textarea v-model="empresaEditada.nombre_calle" required class="bordered-input"
+                          style="height: auto; width: 653px" maxlength="245"></v-textarea>
                       </div>
-                      <div style="width: 48%">
-                        <label>Auto-renovable: </label>
-                        <input type="checkbox" v-model="nuevaEmpresa.autorenovable" />
+
+                      <!-- CORREO + PLAN DE SUSCRIPCION -->
+                      <div style="
+                      display: flex;
+                      flex-direction: row;
+                      justify-content: space-between;
+                      margin-top: 15px;
+                    ">
+                        <div style="width: 48%">
+                          <label>Correo Electrónico: </label>
+                          <input v-model="empresaEditada.correo" required class="bordered-input"
+                            style="height: auto; width: 220px" type="email" />
+                        </div>
+                        <div style="width: 48%">
+                          <label>Plan de Suscripción: </label>
+                          <select v-model="empresaEditada.plan" required class="bordered-input"
+                            style="height: auto; width: 173px">
+                            <option v-for="plan in planes" :value="plan.id">{{ plan.nombre }}</option>
+                          </select>
+                        </div>
+                        <div style="width: 48%">
+                          <label>Auto-renovable: </label>
+                          <input type="checkbox" v-model="empresaEditada.autorenovable" />
+                          <!-- Muestra el valor de autorenovable para verificar -->
+                        </div>
+
                       </div>
-                    </div>
 
-                    <!-- Sitio web -->
-                    <div style="margin-top: 15px">
-                      <label>Sitio Web: </label>
-                      <input v-model="nuevaEmpresa.sitioWeb" required class="bordered-input"
-                        style="height: auto; width: 653px" maxlength="250" type="url" />
-                    </div>
-                  </form>
-                </v-card-text>
-                <v-card-actions>
-                  <v-btn color="primary" @click="crearYGuardarEmpresa">Guardar</v-btn>
-                  <v-btn color="error" @click="limpiarFormularioEmpresa">Cancelar</v-btn>
-                </v-card-actions>
-              </v-card>
-            </v-dialog>
+                      <!-- SITIO WEB -->
+                      <div style="margin-top: 15px">
+                        <label>Sitio Web: </label>
+                        <input v-model="empresaEditada.sitioWeb" required class="bordered-input"
+                          style="height: auto; width: 653px" maxlength="250" type="url" />
+                      </div>
+                    </form>
+                  </v-card-text>
+                  <v-card-actions>
+                    <v-btn color="primary" @click="guardarEdicionEmpresa">Guardar</v-btn>
+                    <v-btn color="error" @click="cancelarEdicionEmpresa">Cancelar</v-btn>
+                  </v-card-actions>
+                </v-card>
+              </v-dialog>
 
 
-            <!-- Diálogo para ver todos los datos de las empresas -->
-            <v-dialog v-model="mostrarModalDatosEmpresas" max-width="820" max-height="700">
-              <v-card width="auto" height="auto">
-                <v-card-title>Detalles de la Empresa</v-card-title>
-                <v-card-text>
-                  <v-list>
-                    <v-list-item v-if="empresaSeleccionada">
-                      <v-list-item>
-                        <v-list-item-title>{{
-                empresaSeleccionada.nom_empresa
-              }}</v-list-item-title>
-                        <v-list-item-subtitle><b>Provincia: </b> {{
-                  empresaSeleccionada.provincia
-                }}</v-list-item-subtitle>
-                        <v-list-item-subtitle><b>Ciudad: </b> {{
-                  empresaSeleccionada.ciudad
-                }}</v-list-item-subtitle>
-                        <v-list-item-subtitle><b>Calle: </b> {{
-                  empresaSeleccionada.nombre_calle
-                }}</v-list-item-subtitle>
-                        <v-list-item-subtitle><b>TEL: </b>{{
-                  empresaSeleccionada.numero_telefono
-                }}</v-list-item-subtitle>
-                        <v-list-item-subtitle><b>MAIL: </b>{{
-                  empresaSeleccionada.correo
-                }}</v-list-item-subtitle>
-                        <v-list-item-subtitle><b>Web: </b>{{
-                  empresaSeleccionada.sitio_web
-                }}</v-list-item-subtitle>
-                        <v-list-item-subtitle><b>Suscripción: </b>{{
-                  empresaSeleccionada.plan
-                }}</v-list-item-subtitle>
+              <!-- CREAR EMPRESA -->
+              <v-dialog v-model="mostrarModalCrear" max-width="820" max-height="700">
+                <v-card width="auto" height="auto">
+                  <v-card-title>Crear Empresa</v-card-title>
+                  <v-card-text>
+                    <form>
+                      <!-- NOMBRE + TEL -->
+                      <div style="
+                      display: flex;
+                      flex-direction: row;
+                      justify-content: space-between;
+                    ">
+                        <!-- NOPMBRE y TELEFONO -->
+                        <div style="width: 48%">
+                          <label>Nombre: </label>
+                          <input v-model="nuevaEmpresa.nombre" required class="bordered-input"
+                            style="height: auto; width: 300px" maxlength="30" />
+                        </div>
+                        <div style="width: 48%">
+                          <label>Teléfono: </label>
+                          <input v-model="nuevaEmpresa.telefono" required class="bordered-input" @input="filtrarNumeros"
+                            type="tel" pattern="[0-9]*" maxlength="15" />
+                        </div>
+                      </div>
+
+                      <!-- PROVINCIA + CIUDAD -->
+                      <div style="
+                      display: flex;
+                      flex-direction: row;
+                      justify-content: space-between;
+                      margin-top: 15px;
+                    ">
+                        <!-- Provincia y CIUDAD -->
+                        <div style="width: 48%;">
+                          <label>Provincia: </label>
+                          <input v-model="nuevaEmpresa.provincia" required class="bordered-input"
+                            style="height: auto; width: 290px" maxlength="45" />
+                        </div>
+                        <div style="width: 48%">
+                          <label>Ciudad: </label>
+                          <input v-model="nuevaEmpresa.ciudad" required class="bordered-input"
+                            style="height: auto; width: 270px" maxlength="45" />
+                        </div>
+                      </div>
+
+                      <!-- Dirección -->
+                      <div style="margin-top: 15px">
+                        <label>Dirección: </label>
+                        <v-textarea v-model="nuevaEmpresa.nombre_calle" required class="bordered-input"
+                          style="height: auto; width: 653px" maxlength="245"></v-textarea>
+                      </div>
+
+                      <!-- Correo electrónico + Plan de suscripción -->
+                      <div style="
+                      display: flex;
+                      flex-direction: row;
+                      justify-content: space-between;
+                      margin-top: 15px;
+                    ">
+                        <div style="width: 48%">
+                          <label>Correo Electrónico: </label>
+                          <input v-model="nuevaEmpresa.correo" required class="bordered-input"
+                            style="height: auto; width: 220px" type="email" />
+                        </div>
+                        <div style="width: 48%">
+                          <label>Plan de Suscripción: </label>
+                          <select v-model="nuevaEmpresa.plan" required class="bordered-input"
+                            style="height: auto; width: 173px">
+                            <option v-for="plan in planes" :value="plan.id">{{ plan.nombre }}</option>
+                          </select>
+                        </div>
+                        <div style="width: 48%">
+                          <label>Auto-renovable: </label>
+                          <input type="checkbox" v-model="nuevaEmpresa.autorenovable" />
+                        </div>
+                      </div>
+
+                      <!-- Sitio web -->
+                      <div style="margin-top: 15px">
+                        <label>Sitio Web: </label>
+                        <input v-model="nuevaEmpresa.sitioWeb" required class="bordered-input"
+                          style="height: auto; width: 653px" maxlength="250" type="url" />
+                      </div>
+                    </form>
+                  </v-card-text>
+                  <v-card-actions>
+                    <v-btn color="primary" @click="crearYGuardarEmpresa">Guardar</v-btn>
+                    <v-btn color="error" @click="limpiarFormularioEmpresa">Cancelar</v-btn>
+                  </v-card-actions>
+                </v-card>
+              </v-dialog>
+
+
+              <!-- Diálogo para ver todos los datos de las empresas -->
+              <v-dialog v-model="mostrarModalDatosEmpresas" max-width="820" max-height="700">
+                <v-card width="auto" height="auto">
+                  <v-card-title>Detalles de la Empresa</v-card-title>
+                  <v-card-text>
+                    <v-list>
+                      <v-list-item v-if="empresaSeleccionada">
+                        <v-list-item>
+                          <v-list-item-title>{{
+                  empresaSeleccionada.nom_empresa
+                }}</v-list-item-title>
+                          <v-list-item-subtitle><b>Provincia: </b> {{
+                    empresaSeleccionada.provincia
+                  }}</v-list-item-subtitle>
+                          <v-list-item-subtitle><b>Ciudad: </b> {{
+                    empresaSeleccionada.ciudad
+                  }}</v-list-item-subtitle>
+                          <v-list-item-subtitle><b>Calle: </b> {{
+                    empresaSeleccionada.nombre_calle
+                  }}</v-list-item-subtitle>
+                          <v-list-item-subtitle><b>TEL: </b>{{
+                    empresaSeleccionada.numero_telefono
+                  }}</v-list-item-subtitle>
+                          <v-list-item-subtitle><b>MAIL: </b>{{
+                    empresaSeleccionada.correo
+                  }}</v-list-item-subtitle>
+                          <v-list-item-subtitle><b>Web: </b>{{
+                    empresaSeleccionada.sitio_web
+                  }}</v-list-item-subtitle>
+                          <v-list-item-subtitle><b>Suscripción: </b>{{
+                    empresaSeleccionada.plan
+                  }}</v-list-item-subtitle>
+                        </v-list-item>
                       </v-list-item>
-                    </v-list-item>
-                  </v-list>
-                </v-card-text>
-                <v-card-actions>
-                  <v-btn color="primary" @click="mostrarModalDatosEmpresas = false">Cerrar</v-btn>
-                </v-card-actions>
-              </v-card>
-            </v-dialog>
-          </v-card>
+                    </v-list>
+                  </v-card-text>
+                  <v-card-actions>
+                    <v-btn color="primary" @click="mostrarModalDatosEmpresas = false">Cerrar</v-btn>
+                  </v-card-actions>
+                </v-card>
+              </v-dialog>
+            </v-card>
 
-          <!-- PLANES -->
-          <v-card max-width="1000" height="auto" width="auto"
-            style="background-color: rgb(189, 236, 255); order: 1; margin-top: 25px;">
+            <!-- PLANES -->
+            <v-card max-width="1000" height="auto" width="auto"
+              style="background-color: rgb(189, 236, 255); order: 1; margin-top: 25px;">
 
-            <!-- Contenedor para el botón y el campo de búsqueda -->
-            <div style="
+              <!-- Contenedor para el botón y el campo de búsqueda -->
+              <div style="
               display: flex;
               justify-content: space-between;
               align-items: center;
               margin-left: 15px;
             ">
 
-              <!-- Botón para crear plan -->
-              <v-btn color="primary" @click="abrirModalCrearPlan">Crear Plan</v-btn>
+                <!-- Botón para crear plan -->
+                <v-btn color="primary" @click="abrirModalCrearPlan">Crear Plan</v-btn>
 
-              <!-- Campo de búsqueda -->
-              <div class="search-wrapper">
-                <input class="search-input" type="text" v-model="filtroPlan" placeholder=" Buscar Plan" />
+                <!-- Campo de búsqueda -->
+                <div class="search-wrapper">
+                  <input class="search-input" type="text" v-model="filtroPlan" placeholder=" Buscar Plan" />
+                </div>
               </div>
-            </div>
 
 
-            <!-- Mostrar lista de planes filtrada -->
-            <v-card v-for="(plan, index) in planesFiltrados" :key="index"
-              style="margin: 15px; width: auto; height: auto">
-              <v-row align="center">
-                <v-col>
-                  <p style="margin: 20px; margin-right: 200px;">
-                    {{ plan.nombre }}
-                  </p>
-                </v-col>
-              </v-row>
-              <!-- BTN para eliminar clientes -->
-              <v-btn icon @click="eliminarPlan(plan)" style="position: absolute; right: 10px; bottom: 10px">
-                <v-icon>mdi-delete</v-icon>
-              </v-btn>
-              <!-- Botón para editar empresa -->
-              <v-btn icon @click="editarPlan(plan)" style="position: absolute; right: 70px; bottom: 10px">
-                <v-icon>mdi-pencil</v-icon>
-              </v-btn>
+              <!-- Mostrar lista de planes filtrada -->
+              <v-card v-for="(plan, index) in planesFiltrados" :key="index"
+                style="margin: 15px; width: auto; height: auto">
+                <v-row align="center">
+                  <v-col>
+                    <p style="margin: 20px; margin-right: 200px;">
+                      {{ plan.nombre }}
+                    </p>
+                  </v-col>
+                </v-row>
+                <!-- BTN para eliminar clientes -->
+                <v-btn icon @click="eliminarPlan(plan)" style="position: absolute; right: 10px; bottom: 10px">
+                  <v-icon>mdi-delete</v-icon>
+                </v-btn>
+                <!-- Botón para editar empresa -->
+                <v-btn icon @click="editarPlan(plan)" style="position: absolute; right: 70px; bottom: 10px">
+                  <v-icon>mdi-pencil</v-icon>
+                </v-btn>
 
-              <!-- Botón para ver todos los datos de las empresas -->
-              <v-btn icon @click="mostrarDatosPlan(plan)" style="position: absolute; right: 130px; bottom: 10px">
-                <v-icon>mdi-eye</v-icon>
-              </v-btn>
-            </v-card>
+                <!-- Botón para ver todos los datos de las empresas -->
+                <v-btn icon @click="mostrarDatosPlan(plan)" style="position: absolute; right: 130px; bottom: 10px">
+                  <v-icon>mdi-eye</v-icon>
+                </v-btn>
+              </v-card>
 
 
-            <!-- EDITAR PLAN -->
-            <v-dialog v-model="mostrarModalEditarPlan" max-width="820" max-height="700">
-              <v-card width="auto" height="auto">
-                <v-card-title>Editar Plan</v-card-title>
-                <v-card-text>
-                  <form>
-                    <div style="display: flex; flex-direction: row; justify-content: space-between;">
-                      <div style="width: 48%">
-                        <label>Nombre: </label>
-                        <input v-model="planEditado.nombre" required class="bordered-input"
-                          style="height: auto; width: 300px" maxlength="30" />
+              <!-- EDITAR PLAN -->
+              <v-dialog v-model="mostrarModalEditarPlan" max-width="820" max-height="700">
+                <v-card width="auto" height="auto">
+                  <v-card-title>Editar Plan</v-card-title>
+                  <v-card-text>
+                    <form>
+                      <div style="display: flex; flex-direction: row; justify-content: space-between;">
+                        <div style="width: 48%">
+                          <label>Nombre: </label>
+                          <input v-model="planEditado.nombre" required class="bordered-input"
+                            style="height: auto; width: 300px" maxlength="30" />
+                        </div>
+                        <div style="width: 48%">
+                          <label>Precio: </label>
+                          <input v-model="planEditado.precio" required class="bordered-input"
+                            style="height: auto; width: 270px" type="number" />
+                        </div>
                       </div>
-                      <div style="width: 48%">
-                        <label>Precio: </label>
-                        <input v-model="planEditado.precio" required class="bordered-input"
-                          style="height: auto; width: 270px" type="number" />
-                      </div>
-                    </div>
 
-                    <div style="display: flex; flex-direction: row; justify-content: space-between; margin-top: 15px;">
-                      <div style="width: 48%;">
-                        <label>Descripcion: </label>
-                        <v-textarea v-model="planEditado.descripcion" required class="bordered-input"
-                          style="height: auto; width: 290px" maxlength="45" />
+                      <div
+                        style="display: flex; flex-direction: row; justify-content: space-between; margin-top: 15px;">
+                        <div style="width: 48%;">
+                          <label>Descripcion: </label>
+                          <v-textarea v-model="planEditado.descripcion" required class="bordered-input"
+                            style="height: auto; width: 290px" maxlength="45" />
+                        </div>
+                        <div style="width: 48%">
+                          <label>Plan de Suscripción: </label>
+                          <select v-model="planEditado.duracion_dias" class="bordered-input"
+                            style="height: auto; width: 173px">
+                            <option value="30">Mensual</option>
+                            <option value="365">Anual</option>
+                          </select>
+                        </div>
                       </div>
-                      <div style="width: 48%">
-                        <label>Plan de Suscripción: </label>
-                        <select v-model="planEditado.duracion_dias" class="bordered-input"
-                          style="height: auto; width: 173px">
+                    </form>
+                  </v-card-text>
+                  <v-card-actions>
+                    <v-btn color="primary" @click="guardarEdicionPlan">Guardar</v-btn>
+                    <v-btn color="error" @click="cancelarEdicionPlan">Cancelar</v-btn>
+                  </v-card-actions>
+                </v-card>
+              </v-dialog>
+
+
+              <!-- CREAR PLAN -->
+              <v-dialog v-model="mostrarModalCrearPlan" max-width="820" max-height="700">
+                <v-card width="auto" height="auto">
+                  <v-card-title>Crear Plan</v-card-title>
+                  <v-card-text>
+                    <form>
+                      <!-- NOMBRE -->
+                      <div style="display: flex; flex-direction: row; justify-content: space-between;">
+                        <div style="width: 48%">
+                          <label>Nombre: </label>
+                          <input v-model="nuevoPlan.nombre" required class="bordered-input"
+                            style="height: auto; width: 300px" maxlength="30" />
+                        </div>
+                        <!-- PRECIO -->
+                        <div style="width: 48%">
+                          <label>Precio: </label>
+                          <input v-model="nuevoPlan.precio" required class="bordered-input"
+                            style="height: auto; width: 270px" type="number" />
+                        </div>
+                      </div>
+
+                      <!-- DESCRIPCION -->
+                      <div style="margin-top: 15px">
+                        <label>Descripción: </label>
+                        <v-textarea v-model="nuevoPlan.descripcion" required class="bordered-input"
+                          style="height: auto; width: 100%" maxlength="245" />
+                      </div>
+
+                      <!-- DURACION DEL PLAN -->
+                      <div style="margin-top: 15px">
+                        <label>Duración del Plan : </label>
+                        <select v-model="nuevoPlan.duracion_dias" required class="bordered-input"
+                          style="height: auto; width: 100%">
                           <option value="30">Mensual</option>
                           <option value="365">Anual</option>
                         </select>
                       </div>
-                    </div>
-                  </form>
-                </v-card-text>
-                <v-card-actions>
-                  <v-btn color="primary" @click="guardarEdicionPlan">Guardar</v-btn>
-                  <v-btn color="error" @click="cancelarEdicionPlan">Cancelar</v-btn>
-                </v-card-actions>
-              </v-card>
-            </v-dialog>
+
+                    </form>
+                  </v-card-text>
+                  <v-card-actions>
+                    <v-btn color="primary" @click="crearYGuardarPlan">Guardar</v-btn>
+                    <v-btn color="error" @click="limpiarFormularioPlan">Cancelar</v-btn>
+                  </v-card-actions>
+                </v-card>
+              </v-dialog>
 
 
-            <!-- CREAR PLAN -->
-            <v-dialog v-model="mostrarModalCrearPlan" max-width="820" max-height="700">
-              <v-card width="auto" height="auto">
-                <v-card-title>Crear Plan</v-card-title>
-                <v-card-text>
-                  <form>
-                    <!-- NOMBRE -->
-                    <div style="display: flex; flex-direction: row; justify-content: space-between;">
-                      <div style="width: 48%">
-                        <label>Nombre: </label>
-                        <input v-model="nuevoPlan.nombre" required class="bordered-input"
-                          style="height: auto; width: 300px" maxlength="30" />
-                      </div>
-                      <!-- PRECIO -->
-                      <div style="width: 48%">
-                        <label>Precio: </label>
-                        <input v-model="nuevoPlan.precio" required class="bordered-input"
-                          style="height: auto; width: 270px" type="number" />
-                      </div>
-                    </div>
-
-                    <!-- DESCRIPCION -->
-                    <div style="margin-top: 15px">
-                      <label>Descripción: </label>
-                      <v-textarea v-model="nuevoPlan.descripcion" required class="bordered-input"
-                        style="height: auto; width: 100%" maxlength="245" />
-                    </div>
-
-                    <!-- DURACION DEL PLAN -->
-                    <div style="margin-top: 15px">
-                      <label>Duración del Plan : </label>
-                      <select v-model="nuevoPlan.duracion_dias" required class="bordered-input"
-                        style="height: auto; width: 100%">
-                        <option value="30">Mensual</option>
-                        <option value="365">Anual</option>
-                      </select>
-                    </div>
-
-                  </form>
-                </v-card-text>
-                <v-card-actions>
-                  <v-btn color="primary" @click="crearYGuardarPlan">Guardar</v-btn>
-                  <v-btn color="error" @click="limpiarFormularioPlan">Cancelar</v-btn>
-                </v-card-actions>
-              </v-card>
-            </v-dialog>
-
-
-            <!-- Diálogo para ver todos los datos de los planes -->
-            <v-dialog v-model="mostrarModalDatosPlan" max-width="820" max-height="700">
-              <v-card width="auto" height="auto">
-                <v-card-title>Detalles del Plan</v-card-title>
-                <v-card-text>
-                  <v-list>
-                    <v-list-item v-if="planSeleccionada">
-                      <v-list-item>
-                        <v-list-item-title>{{ planSeleccionada.nombre }}</v-list-item-title>
-                        <v-list-item-subtitle><b>Precio: </b>{{ planSeleccionada.precio }}</v-list-item-subtitle>
-                        <v-list-item-subtitle><b>Descripción: </b>{{ planSeleccionada.descripcion
-                          }}</v-list-item-subtitle>
-                        <v-list-item-subtitle><b>Duración (días): </b>{{ planSeleccionada.duracion_dias
-                          }}</v-list-item-subtitle>
+              <!-- Diálogo para ver todos los datos de los planes -->
+              <v-dialog v-model="mostrarModalDatosPlan" max-width="820" max-height="700">
+                <v-card width="auto" height="auto">
+                  <v-card-title>Detalles del Plan</v-card-title>
+                  <v-card-text>
+                    <v-list>
+                      <v-list-item v-if="planSeleccionada">
+                        <v-list-item>
+                          <v-list-item-title>{{ planSeleccionada.nombre }}</v-list-item-title>
+                          <v-list-item-subtitle><b>Precio: </b>{{ planSeleccionada.precio }}</v-list-item-subtitle>
+                          <v-list-item-subtitle><b>Descripción: </b>{{ planSeleccionada.descripcion
+                            }}</v-list-item-subtitle>
+                          <v-list-item-subtitle><b>Duración (días): </b>{{ planSeleccionada.duracion_dias
+                            }}</v-list-item-subtitle>
+                        </v-list-item>
                       </v-list-item>
-                    </v-list-item>
-                  </v-list>
-                </v-card-text>
-                <v-card-actions>
-                  <v-btn color="primary" @click="mostrarModalDatosPlan = false">Cerrar</v-btn>
-                </v-card-actions>
-              </v-card>
-            </v-dialog>
-          </v-card>
-        </div>
-      </v-col>
-    </v-row>
-  </v-container>
+                    </v-list>
+                  </v-card-text>
+                  <v-card-actions>
+                    <v-btn color="primary" @click="mostrarModalDatosPlan = false">Cerrar</v-btn>
+                  </v-card-actions>
+                </v-card>
+              </v-dialog>
+            </v-card>
+          </div>
+        </v-col>
+      </v-row>
+    </v-container>
+  </v-layout>
 </template>
 
 <script>
@@ -674,9 +678,9 @@ export default {
       );
       // console.log(this.empresaEditadaEnviar);
       await updateEmpresa(this.empresaEditadaEnviar)
-       console.log(this.empresaEditada.id);
-       console.log(this.empresaEditada.plan);
-       console.log(this.empresaEditada.autorenovable);
+      console.log(this.empresaEditada.id);
+      console.log(this.empresaEditada.plan);
+      console.log(this.empresaEditada.autorenovable);
       await editSubEmpresa(this.empresaEditada.id, this.empresaEditada.plan, this.empresaEditada.autorenovable)
       this.getEmpresas();
       this.mostrarModalEditarEmpresa = false;

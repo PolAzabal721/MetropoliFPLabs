@@ -1,149 +1,151 @@
 <template>
   <default-bar />
+  <v-layout style="background-color: #EFEFEF;">
 
-  <div>
-    <v-btn class="ml-4" style="margin-top: 20px" color="primary" @click="mostrarDialogo">Crear Incidencia</v-btn>
+    <div>
+      <v-btn class="ml-4" style="margin-top: 20px" color="primary" @click="mostrarDialogo">Crear Incidencia</v-btn>
 
-    <v-btn class="ml-4" style="margin-top: 20px" @click="toggleFiltro" text>
-      Filtro <v-icon>mdi-menu-down</v-icon>
-    </v-btn>
+      <v-btn class="ml-4" style="margin-top: 20px" @click="toggleFiltro" text>
+        Filtro <v-icon>mdi-menu-down</v-icon>
+      </v-btn>
 
-    <!-- Filtro de incidencias -->
-    <v-card v-if="mostrarFiltroCard" class="filtro-card">
-      <v-card-text>
-        <v-btn class="filtro-btn" v-for="filtro in filtros" :key="filtro.id" @click="aplicarFiltro(filtro)"
-          :class="{ 'filtro-btn-selected': esFiltroSeleccionado(filtro) }">
-          {{ filtro.label }}
-        </v-btn>
-      </v-card-text>
-    </v-card>
-
-    <!-- TABLA DE INCIDENCIAS -->
-    <v-layout class="rounded rounded-md">
-      <v-container fluid>
-        <table class="table">
-          <thead>
-            <tr>
-              <th>Asunto de la incidencia</th>
-              <th>Submarino</th>
-              <th>Autor</th>
-              <th>Responsable</th>
-              <th>Prioridad</th>
-              <th>Estado</th>
-              <th>Tipo</th>
-              <th @click="ordenarPor('fechaInicio')">
-                Fecha de inicio
-                <v-icon>{{ obtenerIconoOrden("fechaInicio") }}</v-icon>
-              </th>
-              <th @click="ordenarPor('fechaFin')">
-                Fecha de fin
-                <v-icon>{{ obtenerIconoOrden("fechaFin") }}</v-icon>
-              </th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr v-for="(item, index) in incidenciasFiltradas" :key="item.id_incidencia">
-              <td>{{ item.Asunto }}</td>
-              <td>{{ item.nom_sub }}</td>
-              <td>{{ item.Autor }}</td>
-              <td>{{ item.Asignado }}</td>
-              <td>
-                <div
-                  :class="{ 'circle': true, 'high-priority': item.prioridad === 'Alta', 'medium-priority': item.prioridad === 'Media', 'low-priority': item.prioridad === 'Baja' }">
-                  {{ item.prioridad }}</div>
-              </td>
-              <td>{{ item.estado }}</td>
-              <td>{{ item.tipo }}</td>
-              <td>{{ formatearFecha(item.fecha_inicio) }}</td>
-              <td>{{ formatearFecha(item.fecha_fin) }}</td>
-              <td style="border: none">
-                <v-icon @click="mostrarDescripcion(item.descripcion)">mdi-eye</v-icon>
-              </td>
-              <td style="border: none; margin-left: ">
-                <v-icon @click="editarIncidencia(index, item.id_incidencia)">mdi-pencil</v-icon>
-              </td>
-              <td style="border: none; margin-left: ">
-
-                <v-icon @click="reportIncidencia(item.id_incidencia)">mdi-history</v-icon>
-              </td>
-            </tr>
-          </tbody>
-        </table>
-      </v-container>
-    </v-layout>
-
-    <!-- Diálogo para mostrar la descripción de la incidencia -->
-    <v-dialog v-model="dialogDescripcion" max-width="500">
-      <v-card>
-        <v-card-title>Descripción de la incidencia</v-card-title>
+      <!-- Filtro de incidencias -->
+      <v-card v-if="mostrarFiltroCard" class="filtro-card">
         <v-card-text>
-          {{ descripcionSeleccionada }}
+          <v-btn class="filtro-btn" v-for="filtro in filtros" :key="filtro.id" @click="aplicarFiltro(filtro)"
+            :class="{ 'filtro-btn-selected': esFiltroSeleccionado(filtro) }">
+            {{ filtro.label }}
+          </v-btn>
         </v-card-text>
-        <v-card-actions>
-          <v-btn color="primary" @click="dialogDescripcion = false">Cerrar</v-btn>
-        </v-card-actions>
       </v-card>
-    </v-dialog>
 
-    <v-dialog v-model="dialogReport" max-width="500">
-      <v-card>
-        <v-card-title>Historial de reportes de la incidencia</v-card-title>
+      <!-- TABLA DE INCIDENCIAS -->
+      <v-layout class="rounded rounded-md">
+        <v-container fluid>
+          <table class="table">
+            <thead>
+              <tr>
+                <th>Asunto de la incidencia</th>
+                <th>Submarino</th>
+                <th>Autor</th>
+                <th>Responsable</th>
+                <th>Prioridad</th>
+                <th>Estado</th>
+                <th>Tipo</th>
+                <th @click="ordenarPor('fechaInicio')">
+                  Fecha de inicio
+                  <v-icon>{{ obtenerIconoOrden("fechaInicio") }}</v-icon>
+                </th>
+                <th @click="ordenarPor('fechaFin')">
+                  Fecha de fin
+                  <v-icon>{{ obtenerIconoOrden("fechaFin") }}</v-icon>
+                </th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr v-for="(item, index) in incidenciasFiltradas" :key="item.id_incidencia">
+                <td>{{ item.Asunto }}</td>
+                <td>{{ item.nom_sub }}</td>
+                <td>{{ item.Autor }}</td>
+                <td>{{ item.Asignado }}</td>
+                <td>
+                  <div
+                    :class="{ 'circle': true, 'high-priority': item.prioridad === 'Alta', 'medium-priority': item.prioridad === 'Media', 'low-priority': item.prioridad === 'Baja' }">
+                    {{ item.prioridad }}</div>
+                </td>
+                <td>{{ item.estado }}</td>
+                <td>{{ item.tipo }}</td>
+                <td>{{ formatearFecha(item.fecha_inicio) }}</td>
+                <td>{{ formatearFecha(item.fecha_fin) }}</td>
+                <td style="border: none">
+                  <v-icon @click="mostrarDescripcion(item.descripcion)">mdi-eye</v-icon>
+                </td>
+                <td style="border: none; margin-left: ">
+                  <v-icon @click="editarIncidencia(index, item.id_incidencia)">mdi-pencil</v-icon>
+                </td>
+                <td style="border: none; margin-left: ">
 
-        <v-list>
-          <v-list-item v-for="(reporte, index) in reporteSeleccionado" :key="index">
-            <v-list-item>
-              <v-list-item-title>{{ reporte.fecha_report }}</v-list-item-title>
-              <v-list-item-subtitle>{{ reporte.mensaje }}</v-list-item-subtitle>
-              <v-list-item-subtitle>{{ reporte.solucionado }}</v-list-item-subtitle>
+                  <v-icon @click="reportIncidencia(item.id_incidencia)">mdi-history</v-icon>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </v-container>
+      </v-layout>
 
+      <!-- Diálogo para mostrar la descripción de la incidencia -->
+      <v-dialog v-model="dialogDescripcion" max-width="500">
+        <v-card>
+          <v-card-title>Descripción de la incidencia</v-card-title>
+          <v-card-text>
+            {{ descripcionSeleccionada }}
+          </v-card-text>
+          <v-card-actions>
+            <v-btn color="primary" @click="dialogDescripcion = false">Cerrar</v-btn>
+          </v-card-actions>
+        </v-card>
+      </v-dialog>
+
+      <v-dialog v-model="dialogReport" max-width="500">
+        <v-card>
+          <v-card-title>Historial de reportes de la incidencia</v-card-title>
+
+          <v-list>
+            <v-list-item v-for="(reporte, index) in reporteSeleccionado" :key="index">
+              <v-list-item>
+                <v-list-item-title>{{ reporte.fecha_report }}</v-list-item-title>
+                <v-list-item-subtitle>{{ reporte.mensaje }}</v-list-item-subtitle>
+                <v-list-item-subtitle>{{ reporte.solucionado }}</v-list-item-subtitle>
+
+              </v-list-item>
             </v-list-item>
-          </v-list-item>
-        </v-list>
+          </v-list>
 
-        <v-card-actions>
-          <v-btn color="primary" @click="dialogReport = false">Cerrar</v-btn>
-        </v-card-actions>
-      </v-card>
-    </v-dialog>
+          <v-card-actions>
+            <v-btn color="primary" @click="dialogReport = false">Cerrar</v-btn>
+          </v-card-actions>
+        </v-card>
+      </v-dialog>
 
 
-    <!-- Diálogo para crear una nueva incidencia -->
-    <v-dialog v-model="dialogoVisible" max-width="600px">
-      <v-card>
-        <v-card-title>Crear Nueva Incidencia</v-card-title>
-        <v-card-text>
-          <v-text-field v-model="nuevaIncidencia.nombre" label="Asunto de la incidencia"></v-text-field>
-          <v-textarea v-model="nuevaIncidencia.descripcion" label="Descripción de la incidencia"></v-textarea>
-          <v-select v-model="nuevaIncidencia.submarinoSeleccionado" label="Submarino" :items="submarinos.map((submarino) => submarino.nom_sub)
-      " item-text="text" item-value="value"></v-select>
+      <!-- Diálogo para crear una nueva incidencia -->
+      <v-dialog v-model="dialogoVisible" max-width="600px">
+        <v-card>
+          <v-card-title>Crear Nueva Incidencia</v-card-title>
+          <v-card-text>
+            <v-text-field v-model="nuevaIncidencia.nombre" label="Asunto de la incidencia"></v-text-field>
+            <v-textarea v-model="nuevaIncidencia.descripcion" label="Descripción de la incidencia"></v-textarea>
+            <v-select v-model="nuevaIncidencia.submarinoSeleccionado" label="Submarino" :items="submarinos.map((submarino) => submarino.nom_sub)
+        " item-text="text" item-value="value"></v-select>
 
-          <v-select v-model="nuevaIncidencia.tipo" :items="['Actualización software', 'Reparación']"
-            label="Tipo"></v-select>
-          <v-select v-model="nuevaIncidencia.prioridad" :items="prioridades" label="Prioridad"></v-select>
-        </v-card-text>
-        <v-card-actions>
-          <v-btn color="primary" @click="guardarIncidencia">Crear y guardar</v-btn>
-          <v-btn color="error" @click="cerrarDialogo">Cancelar</v-btn>
-        </v-card-actions>
-      </v-card>
-    </v-dialog>
+            <v-select v-model="nuevaIncidencia.tipo" :items="['Actualización software', 'Reparación']"
+              label="Tipo"></v-select>
+            <v-select v-model="nuevaIncidencia.prioridad" :items="prioridades" label="Prioridad"></v-select>
+          </v-card-text>
+          <v-card-actions>
+            <v-btn color="primary" @click="guardarIncidencia">Crear y guardar</v-btn>
+            <v-btn color="error" @click="cerrarDialogo">Cancelar</v-btn>
+          </v-card-actions>
+        </v-card>
+      </v-dialog>
 
-    <!-- Diálogo para editar nombre, descripción y prioridad -->
-    <v-dialog v-model="dialogoEdicionVisible" max-width="600px">
-      <v-card>
-        <v-card-title>Editar Incidencia</v-card-title>
-        <v-card-text>
-          <v-text-field v-model="edicionIncidencia.nombre" label="Nuevo nombre"></v-text-field>
-          <v-textarea v-model="edicionIncidencia.descripcion" label="Nueva descripción"></v-textarea>
-          <v-select v-model="edicionIncidencia.prioridad" :items="prioridades" label="Cambiar prioridad"></v-select>
-        </v-card-text>
-        <v-card-actions>
-          <v-btn color="primary" @click="guardarEdicionIncidencia">Guardar</v-btn>
-          <v-btn color="error" @click="cancelarEdicion">Cancelar</v-btn>
-        </v-card-actions>
-      </v-card>
-    </v-dialog>
-  </div>
+      <!-- Diálogo para editar nombre, descripción y prioridad -->
+      <v-dialog v-model="dialogoEdicionVisible" max-width="600px">
+        <v-card>
+          <v-card-title>Editar Incidencia</v-card-title>
+          <v-card-text>
+            <v-text-field v-model="edicionIncidencia.nombre" label="Nuevo nombre"></v-text-field>
+            <v-textarea v-model="edicionIncidencia.descripcion" label="Nueva descripción"></v-textarea>
+            <v-select v-model="edicionIncidencia.prioridad" :items="prioridades" label="Cambiar prioridad"></v-select>
+          </v-card-text>
+          <v-card-actions>
+            <v-btn color="primary" @click="guardarEdicionIncidencia">Guardar</v-btn>
+            <v-btn color="error" @click="cancelarEdicion">Cancelar</v-btn>
+          </v-card-actions>
+        </v-card>
+      </v-dialog>
+    </div>
+  </v-layout>
 </template>
 
 <script>
@@ -528,26 +530,26 @@ export default {
           prioridad: incidenciaSeleccionada.prioridad,
           id: id,
           id_empresa: idEmpresa
-      };
+        };
 
         this.socket.emit('updateIncidencia', dataToSend, (response) => {
-        if (response.status === 200) {
-        } else {
-          window.alert('Error al insertar la incidencia')
-        }
-      });
+          if (response.status === 200) {
+          } else {
+            window.alert('Error al insertar la incidencia')
+          }
+        });
 
-      this.socket.emit('SelectReports', id, (response) => {
-        if (response.status === 200) {
-        } else {
-          window.alert('Error al insertar la incidencia')
-        }
-      });
+        this.socket.emit('SelectReports', id, (response) => {
+          if (response.status === 200) {
+          } else {
+            window.alert('Error al insertar la incidencia')
+          }
+        });
 
-      this.socket.on("incidenciaResult", (result) => {
-        this.incidencias = result;
-        console.log("Incidencias para la empresa:", this.incidencias);
-      });
+        this.socket.on("incidenciaResult", (result) => {
+          this.incidencias = result;
+          console.log("Incidencias para la empresa:", this.incidencias);
+        });
 
 
         // Cerrar el diálogo de edición

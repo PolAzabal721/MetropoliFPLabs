@@ -1,6 +1,6 @@
 <template>
   <default-bar />
-  <v-layout class="rounded rounded-md">
+  <v-layout class="rounded rounded-md"  style="background-color: #EFEFEF;">
     <v-main style="height: 100vh">
       <v-container fluid>
         <v-row>
