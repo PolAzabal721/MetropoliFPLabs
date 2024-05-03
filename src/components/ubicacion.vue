@@ -152,32 +152,36 @@ export default {
 
     // MOSTRAR UBI AL SELECCIONAR UN SUBMARINO
     mostrarUbicacionSubmarino(idSub) {
-      if (this.areaSeleccionada || this.tareaSeleccionada) {
+      if (this.ubicacionesSubmarinos[idSub] && this.ubicacionesSubmarinos[idSub].length > 0) {
+        if (this.areaSeleccionada || this.tareaSeleccionada) {
 
-        if (this.submarinoSeleccionado === idSub) {
-          // Volver al estado anterior
-          this.restaurarEstadoMapa();
-          this.submarinoSeleccionado = null;
-          // Restaurar la tarea seleccionada solo si no es null
-          if (this.tareaSeleccionadaAntes !== null) {
-            this.filtroTarea = this.tareaSeleccionadaAntes;
-            this.filtrarSubmarinosPorTarea();
-            this.tareaSeleccionadaAntes = null;
+          if (this.submarinoSeleccionado === idSub) {
+            // Volver al estado anterior
+            this.restaurarEstadoMapa();
+            this.submarinoSeleccionado = null;
+            // Restaurar la tarea seleccionada solo si no es null
+            if (this.tareaSeleccionadaAntes !== null) {
+              this.filtroTarea = this.tareaSeleccionadaAntes;
+              this.filtrarSubmarinosPorTarea();
+              this.tareaSeleccionadaAntes = null;
+            }
+          } else {
+            // Almacenar la tarea seleccionada antes de cambiarla
+            this.tareaSeleccionadaAntes = this.filtroTarea;
+
+            this.submarinoSeleccionado = idSub;
+            this.guardarEstadoActualMapa();
+            const ubicaciones = this.ubicacionesSubmarinos[idSub];
+
+            const mapaActivo = this.mapa || this.mapaGlobal;
+            this.limpiarMapa(mapaActivo);
+
+            const polyline = L.polyline(ubicaciones, { color: '#122C34' }).addTo(mapaActivo);
+            mapaActivo.fitBounds(polyline.getBounds());
           }
-        } else {
-          // Almacenar la tarea seleccionada antes de cambiarla
-          this.tareaSeleccionadaAntes = this.filtroTarea;
-
-          this.submarinoSeleccionado = idSub;
-          this.guardarEstadoActualMapa();
-          const ubicaciones = this.ubicacionesSubmarinos[idSub];
-
-          const mapaActivo = this.mapa || this.mapaGlobal;
-          this.limpiarMapa(mapaActivo);
-
-          const polyline = L.polyline(ubicaciones, { color: '#122C34' }).addTo(mapaActivo);
-          mapaActivo.fitBounds(polyline.getBounds());
         }
+      } else {
+       
       }
     },
 
@@ -185,27 +189,33 @@ export default {
     mostrarUbicacionSubmarinoSinFiltros(idSub) {
       // console.log(this.areaSeleccionada);
       // console.log(this.tareaSeleccionada);
-      // Solo ejecutar si no hay filtros de área o tarea activos
-      if (!this.areaSeleccionada && !this.tareaSeleccionada) {
-        if (this.submarinoSeleccionado === idSub) {
-          // Deseleccionar el submarino y limpiar/restaurar el mapa
-          this.limpiarMapaGlobal();
+      if (this.ubicacionesSubmarinos[idSub] && this.ubicacionesSubmarinos[idSub].length > 0) {
+        // Solo ejecutar si no hay filtros de área o tarea activos
+        if (!this.areaSeleccionada && !this.tareaSeleccionada) {
+          if (this.submarinoSeleccionado === idSub) {
+            // Deseleccionar el submarino y limpiar/restaurar el mapa
+            this.limpiarMapaGlobal();
 
-          this.restaurarEstadoMapaSinFiltros(true); // Pasamos true para indicar que deseleccionamos
-          this.submarinoSeleccionado = null;
-        } else {
-          // Seleccionar un nuevo submarino y mostrar su ubicación
-          this.submarinoSeleccionado = idSub;
-          this.guardarEstadoActualMapaSinFiltros();
-          const ubicaciones = this.ubicacionesSubmarinos[idSub];
+            this.restaurarEstadoMapaSinFiltros(true); // Pasamos true para indicar que deseleccionamos
+            this.submarinoSeleccionado = null;
+          } else {
+            // Seleccionar un nuevo submarino y mostrar su ubicación
+            this.submarinoSeleccionado = idSub;
+            this.guardarEstadoActualMapaSinFiltros();
+            const ubicaciones = this.ubicacionesSubmarinos[idSub];
 
-          const mapaActivo = this.mapa || this.mapaGlobal;
-          this.limpiarMapaSinFiltros(mapaActivo);
+            const mapaActivo = this.mapa || this.mapaGlobal;
+            this.limpiarMapaSinFiltros(mapaActivo);
 
-          const polyline = L.polyline(ubicaciones, { color: '#122C34' }).addTo(mapaActivo);
-          mapaActivo.fitBounds(polyline.getBounds());
+            const polyline = L.polyline(ubicaciones, { color: '#122C34' }).addTo(mapaActivo);
+            mapaActivo.fitBounds(polyline.getBounds());
+          }
         }
+      } else {
+        // Si no tiene ubicaciones, muestra una alerta al usuario
+        alert("Este submarino no tiene una ubicación.");
       }
+
     },
 
     // GUARDAR ESTADO MAPA SIN FILTROS
