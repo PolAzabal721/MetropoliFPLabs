@@ -498,8 +498,11 @@ export default {
 
       try {
         const submarinos = await getSubmarinos(userEmpresa);
+        //console.log(submarinos);
         this.submarinos = submarinos; // Store all fetched submarines
         this.clasificarSubmarinos(); // Classify submarines after fetching
+        this.dibujarRutasSubmarinos();
+
       } catch (error) {
         console.error("Error fetching submarinos:", error);
       }
@@ -688,23 +691,21 @@ export default {
         return;
       }
 
-      // this.limpiarMapaGlobal();  // Asegúrate de limpiar el mapa antes de añadir nuevas rutas
-
       let bounds = new L.LatLngBounds();
-      console.log("Submarinos disponibles:", this.submarinos);
-      Object.keys(this.ubicacionesSubmarinos).forEach(idSub => {
-        // Aquí aplicamos el filtro para asegurarnos de que solo mostramos los submarinos de la empresa correcta
-        if (this.submarinos.find(sub => sub.id === idSub && sub.empresa === userEmpresa)) {
-          console.log("Verificando submarino con ID:", idSub);
 
-          console.log("Submarino encontrado y válido para la empresa:", userEmpresa);
+      // Filtrar submarinos cuyas IDs coinciden con las ubicaciones conocidas
+      const submarinosConUbicaciones = this.submarinos.filter(submarino =>
+        this.ubicacionesSubmarinos.hasOwnProperty(submarino.id_sub)
+      );
+      //console.log("Submarinos filtrados con ubicaciones:", submarinosConUbicaciones);
 
-          let latlngs = this.ubicacionesSubmarinos[idSub];
-          let polyline = L.polyline(latlngs, { color: '#122C34' }).addTo(this.mapaGlobal);
-          this.mapaGlobal.fitBounds(polyline.getBounds());
-          bounds.extend(polyline.getBounds());
-        }
+      // Dibujar las rutas de submarinos filtrados
+      submarinosConUbicaciones.forEach(submarino => {
+        let latlngs = this.ubicacionesSubmarinos[submarino.id_sub];
+        let polyline = L.polyline(latlngs, { color: '#122C34' }).addTo(this.mapaGlobal);
+        bounds.extend(polyline.getBounds());
       });
+
 
       if (bounds.isValid()) {
         this.mapaGlobal.fitBounds(bounds, { padding: [50, 50] }); // Ajustar el mapa para mostrar todos los límites con un padding
@@ -787,7 +788,6 @@ export default {
           }
         });
       });
-      this.dibujarRutasSubmarinos();
     })
   },
 
