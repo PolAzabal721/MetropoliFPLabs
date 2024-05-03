@@ -606,9 +606,28 @@ export default {
           // Por ejemplo, buscar la incidencia por ID y actualizar su estado y asignado
           const index = this.incidencias.findIndex(inc => inc.id_incidencia === jsonEnviar.id_incidencia);
           if (index !== -1) {
-            this.incidencias[index].asignado = jsonEnviar.asignado;
+            this.incidencias[index].Asignado = jsonEnviar.asignado;
             this.incidencias[index].estado = jsonEnviar.newEstado;
+            console.log("IF");
+            console.log(this.incidencias[index]);
           }
+          console.log("Fuera:");
+          console.log(this.incidencias);
+        });
+
+        this.socket.on("ResultUpdateEstado", (jsonEnviar) => {
+          console.log("Actualización recibida para incidencias 2:", jsonEnviar);
+          // Aquí puedes implementar lógica para actualizar las incidencias visibles
+          // Por ejemplo, buscar la incidencia por ID y actualizar su estado y asignado
+          const index = this.incidencias.findIndex(inc => inc.id_incidencia === jsonEnviar.id_incidencia);
+          if (index !== -1) {
+            this.incidencias[index].estado = jsonEnviar.newEstado;
+            this.incidencias[index].fecha_fin = jsonEnviar.fecha_fin;
+            console.log("IF");
+            console.log(this.incidencias[index]);
+          }
+          console.log("Fuera:");
+          console.log(this.incidencias);
         });
 
       } catch (error) {
