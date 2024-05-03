@@ -1,11 +1,9 @@
 <template>
-      <default-bar />
+    <default-bar />
+    <v-layout class="rounded rounded-md" style="background-color: #EFEFEF;">
 
-    <v-layout class="rounded rounded-md"  style="background-color: #EFEFEF;">
-
-       
-<!-- Barra lateral con archivos o grabaciones anteriores -->
-<v-navigation-drawer class="navDrawer">
+        <!-- Barra lateral con archivos o grabaciones anteriores -->
+        <v-navigation-drawer class="navDrawer">
             <v-card>
                 <v-toolbar height="60">
                     <v-toolbar-title>Vídeos</v-toolbar-title>
@@ -37,13 +35,6 @@
                 </v-row>
             </v-container>
         </v-main>
-        
-        <v-main>
-
-     
-        </v-main>
-
-        <br><br><br>
     </v-layout>
 </template>
 
@@ -96,15 +87,16 @@ export default {
     }
 };
 </script>
+
 <script setup>
 import DefaultBar from "@/layouts/default/AppBar.vue";
-
 </script>
+
 <style>
-.navDrawer{
+.navDrawer {
     top: 62 !important;
     float: left;
     z-index: -1 !important;
-    position:relative !important;
+    position: relative !important;
 }
 </style>

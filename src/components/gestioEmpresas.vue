@@ -5,7 +5,7 @@
       <v-row>
         <!-- Gráfico a la izquierda -->
         <v-col cols="12" md="6">
-          <v-card style="max-width: 900px; max-height: auto; margin-top: 25px">
+          <v-card style="max-width: 900px; max-height: auto; margin-top: 25px; background-color: #EFEFEF;">
             <!-- Gráfico de empresas por plan -->
             <v-card width="900" height="450">
               <canvas id="empresasPorPlan"></canvas>
@@ -26,32 +26,30 @@
 
         <!-- Lista de clientes a la derecha -->
         <v-col cols="12" md="6">
-
           <div style="display: flex; flex-direction: column;">
 
             <!-- CLIENTES -->
-            <v-card max-width="1000" height="auto" width="auto" style="background-color: rgb(189, 236, 255);">
+            <v-card max-width="1000" height="auto" width="auto" style="background-color: #224870;">
 
               <!-- Contenedor para el botón y el campo de búsqueda -->
               <div style="
               display: flex;
               justify-content: space-between;
               align-items: center;
-              margin-left: 15px;
-            ">
+              margin-left: 15px;">
 
                 <!-- Botón para crear empresa -->
-                <v-btn color="primary" @click="abrirModalCrearEmpresa">Crear Empresa</v-btn>
+                <v-btn color="#84ACCE" @click="abrirModalCrearEmpresa">Crear Empresa</v-btn>
 
                 <!-- Campo de búsqueda -->
                 <div class="search-wrapper">
-                  <input class="search-input" type="text" v-model="filtroEmpresa" placeholder=" Buscar cliente" />
+                  <input style="color: white;" class="search-input" type="text" v-model="filtroEmpresa" placeholder=" Buscar cliente" />
                 </div>
               </div>
 
               <!-- Mostrar lista de clientes filtrada -->
               <v-card v-for="(empresa, index) in clientesFiltrados" :key="index"
-                style="margin: 15px; width: auto; height: auto">
+                style="margin: 15px; width: auto; height: auto; background-color:#84ACCE; color: white;">
                 <v-row align="center">
                   <v-col>
                     <p style="margin: 20px; margin-right: 200px;">
@@ -75,11 +73,12 @@
                 </v-btn>
               </v-card>
 
-
               <!-- EDITAR EMPRESA -->
               <v-dialog v-model="mostrarModalEditarEmpresa" max-width="820" max-height="700">
                 <v-card width="auto" height="auto">
-                  <v-card-title>Editar Empresa</v-card-title>
+                  <v-toolbar height="60" style="background-color: #224870; color: white;">
+                    <h3 style="margin-left: 15px;">Editar Empresa</h3>
+                  </v-toolbar>
                   <v-card-text>
                     <form>
                       <!-- NOMBRE + TEL -->
@@ -171,11 +170,12 @@
                 </v-card>
               </v-dialog>
 
-
               <!-- CREAR EMPRESA -->
               <v-dialog v-model="mostrarModalCrear" max-width="820" max-height="700">
                 <v-card width="auto" height="auto">
-                  <v-card-title>Crear Empresa</v-card-title>
+                  <v-toolbar height="60" style="background-color: #224870; color: white;">
+                    <h3 style="margin-left: 15px;">Crear Empresa</h3>
+                  </v-toolbar>
                   <v-card-text>
                     <form>
                       <!-- NOMBRE + TEL -->
@@ -264,11 +264,12 @@
                 </v-card>
               </v-dialog>
 
-
               <!-- Diálogo para ver todos los datos de las empresas -->
               <v-dialog v-model="mostrarModalDatosEmpresas" max-width="820" max-height="700">
                 <v-card width="auto" height="auto">
-                  <v-card-title>Detalles de la Empresa</v-card-title>
+                  <v-toolbar height="60" style="background-color: #224870; color: white;">
+                    <h3 style="margin-left: 15px;">Detalles de la Empresa</h3>
+                  </v-toolbar>
                   <v-card-text>
                     <v-list>
                       <v-list-item v-if="empresaSeleccionada">
@@ -310,29 +311,28 @@
 
             <!-- PLANES -->
             <v-card max-width="1000" height="auto" width="auto"
-              style="background-color: rgb(189, 236, 255); order: 1; margin-top: 25px;">
+              style="background-color: #224870; order: 1; margin-top: 25px;">
 
               <!-- Contenedor para el botón y el campo de búsqueda -->
               <div style="
               display: flex;
               justify-content: space-between;
               align-items: center;
-              margin-left: 15px;
-            ">
+              margin-left: 15px;">
 
                 <!-- Botón para crear plan -->
-                <v-btn color="primary" @click="abrirModalCrearPlan">Crear Plan</v-btn>
+                <v-btn color="#84ACCE" @click="abrirModalCrearPlan">Crear Plan</v-btn>
 
                 <!-- Campo de búsqueda -->
                 <div class="search-wrapper">
-                  <input class="search-input" type="text" v-model="filtroPlan" placeholder=" Buscar Plan" />
+                  <input style="color: white;" class="search-input" type="text" v-model="filtroPlan"
+                    placeholder=" Buscar Plan" />
                 </div>
               </div>
 
-
               <!-- Mostrar lista de planes filtrada -->
               <v-card v-for="(plan, index) in planesFiltrados" :key="index"
-                style="margin: 15px; width: auto; height: auto">
+                style="margin: 15px; width: auto; height: auto; background-color: #84ACCE; color: white">
                 <v-row align="center">
                   <v-col>
                     <p style="margin: 20px; margin-right: 200px;">
@@ -355,11 +355,12 @@
                 </v-btn>
               </v-card>
 
-
               <!-- EDITAR PLAN -->
               <v-dialog v-model="mostrarModalEditarPlan" max-width="820" max-height="700">
                 <v-card width="auto" height="auto">
-                  <v-card-title>Editar Plan</v-card-title>
+                  <v-toolbar height="60" style="background-color: #224870; color: white;">
+                    <h3 style="margin-left: 15px;">Editar Plan</h3>
+                  </v-toolbar>
                   <v-card-text>
                     <form>
                       <div style="display: flex; flex-direction: row; justify-content: space-between;">
@@ -400,11 +401,12 @@
                 </v-card>
               </v-dialog>
 
-
               <!-- CREAR PLAN -->
               <v-dialog v-model="mostrarModalCrearPlan" max-width="820" max-height="700">
                 <v-card width="auto" height="auto">
-                  <v-card-title>Crear Plan</v-card-title>
+                  <v-toolbar height="60" style="background-color: #224870; color: white;">
+                    <h3 style="margin-left: 15px;">Crear Plan</h3>
+                  </v-toolbar>
                   <v-card-text>
                     <form>
                       <!-- NOMBRE -->
@@ -448,11 +450,12 @@
                 </v-card>
               </v-dialog>
 
-
               <!-- Diálogo para ver todos los datos de los planes -->
               <v-dialog v-model="mostrarModalDatosPlan" max-width="820" max-height="700">
                 <v-card width="auto" height="auto">
-                  <v-card-title>Detalles del Plan</v-card-title>
+                  <v-toolbar height="60" style="background-color: #224870; color: white;">
+                    <h3 style="margin-left: 15px;">Detalles del Plan</h3>
+                  </v-toolbar>
                   <v-card-text>
                     <v-list>
                       <v-list-item v-if="planSeleccionada">
@@ -760,6 +763,7 @@ export default {
       // Mostrar el modal editar empresa
       this.mostrarModalEditarPlan = true;
     },
+    
     // CREAR Y GUARDAR EMPRESA
     async crearYGuardarEmpresa() {
       // Validar que todos los campos estén rellenados
@@ -970,7 +974,6 @@ export default {
         ctx.canvas.parentNode.removeChild(ctx.canvas);
       }
 
-
       // Obtener la cantidad de empresas por plan de servicio
       const empresasPorPlan = this.empresas.reduce((acc, empresa) => {
         acc[empresa.nombre_sub] = (acc[empresa.nombre_sub] || 0) + 1;
@@ -984,18 +987,12 @@ export default {
           label: 'Cantidad de empresas por plan de servicio',
           data: Object.values(empresasPorPlan),
           backgroundColor: [
-            'rgba(255, 99, 132, 0.5)',
-            'rgba(54, 162, 235, 0.5)',
-            'rgba(255, 206, 86, 0.5)',
-            // Puedes agregar más colores si tienes más planes
+            '#84ACCE'
           ],
           borderColor: [
-            'rgba(255, 99, 132, 1)',
-            'rgba(54, 162, 235, 1)',
-            'rgba(255, 206, 86, 1)',
-            // Puedes agregar más colores si tienes más planes
+            '#224870'
           ],
-          borderWidth: 1
+          borderWidth: 2
         }]
       };
 
@@ -1037,8 +1034,9 @@ export default {
             {
               label: "Cantidad de Empresas por ciudad",
               data: Object.values(cities),
-              backgroundColor: "grey",
-              borderWidth: 1
+              backgroundColor: '#84ACCE',
+              borderColor: '#224870',
+              borderWidth: 2
             }
           ]
         },
@@ -1073,8 +1071,9 @@ export default {
             {
               label: "Cantidad de Empresas por provincia",
               data: Object.values(provinces),
-              backgroundColor: "#007bff",
-              borderWidth: 1
+              backgroundColor: '#84ACCE',
+              borderColor: '#224870',
+              borderWidth: 2
             }
           ]
         },
