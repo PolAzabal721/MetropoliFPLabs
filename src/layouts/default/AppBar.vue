@@ -1,5 +1,5 @@
 <template>
-  <v-toolbar color="#259FAF">
+  <v-toolbar color="#122C34">
     <div v-if="isWideScreen" style="
         display: flex;
         justify-content: space-between;
@@ -68,7 +68,7 @@
       <!-- Your collapsed view for smaller screens -->
 
 
-      <router-link style="width: 80%; !important" :to="'/'" class="title">
+      <router-link style="width: 80%;" :to="'/'" class="title">
         <v-toolbar-title class="mx-5 title">Sea Shepherd</v-toolbar-title>
       </router-link>
       <v-btn icon @click="toggleCollapsedView">
@@ -120,8 +120,8 @@
 }
 
 .dropdown-submari {
-  color: #8ecae6 !important;
-  background-color: rgba(127, 217, 233, 0.95) !important;
+  color: white !important;
+  background-color: #122C34 !important;
   padding: 5%;
   position: absolute;
   left: 0;
@@ -158,7 +158,7 @@
 
 .colorBoton:hover {
   font-weight: bold;
-  color: #152636;
+  color: #FFEBD6;
   transition: 0.2s;
 }
 
@@ -179,7 +179,7 @@
   align-items: center;
   justify-content: space-between;
   flex-wrap: wrap;
-} 
+}
 
 .seleccion {
   /* Estilos del select según tus preferencias */

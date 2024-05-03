@@ -1,13 +1,13 @@
 <template>
   <default-bar />
-  <v-layout class="rounded rounded-md">
+  <v-layout class="rounded rounded-md" style="background-color: #EFEFEF;">
     <v-main>
       <v-row style="margin: 25px;">
 
         <!-- Left Column for Submarines not in water -->
         <v-col cols="12" sm="3">
           <v-card>
-            <v-toolbar height="60">
+            <v-toolbar height="60" style="background-color: #224870; color: white;">
               <h3 style="margin-left: 15px;">Submarinos Fuera del Agua</h3>
             </v-toolbar>
             <v-container>
@@ -15,7 +15,7 @@
                 <v-col v-for="submarino in submarinosFueraDelAgua" :key="submarino.id_sub" cols="12">
                   <v-card
                     @click="mostrarUbicacionSubmarino(submarino.id_sub) || mostrarUbicacionSubmarinoSinFiltros(submarino.id_sub)"
-                    :color="submarino.enReparacion ? 'red' : 'grey lighten-2'">
+                    style="background-color: #84ACCE; color: white;">
                     <v-card-title>{{ submarino.nom_sub }}</v-card-title>
                     <v-card-text>Estado: {{ submarino.estado_sub }}</v-card-text>
                   </v-card>
@@ -31,23 +31,26 @@
 
           <!-- Selector de Área -->
           <v-select v-model="nombreLugarBusqueda" :items="[...areas.map(area => area.nombreArea)]"
-            label="Seleccionar Área" @change="actualizarSubmarinos" :disabled="areaSeleccionada">
+            label="Seleccionar Área" @change="actualizarSubmarinos" :disabled="areaSeleccionada"
+            style="color: #224870;">
           </v-select>
 
           <!-- Selector de Tarea/Rutina -->
           <v-select v-model="filtroTarea" :items="[...tareasDisponibles]" label="Filtrar por Tarea/Rutina"
-            @change="filtrarSubmarinosPorTarea" :disabled="!areaSeleccionada || tareaSeleccionada">
+            @change="filtrarSubmarinosPorTarea" :disabled="!areaSeleccionada || tareaSeleccionada"
+            style="color: #224870;">
           </v-select>
 
           <!-- btn para filtrar area -->
-          <v-btn @click="buscarArea" :disabled="!nombreLugarBusqueda" :color="areaSeleccionada ? 'red' : 'blue'" dark>
+          <v-btn @click="buscarArea" :disabled="!nombreLugarBusqueda" :color="areaSeleccionada ? 'red' : '#84ACCE'"
+            dark>
             {{ areaSeleccionada ? 'Limpiar Área' : 'Buscar' }}
           </v-btn>
 
           <!-- btn para filtar tarea -->
           <v-btn style="margin-left: 15px;" @click="filtrarSubmarinosPorTarea"
             :disabled="!nombreLugarBusqueda || !filtroTarea || filtroTarea === null"
-            :color="tareaSeleccionada ? 'red' : 'blue'">
+            :color="tareaSeleccionada ? 'red' : '#84ACCE'">
             {{ tareaSeleccionada ? 'Limpiar Filtro' : 'Filtrar por Tarea' }}
           </v-btn>
 
@@ -172,7 +175,7 @@ export default {
           const mapaActivo = this.mapa || this.mapaGlobal;
           this.limpiarMapa(mapaActivo);
 
-          const polyline = L.polyline(ubicaciones, { color: 'red' }).addTo(mapaActivo);
+          const polyline = L.polyline(ubicaciones, { color: '#122C34' }).addTo(mapaActivo);
           mapaActivo.fitBounds(polyline.getBounds());
         }
       }
@@ -199,7 +202,7 @@ export default {
           const mapaActivo = this.mapa || this.mapaGlobal;
           this.limpiarMapaSinFiltros(mapaActivo);
 
-          const polyline = L.polyline(ubicaciones, { color: 'red' }).addTo(mapaActivo);
+          const polyline = L.polyline(ubicaciones, { color: '#122C34' }).addTo(mapaActivo);
           mapaActivo.fitBounds(polyline.getBounds());
         }
       }
@@ -596,7 +599,7 @@ export default {
       submarinosAsignados.forEach(submarino => {
         if (this.ubicacionesSubmarinos[submarino.id_sub]) {
           let latlngs = this.ubicacionesSubmarinos[submarino.id_sub];
-          let polyline = L.polyline(latlngs, { color: 'red' }).addTo(this.mapa);
+          let polyline = L.polyline(latlngs, { color: '#122C34' }).addTo(this.mapa);
           this.mapa.fitBounds(polyline.getBounds());
         }
       });
@@ -632,7 +635,7 @@ export default {
       submarinosAsignados.forEach(submarino => {
         if (this.ubicacionesSubmarinos[submarino.id_sub]) {
           let latlngs = this.ubicacionesSubmarinos[submarino.id_sub];
-          let polyline = L.polyline(latlngs, { color: 'red' }).addTo(this.mapa);
+          let polyline = L.polyline(latlngs, { color: '#122C34' }).addTo(this.mapa);
           this.mapa.fitBounds(polyline.getBounds());
         }
       });
@@ -664,8 +667,6 @@ export default {
         if (this.drawControl) {
           this.mapa.removeControl(this.drawControl);
         }
-
-
       }
     },
 
@@ -690,7 +691,7 @@ export default {
       let bounds = new L.LatLngBounds();
       Object.keys(this.ubicacionesSubmarinos).forEach(idSub => {
         let latlngs = this.ubicacionesSubmarinos[idSub];
-        let polyline = L.polyline(latlngs, { color: 'red' }).addTo(this.mapaGlobal);
+        let polyline = L.polyline(latlngs, { color: '#122C34'}).addTo(this.mapaGlobal);
         this.mapaGlobal.fitBounds(polyline.getBounds());
         bounds.extend(polyline.getBounds())
       });
@@ -799,14 +800,6 @@ import DefaultBar from "@/layouts/default/AppBar.vue";
 </script>
 
 <style scoped>
-.estado-desactivado {
-  box-shadow: 0 0 8px red;
-}
-
-.estado-activo {
-  box-shadow: 0 0 8px green;
-}
-
 .navDrawer {
   float: left;
   z-index: -1 !important;
