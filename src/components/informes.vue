@@ -1,22 +1,24 @@
 <template>
-  <default-bar/>
-  <v-layout class="rounded rounded-md" style="background-color: #EFEFEF;">
+  <default-bar />
+  <v-layout class="rounded rounded-md" :style="{ backgroundColor: backgroundColor }">
     <v-main>
-      <br />
       <v-container fluid>
         <v-row>
           <v-col cols="6">
-            <!-- MAPA PRINCIPAL -->
-            <v-card class="mx-auto" height="775" width="800">
+            <!-- Sección del select y el botón -->
+            <div class="d-flex align-center">
               <v-select id="select-ruta" v-model="nombreLugarBusqueda" :items="areas.map((area) => area.nombreArea)"
-                label="Selecciona el área que quieras editar"></v-select>
+                label="Selecciona el área que quieras editar" style="color: #224870;"></v-select>
 
-              <v-btn class="ml-4 d-flex" @click="buscarArea" :disabled="nombreLugarBusqueda === ''">
+              <v-btn class="ml-4" @click="buscarArea" :disabled="nombreLugarBusqueda === ''" style="color: #84ACCE;">
                 Buscar
               </v-btn>
-              <div id="mapaSelect" style="height: 650px; width: 800px; margin-top: 10px;"></div>
-            </v-card>
+            </div>
+
+            <!-- Sección del mapa -->
+            <div id="mapaSelect" style="height: 650px; width: 100%;"></div>
           </v-col>
+
           <v-col cols="6">
             <!-- GRÀFICS -->
             <div class="scroll-container">
@@ -45,7 +47,6 @@
 </template>
 
 <script>
-import { ref } from "vue";
 import Chart from "chart.js/auto";
 import "leaflet/dist/leaflet.css";
 import "leaflet/dist/leaflet.js";
@@ -58,7 +59,6 @@ import "leaflet-draw/dist/leaflet.draw-src.js";
 import { fetchAreas } from "@/services/connectionManager.js";
 import { useAppStore } from "@/store/app";
 
-
 export default {
   data() {
     return {
@@ -67,6 +67,7 @@ export default {
       areas: [],
       areaEncontrada: null,
       nombreLugarBusqueda: "",
+      backgroundColor: "#EFEFEF",
     };
   },
   methods: {
@@ -76,7 +77,7 @@ export default {
         const store = useAppStore();
         const idEmpresa = store.getUserEmpresa;
         this.areas = await fetchAreas();
-        this.areas = this.areas.filter(area => area.idEmpresa === idEmpresa); 
+        this.areas = this.areas.filter(area => area.idEmpresa === idEmpresa);
 
       } catch (error) {
         console.error("Error fetching areas:", error);
@@ -201,7 +202,7 @@ export default {
               label: "",
               data: [], // Datos iniciales de temperatura
               fill: false,
-              borderColor: "rgb(75, 192, 192)",
+              borderColor: "#224870",
               tension: 0.1,
             },
           ],
@@ -312,20 +313,34 @@ export default {
       const hourFilter = document.getElementById("hour-filter");
       hourFilter.selectedIndex = 0;
     },
-  },
 
-  //
-  computed: {},
+    // Método computado para detectar el tamaño de la pantalla y establecer el color de fondo
+    detectScreenSize() {
+      const screenWidth = window.innerWidth;
+      // Establecer el color de fondo según el tamaño de la pantalla
+      if (screenWidth <= 768) {
+        this.backgroundColor = "#EFEFEF"; // Color de fondo para pantallas pequeñas
+      } else {
+        this.backgroundColor = "#EFEFEF"; // Color de fondo predeterminado para pantallas grandes
+      }
+    },
+  },
 
   //CONSOLA
   created() {
     console.log("CREADO");
     this.getAreas();
+
+    // Detectar el tamaño de la pantalla y establecer el color de fondo
+    window.addEventListener("resize", this.detectScreenSize);
+    this.detectScreenSize();
   },
 
   mounted() {
     console.log("MONTADO");
-
+    this.$nextTick(() => {
+    this.detectScreenSize();  // Recalculate background color after everything is loaded
+  });
     // INICIAR MAPA
     this.initMapaSelect();
 
@@ -335,6 +350,11 @@ export default {
 
   updated() {
     console.log("UPDATED");
+  },
+
+  destroyed() {
+    // Eliminar el listener del evento resize al destruir el componente
+    window.removeEventListener("resize", this.detectScreenSize);
   },
 };
 </script>
@@ -349,35 +369,9 @@ import DefaultBar from "@/layouts/default/AppBar.vue";
   margin-left: 30px;
 }
 
-/* Estilos para la leyenda */
-.legend {
-  display: flex;
-  justify-content: space-between;
-  margin-top: 10px;
-}
-
-.legend-item {
-  display: flex;
-  align-items: center;
-  margin-right: 20px;
-}
-
-.legend-color {
-  width: 20px;
-  height: 20px;
-  margin-right: 5px;
-  border: 1px solid #ccc;
-  /* Bordes para resaltar */
-}
-
-.custom-app-bar {
-  padding: 10px;
-  box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.2);
-}
-
-.chart-container {
-  position: relative;
-  width: 80%;
-  margin: auto;
+body, html {
+  height: 100%;
+  margin: 0;
+  background-color: #EFEFEF; 
 }
 </style>

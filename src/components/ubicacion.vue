@@ -820,6 +820,11 @@ import DefaultBar from "@/layouts/default/AppBar.vue";
 </script>
 
 <style scoped>
+body, html {
+  height: 100%;
+  margin: 0;
+  background-color: #EFEFEF; /* Define el color de fondo aquí */
+}
 .navDrawer {
   float: left;
   z-index: -1 !important;

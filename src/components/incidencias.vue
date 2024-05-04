@@ -1,26 +1,25 @@
 <template>
   <default-bar />
-  <v-layout style="background-color: #EFEFEF;">
+  <v-layout class="rounded rounded-md">
+    <v-main>
+      <div>
+        <v-btn class="ml-4" style="margin-top: 20px" color="#84ACCE" @click="mostrarDialogo">Crear Incidencia</v-btn>
 
-    <div>
-      <v-btn class="ml-4" style="margin-top: 20px" color="primary" @click="mostrarDialogo">Crear Incidencia</v-btn>
+        <v-btn class="ml-4" style="margin-top: 20px" @click="toggleFiltro" text color="#84ACCE">
+          Filtro <v-icon>mdi-menu-down</v-icon>
+        </v-btn>
 
-      <v-btn class="ml-4" style="margin-top: 20px" @click="toggleFiltro" text>
-        Filtro <v-icon>mdi-menu-down</v-icon>
-      </v-btn>
+        <!-- Filtro de incidencias -->
+        <v-card v-if="mostrarFiltroCard" class="filtro-card">
+          <v-card-text>
+            <v-btn class="filtro-btn" v-for="filtro in filtros" :key="filtro.id" @click="aplicarFiltro(filtro)"
+              :class="{ 'filtro-btn-selected': esFiltroSeleccionado(filtro) }">
+              {{ filtro.label }}
+            </v-btn>
+          </v-card-text>
+        </v-card>
 
-      <!-- Filtro de incidencias -->
-      <v-card v-if="mostrarFiltroCard" class="filtro-card">
-        <v-card-text>
-          <v-btn class="filtro-btn" v-for="filtro in filtros" :key="filtro.id" @click="aplicarFiltro(filtro)"
-            :class="{ 'filtro-btn-selected': esFiltroSeleccionado(filtro) }">
-            {{ filtro.label }}
-          </v-btn>
-        </v-card-text>
-      </v-card>
-
-      <!-- TABLA DE INCIDENCIAS -->
-      <v-layout class="rounded rounded-md">
+        <!-- TABLA DE INCIDENCIAS -->
         <v-container fluid>
           <table class="table">
             <thead>
@@ -71,12 +70,14 @@
             </tbody>
           </table>
         </v-container>
-      </v-layout>
+      </div>
 
       <!-- Diálogo para mostrar la descripción de la incidencia -->
       <v-dialog v-model="dialogDescripcion" max-width="500">
         <v-card>
-          <v-card-title>Descripción de la incidencia</v-card-title>
+          <v-toolbar height="60" style="background-color: #224870; color: white;">
+            <h3 style="margin-left: 15px;">Descripción de la incidencia</h3>
+          </v-toolbar>
           <v-card-text>
             {{ descripcionSeleccionada }}
           </v-card-text>
@@ -88,8 +89,9 @@
 
       <v-dialog v-model="dialogReport" max-width="500">
         <v-card>
-          <v-card-title>Historial de reportes de la incidencia</v-card-title>
-
+          <v-toolbar height="60" style="background-color: #224870; color: white;">
+            <h3 style="margin-left: 15px;">Historial de reportes de la incidencia</h3>
+          </v-toolbar>
           <v-list>
             <v-list-item v-for="(reporte, index) in reporteSeleccionado" :key="index">
               <v-list-item>
@@ -107,16 +109,17 @@
         </v-card>
       </v-dialog>
 
-
       <!-- Diálogo para crear una nueva incidencia -->
       <v-dialog v-model="dialogoVisible" max-width="600px">
         <v-card>
-          <v-card-title>Crear Nueva Incidencia</v-card-title>
+          <v-toolbar height="60" style="background-color: #224870; color: white;">
+            <h3 style="margin-left: 15px;">Crear Nueva Incidencia</h3>
+          </v-toolbar>
           <v-card-text>
             <v-text-field v-model="nuevaIncidencia.nombre" label="Asunto de la incidencia"></v-text-field>
             <v-textarea v-model="nuevaIncidencia.descripcion" label="Descripción de la incidencia"></v-textarea>
             <v-select v-model="nuevaIncidencia.submarinoSeleccionado" label="Submarino" :items="submarinos.map((submarino) => submarino.nom_sub)
-        " item-text="text" item-value="value"></v-select>
+          " item-text="text" item-value="value"></v-select>
 
             <v-select v-model="nuevaIncidencia.tipo" :items="['Actualización software', 'Reparación']"
               label="Tipo"></v-select>
@@ -132,7 +135,9 @@
       <!-- Diálogo para editar nombre, descripción y prioridad -->
       <v-dialog v-model="dialogoEdicionVisible" max-width="600px">
         <v-card>
-          <v-card-title>Editar Incidencia</v-card-title>
+          <v-toolbar height="60" style="background-color: #224870; color: white;">
+            <h3 style="margin-left: 15px;">Editar Incidencia</h3>
+          </v-toolbar>
           <v-card-text>
             <v-text-field v-model="edicionIncidencia.nombre" label="Nuevo nombre"></v-text-field>
             <v-textarea v-model="edicionIncidencia.descripcion" label="Nueva descripción"></v-textarea>
@@ -144,17 +149,13 @@
           </v-card-actions>
         </v-card>
       </v-dialog>
-    </div>
+    </v-main>
   </v-layout>
 </template>
 
 <script>
 import {
   getSubmarinos,
-  insertIncidencia,
-  getIncidencias,
-  updateIncidencias,
-  selectIncidenciasEmpresa,
   getReports
 } from "@/services/connectionManager.js";
 import { useAppStore } from "@/store/app";
@@ -602,6 +603,7 @@ export default {
     }
 
   },
+
   //CONSOLA
   created() {
     this.socket = io("http://localhost:3169/");
@@ -622,13 +624,13 @@ export default {
           // Manejar la respuesta para incidencias específicas de la empresa
           this.socket.on("incidenciaResult", (result) => {
             this.incidencias = result;
-            console.log("Incidencias para la empresa:", this.incidencias);
+            // console.log("Incidencias para la empresa:", this.incidencias);
           });
         }
 
         // Agregar escucha para el evento de actualización de incidencias
         this.socket.on("ResultUpdateInci", (jsonEnviar) => {
-          console.log("Actualización recibida para incidencias:", jsonEnviar);
+          //console.log("Actualización recibida para incidencias:", jsonEnviar);
           // Aquí puedes implementar lógica para actualizar las incidencias visibles
           // Por ejemplo, buscar la incidencia por ID y actualizar su estado y asignado
           const index = this.incidencias.findIndex(inc => inc.id_incidencia === jsonEnviar.id_incidencia);
@@ -670,10 +672,6 @@ export default {
     });
   },
 
-
-
-
-
   mounted() {
     console.log("MONTADO");
   },
@@ -690,6 +688,12 @@ import DefaultBar from "@/layouts/default/AppBar.vue";
 </script>
 
 <style scoped>
+body, html {
+  height: 100%;
+  margin: 0;
+  background-color: #EFEFEF; 
+}
+
 .circle {
   width: auto;
   height: auto;
@@ -744,7 +748,7 @@ import DefaultBar from "@/layouts/default/AppBar.vue";
 }
 
 .filtro-btn-selected {
-  background-color: #3569b6;
+  background-color: #224870;
   /* Puedes ajustar el color de fondo cuando está seleccionado */
   color: #fff;
   /* Puedes ajustar el color del texto cuando está seleccionado */
@@ -757,12 +761,13 @@ import DefaultBar from "@/layouts/default/AppBar.vue";
 
 .table th,
 .table td {
-  border: 1px solid #ccc;
+  border: 1px solid #122C34;
   padding: 8px;
 }
 
 .table th {
-  background-color: #f2f2f2;
+  background-color: #224870;
   font-weight: bold;
+  color: #fff;
 }
 </style>

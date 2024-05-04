@@ -5,7 +5,7 @@
       <v-row>
         <!-- Gráfico a la izquierda -->
         <v-col cols="12" md="6">
-          <v-card style="max-width: 900px; max-height: auto; margin-top: 25px; background-color: #EFEFEF;">
+         
             <!-- Gráfico de empresas por plan -->
             <v-card width="900" height="450">
               <canvas id="empresasPorPlan"></canvas>
@@ -20,8 +20,6 @@
             <v-card style="margin-top: 30px;" width="900" height="450">
               <canvas ref="barChartByProvince"></canvas>
             </v-card>
-
-          </v-card>
         </v-col>
 
         <!-- Lista de clientes a la derecha -->
@@ -1122,13 +1120,11 @@ export default {
 
     }
 
-
   },
   //CONSOLA
   created() {
     console.log("CREADO");
     this.getEmpresas().then(() => {
-
 
       // Llamar a graficoPlanes una vez que se hayan obtenido las empresas
       this.graficoPlanes();

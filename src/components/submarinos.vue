@@ -1,14 +1,14 @@
 <template>
   <default-bar />
-  <v-layout class="rounded rounded-md" style="background-color: #EFEFEF;">
+  <v-layout class="rounded rounded-md" :style="{ backgroundColor: backgroundColor }">
     <v-main>
       <v-row style="margin: 25px;">
         <!-- Columna izquierda (submarinos) -->
         <v-col cols="12" sm="3">
           <v-card>
             <!-- Contenido submarinos -->
-            <v-toolbar height="60">
-              <h3 style="margin-left: 15px;">Submarinos Disponibles</h3>
+            <v-toolbar height="60" style="background-color: #224870;">
+              <h3 style="margin-left: 15px; color: white;">Submarinos Disponibles</h3>
             </v-toolbar>
             <v-container>
               <v-row>
@@ -18,7 +18,7 @@
               </v-row>
             </v-container>
             <v-card-actions>
-              <v-btn @click="asignarSubmarinos">Añadir Submarinos</v-btn>
+              <v-btn @click="asignarSubmarinos" style="background-color: #84ACCE;">Añadir Submarinos</v-btn>
             </v-card-actions>
           </v-card>
         </v-col>
@@ -309,7 +309,8 @@ export default {
       dialogTarea: false,
       showDialogEdicionTarea: false,
       minDate: new Date().toISOString().substr(0, 10),
-      seleccionSubmarinos: {}
+      seleccionSubmarinos: {},
+      backgroundColor: "#EFEFEF",
     };
   },
   methods: {
@@ -1059,10 +1060,21 @@ export default {
 
       if (minutos < 150) {
         return 'La hora de fin debe ser al menos 2 horas y 30 minutos después de la hora de inicio.';
-      }
+      } 
 
       return true;
-    }
+    },
+
+    // Método computado para detectar el tamaño de la pantalla y establecer el color de fondo
+    detectScreenSize() {
+      const screenWidth = window.innerWidth;
+      // Establecer el color de fondo según el tamaño de la pantalla
+      if (screenWidth <= 768) {
+        this.backgroundColor = "#EFEFEF"; // Color de fondo para pantallas pequeñas
+      } else {
+        this.backgroundColor = "#EFEFEF"; // Color de fondo predeterminado para pantallas grandes
+      }
+    },
   },
   //
   computed: {
@@ -1083,10 +1095,16 @@ export default {
   //CONSOLA
   created() {
     console.log("CREADO");
+    window.addEventListener("resize", this.detectScreenSize);
+    this.detectScreenSize();
   },
 
   mounted() {
     console.log("MONTADO");
+
+    this.$nextTick(() => {
+    this.detectScreenSize();  // Recalculate background color after everything is loaded
+  });
     this.getAreas();
     this.getSubmarino();
   },
@@ -1103,6 +1121,11 @@ import DefaultBar from "@/layouts/default/AppBar.vue";
 </script>
 
 <style scoped>
+body, html {
+  height: 100%;
+  margin: 0;
+  background-color: #EFEFEF; /* Define el color de fondo aquí */
+}
 /* Estilo base para el checkbox */
 .checkbox-personalizado {
   -webkit-appearance: none;
