@@ -8,10 +8,13 @@
             <!-- Sección del select y el botón -->
             <div class="d-flex align-center">
               <v-select id="select-ruta" v-model="nombreLugarBusqueda" :items="areas.map((area) => area.nombreArea)"
-                label="Selecciona el área que quieras editar" style="color: #224870;"></v-select>
+                label="Selecciona el área que quieras editar" :disabled="isSearchActive"
+                style="color: #224870;"></v-select>
 
-              <v-btn class="ml-4" @click="buscarArea" :disabled="nombreLugarBusqueda === ''" style="color: #84ACCE;">
-                Buscar
+              <v-btn class="ml-4 elevation-2" @click="buscarArea"
+                :disabled="nombreLugarBusqueda === '' && !isSearchActive"
+                :style="{ backgroundColor: isSearchActive ? 'red' : '#84ACCE', color: 'white' }">
+                {{ isSearchActive ? 'Limpiar Área Seleccionada' : 'Buscar Área' }}
               </v-btn>
             </div>
 
@@ -29,8 +32,7 @@
                     Temperatura °C
                   </h1>
                   <canvas class="mx-auto" id="myChart" width="850" height="425"></canvas>
-                  <br />
-                  <select class="filtroBtn" id="hour-filter">
+                  <select class="filtroBtn" id="hour-filter" :disabled="!areaEncontrada">
                     <option value="hores">Filtrar Hores</option>
                     <option value="dies">Filtrar Dies</option>
                     <option value="meses">Filtrar Mesos</option>
@@ -68,6 +70,8 @@ export default {
       areaEncontrada: null,
       nombreLugarBusqueda: "",
       backgroundColor: "#EFEFEF",
+      areaSeleccionada: false,
+      isSearchActive: false,
     };
   },
   methods: {
@@ -84,25 +88,48 @@ export default {
       }
     },
 
+    // SELECCIONAR AREA + CARGAR SUS DATOS
     async buscarArea() {
-      const areaEncontrada = this.areas.find(
-        (area) => area.nombreArea === this.nombreLugarBusqueda
-      );
+      if (!this.isSearchActive) {
+        const areaEncontrada = this.areas.find(
+          (area) => area.nombreArea === this.nombreLugarBusqueda
+        );
 
-      if (areaEncontrada && areaEncontrada.coordenadas) {
-        // Cargar coordenadas en mapaSelect
-        this.cargarCoordenadasEnMapaSelect(areaEncontrada.coordenadas);
-        this.areaEncontrada = areaEncontrada;
-        this.areaEncontradaID = areaEncontrada._id;
-        this.nombreExistente = areaEncontrada.nombreArea;
+        if (areaEncontrada && areaEncontrada.coordenadas) {
+          // Cargar coordenadas en mapaSelect
+          this.cargarCoordenadasEnMapaSelect(areaEncontrada.coordenadas);
+          this.areaEncontrada = areaEncontrada;
+          this.areaEncontradaID = areaEncontrada._id;
+          this.nombreExistente = areaEncontrada.nombreArea;
 
-        // Verificar si selectedRoute está definido antes de cargar temperaturas
-        if (this.areaEncontrada) {
-          this.cargarTemperaturas();
+          // Verificar si selectedRoute está definido antes de cargar temperaturas
+          if (this.areaEncontrada) {
+            this.cargarTemperaturas();
+          }
+          this.isSearchActive = true;
         }
-
-        this.resetFilter();
+      } else {
+        this.limpiarBusqueda();
       }
+    },
+
+    // LIMPIAR BUSQUEDA
+    limpiarBusqueda() {
+      this.areaEncontrada = null;
+      this.nombreLugarBusqueda = '';
+      this.isSearchActive = false;  // Desactivar el modo de búsqueda activa
+
+      this.limpiarMapaSelect();  // Limpiar el mapa
+
+      if (this.myChart) {
+        this.myChart.data.labels = [];
+        this.myChart.data.datasets.forEach(dataset => {
+          dataset.data = [];
+        });
+        this.myChart.update();  // Actualizar el gráfico si es necesario
+      }
+      this.initMapaSelect();
+      this.resetFilter();  // Reiniciar cualquier filtro aplicado
     },
 
     // INICIO Y CONFIG DEL MAPA
@@ -339,8 +366,8 @@ export default {
   mounted() {
     console.log("MONTADO");
     this.$nextTick(() => {
-    this.detectScreenSize();  // Recalculate background color after everything is loaded
-  });
+      this.detectScreenSize();  // Recalculate background color after everything is loaded
+    });
     // INICIAR MAPA
     this.initMapaSelect();
 
@@ -367,11 +394,36 @@ import DefaultBar from "@/layouts/default/AppBar.vue";
 <style>
 .filtroBtn {
   margin-left: 30px;
+  background-color: #ffffff;
+  /* Fondo blanco para resaltar el select */
+  border: 2px solid #224870;
+  /* Borde del color principal para mantener la coherencia */
+  border-radius: 8px;
+  /* Bordes redondeados para un look más moderno */
+  padding: 8px 12px;
+  /* Padding para mayor comodidad visual */
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  /* Sombra suave para dar profundidad */
+  transition: all 0.3s ease;
+  /* Transición suave al interactuar */
 }
 
-body, html {
+.filtroBtn:hover {
+  box-shadow: 0 6px 8px rgba(0, 0, 0, 0.15);
+  /* Sombra más profunda al pasar el mouse */
+}
+
+body,
+html {
   height: 100%;
   margin: 0;
-  background-color: #EFEFEF; 
+  background-color: #EFEFEF;
 }
+
+@media (max-width: 768px) {
+  .filtroBtn, .v-btn {
+    width: 100%; /* Botones más anchos para facilitar la interacción en pantallas táctiles */
+  }
+}
+
 </style>

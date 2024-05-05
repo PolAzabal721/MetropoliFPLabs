@@ -47,7 +47,7 @@
                 <td>{{ item.nom_sub }}</td>
                 <td>{{ item.Autor }}</td>
                 <td>{{ item.Asignado }}</td>
-                <td>
+                <td >
                   <div
                     :class="{ 'circle': true, 'high-priority': item.prioridad === 'Alta', 'medium-priority': item.prioridad === 'Media', 'low-priority': item.prioridad === 'Baja' }">
                     {{ item.prioridad }}</div>

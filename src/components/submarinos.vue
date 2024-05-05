@@ -4,8 +4,8 @@
     <v-main>
       <v-row style="margin: 25px;">
         <!-- Columna izquierda (submarinos) -->
-        <v-col cols="12" sm="3">
-          <v-card>
+        <v-col cols="12" sm="2">
+          <v-card style="max-width: 300px;">
             <!-- Contenido submarinos -->
             <v-toolbar height="60" style="background-color: #224870;">
               <h3 style="margin-left: 15px; color: white;">Submarinos Disponibles</h3>
@@ -17,26 +17,30 @@
                 </v-col>
               </v-row>
             </v-container>
-            <v-card-actions>
-              <v-btn @click="asignarSubmarinos" style="background-color: #84ACCE;">Añadir Submarinos</v-btn>
+            <v-card-actions class="d-flex justify-center">
+              <v-btn @click="asignarSubmarinos" style="background-color: #84ACCE; color: white;">Añadir
+                Submarinos</v-btn>
             </v-card-actions>
           </v-card>
         </v-col>
 
         <!-- Columna medio (Mapa y buscador) -->
-        <v-col cols="12" sm="4">
+        <v-col cols="12" sm="6">
           <!-- CONFIG MAPA + SELECT AREA -->
-          <v-select style="height: 75px; font-size: auto" v-model="nombreLugarBusqueda"
-            :items="areas.map((area) => area.nombreArea)" label="Seleccionar Área"
-            @change="actualizarSubmarinos"></v-select>
-          <v-btn class="small-select" @click="buscarArea" :disabled="nombreLugarBusqueda === ''"
-            style="margin-bottom: 30px">
-            Buscar
-          </v-btn>
+          <div class="d-flex align-center">
+            <v-select style="height: 75px; font-size: auto; color: #224870;" v-model="nombreLugarBusqueda"
+              :items="areas.map((area) => area.nombreArea)" label="Seleccionar Área" @change="actualizarSubmarinos"
+              :disabled="isSearchActive"></v-select>
+
+            <v-btn class="ml-4 elevation-2" @click="buscarArea"
+              :disabled="nombreLugarBusqueda === '' && !isSearchActive"
+              :style="{ backgroundColor: isSearchActive ? 'red' : '#84ACCE', color: 'white' }">
+              {{ isSearchActive ? 'Limpiar Área Seleccionada' : 'Buscar Área' }}
+            </v-btn>
+          </div>
+
           <!-- MAPA -->
-          <v-card class="mx-auto slidecontainer" max-height="500" max-width="550">
-            <div id="mapaSelect" style="height: 500px; width: 550px"></div>
-          </v-card>
+          <div id="mapaSelect" style="height: 700px; width: 850px"></div>
         </v-col>
 
         <!-- Columna derecha -->
@@ -45,14 +49,18 @@
           <v-row v-if="mostrarColumnaDerecha">
             <!-- Opciones para submarinos -->
             <v-col class="text-center">
-              <v-btn @click="crearRutina">Actividades de los submarinos</v-btn>
+              <v-btn style="background-color: #84ACCE; color: white;" @click="crearRutina">Actividades de los
+                submarinos</v-btn>
 
               <!-- Lista submarinos -->
               <h3 style="margin-top: 25px;" class="text-center">Submarinos Asignados a {{ nombreLugarBusqueda }}</h3>
               <v-row style="margin-top: 10px;">
-                <v-col cols="12" v-for="submarino in submarinosAsignadosFiltrados" :key="submarino.id_sub">
-                  <v-card
-                    :class="{ 'estado-desactivado': submarino.estado_sub.trim().toLowerCase() === 'desactivado', 'estado-activo': submarino.estado_sub.trim().toLowerCase() !== 'desactivado' }">
+                <v-col cols="12" v-for="submarino in submarinosAsignadosFiltrados" :key="submarino.id_sub"
+                  class="justify-center align-center">
+                  <v-card style="max-width: 500px; max-height: 200px; margin: 10px;" :class="{
+    'estado-desactivado': submarino.estado_sub.trim().toLowerCase() === 'desactivado',
+    'estado-activo': submarino.estado_sub.trim().toLowerCase() !== 'desactivado'
+  }">
                     <v-card-title class="text-center">
                       {{ submarino.nom_sub }}
                     </v-card-title>
@@ -60,8 +68,9 @@
                       <p>Estado: {{ submarino.estado_sub }}</p>
                       <p>Ubicación: {{ submarino.ruta }}</p>
                     </v-card-text>
-                    <v-card-actions class="justify-center" style="margin-top: -30px;">
-                      <v-btn @click="abrirDialogoSubmarino(submarino)">Ver Tareas y Rutinas</v-btn>
+                    <v-card-actions class="justify-center" style="margin-top: -25px;">
+                      <v-btn style="background-color: #84ACCE; color: white;"
+                        @click="abrirDialogoSubmarino(submarino)">Ver Tareas y Rutinas</v-btn>
                       <v-btn color="red" icon @click="desvincularSubmarino(submarino)">
                         <v-icon>mdi-delete</v-icon>
                       </v-btn>
@@ -69,15 +78,18 @@
                   </v-card>
                 </v-col>
               </v-row>
+
             </v-col>
           </v-row>
         </v-col>
       </v-row>
 
       <!-- Diálogo para rutinas (CREAR) -->
-      <v-dialog v-model="dialogRutina" max-height="870" max-width="800">
-        <v-card height="870" width="800">
-          <v-card-title>Rutinas del submarino</v-card-title>
+      <v-dialog v-model="dialogRutina" max-height="855" max-width="800">
+        <v-card height="855" width="800">
+          <v-toolbar height="60" style="background-color: #224870; color: white;">
+            <h3 style="margin-left: 15px;">Rutinas del submarino</h3>
+          </v-toolbar>
           <v-card-text>
             <v-row>
               <!-- Columna izquierda -->
@@ -100,14 +112,10 @@
                   <v-text-field ref="horaFinNuevaRutina" v-model="nuevaHoraFin" label="Hora de fin" type="time"
                     :rules="[() => validarHoraFin(selectedDate, nuevaHoraInicio, nuevaHoraFin) || 'Hora inválida']"
                     required></v-text-field>
-                  <!-- Fin de la selección de hora de fin -->
-
                   <!-- Campo para la repetición -->
                   <v-select ref="repetirRutina" v-model="nuevaRepetir" :items="repetirOpciones" label="Repetir"
                     required></v-select>
-
-                  <br />
-                  <v-btn @click="agregarRutina">Agregar Rutina</v-btn>
+                  <v-btn @click="agregarRutina" style="background-color: #84ACCE; color: white;">Agregar Rutina</v-btn>
                 </v-form>
               </v-col>
 
@@ -122,7 +130,7 @@
                         <div>
                           <v-icon @click="editarRutina(index)">mdi-pencil</v-icon>
                           <v-icon @click="confirmarEliminar(index)"
-                            style="margin-left: 10px; margin-right: 10px;">mdi-delete</v-icon>
+                            style="margin-left: 10px; margin-right: 10px; color: red">mdi-delete</v-icon>
                         </div>
                       </div>
                     </v-card>
@@ -132,15 +140,17 @@
             </v-row>
           </v-card-text>
           <v-card-actions>
-            <v-btn @click="cerrarDialogRutina">Cerrar</v-btn>
+            <v-btn @click="cerrarDialogRutina" style="color: red;">Cerrar</v-btn>
           </v-card-actions>
         </v-card>
       </v-dialog>
 
       <!-- Diálogo para editar rutina -->
       <v-dialog v-model="showDialogEdicion" position="center" max-width="800">
-        <v-card height="835" width="800">
-          <v-card-title>Editar Rutina</v-card-title>
+        <v-card height="855" width="800">
+          <v-toolbar height="60" style="background-color: #224870; color: white;">
+            <h3 style="margin-left: 15px;">Editar Rutina</h3>
+          </v-toolbar>
           <v-card-text>
             <v-form @submit.prevent="actualizarRutinaEditada(editingTaskIndex)"> <!-- Pasar el índice -->
               <v-text-field ref="nombreRutinaEditada" v-model="rutinaEnEdicion.nombre" label="* Nombre de la rutina"
@@ -169,12 +179,12 @@
               <!-- Campo de selección de repetición -->
               <v-select ref="repetirRutinaEditada" v-model="rutinaEnEdicion.repetir" :items="repetirOpciones"
                 label="Repetir" required></v-select>
-              <!-- Fin de la selección de repetición -->
             </v-form>
           </v-card-text>
           <v-card-actions>
-            <v-btn @click="actualizarRutinaEditada(editingTaskIndex)">Actualizar Rutina</v-btn>
-            <v-btn @click="this.showDialogEdicion = false">Cancelar</v-btn>
+            <v-btn style="background-color: #84ACCE; color: white;"
+              @click="actualizarRutinaEditada(editingTaskIndex)">Actualizar Rutina</v-btn>
+            <v-btn style="color: red;" @click="this.showDialogEdicion = false">Cancelar</v-btn>
           </v-card-actions>
         </v-card>
       </v-dialog>
@@ -193,7 +203,9 @@
       <!-- ASIGNAR RUTINAS Y TAREAS A SUBMARINOS -->
       <v-dialog v-model="dialogoSubmarinoVisible" max-width="1000px">
         <v-card>
-          <v-card-title>{{ submarinoSeleccionado.nom_sub }}</v-card-title>
+          <v-toolbar height="60" style="background-color: #224870; color: white;">
+            <h3 style="margin-left: 15px;">{{ submarinoSeleccionado.nom_sub }}</h3>
+          </v-toolbar>
           <v-card-text>
             <v-row>
               <v-col cols="6">
@@ -249,6 +261,7 @@ import { ref } from "vue";
 export default {
   data() {
     return {
+      isSearchActive: false,
       drawer: false,
       submarinoSeleccionado: null,
       dialogoSubmarinoVisible: false,
@@ -345,7 +358,6 @@ export default {
       return true;
     },
 
-
     generarRepeticionesTotales(actividad) {
       if (actividad.tipo === 'Tarea') {
         return this.generarRepeticionesDiarias(actividad);
@@ -420,6 +432,7 @@ export default {
           } else {
             // Hay solapamientos, muestra un mensaje y no hagas nada
             alert("La asignación de la rutina se solapa con otras actividades o no respeta el intervalo de descanso requerido.");
+            return;
           }
         }
       } else {
@@ -445,6 +458,11 @@ export default {
       //console.log("ID AREA " + this.areaEncontradaID + " ID rutina " + rutina.id + " Id sub: " + submarino.id_sub);
       await eliminarIdSubmarino(this.areaEncontradaID, rutina.id, submarino.id_sub);
       await eliminarIdRutinaDeSubmarino(this.areaEncontradaID, rutina.id, submarino.id_sub);
+    },
+
+    // ELIMINAR ID SUB DE RUTINA AL DESVINCULAR SUB
+    async actualizarBaseDeDatosRutinaEliminarAlEliminarSub(rutina, submarino) {
+      await eliminarIdSubmarino(this.areaEncontradaID, rutina.id, submarino.id_sub);
     },
 
     // ACTUALIZAR LA DISPO DE ACTIVIDADES
@@ -553,22 +571,37 @@ export default {
     },
 
     async desvincularSubmarino(submarino) {
-      // Desvincular un submarino específico del área seleccionada
-      submarino.area = null;
-      // console.log(submarino.id_sub);
-      // console.log(submarino.id_area);
-      this.submarinosAsignados = this.submarinosAsignados.filter(
-        (sub) => sub !== submarino
-      );
-      this.submarinosDisponibles.push(submarino);
+      // Mostrar un cuadro de diálogo de confirmación antes de proceder
+      if (confirm("¿Estás seguro de que quieres desvincular el submarino?")) {
+        submarino.area = null;  // Desvincular el submarino del área seleccionada
+        this.submarinosAsignados = this.submarinosAsignados.filter(
+          (sub) => sub !== submarino
+        );
+        this.submarinosDisponibles.push(submarino);
 
-      try {
-        await deleteSubMongo(this.areaEncontrada._id, submarino.id_sub);
-        await deleteAreaSub(submarino.id_sub);
-      } catch (err) {
-        console.error("Error al desvincular el submarino:", error);
+        try {
+          // Eliminar el submarino de todas las rutinas asociadas
+          this.rutinas.rutinas.forEach(rutina => {
+            const index = rutina.submarinos.indexOf(submarino.id_sub);
+            if (index !== -1) {
+              rutina.submarinos.splice(index, 1);
+              this.actualizarBaseDeDatosRutinaEliminarAlEliminarSub(rutina, submarino);
+              console.log("DEL");
+            }
+          });
+
+          await deleteSubMongo(this.areaEncontrada._id, submarino.id_sub);
+          await deleteAreaSub(submarino.id_sub);
+
+
+        } catch (err) {
+          console.error("Error al desvincular el submarino:", err);
+        }
+        this.getSubmarino();
+      } else {
+        // El usuario ha cancelado la acción
+        console.log("Desvinculación cancelada.");
       }
-      this.getSubmarino();
     },
 
     crearRutina() {
@@ -727,43 +760,59 @@ export default {
 
     // BUSCAR AREA + CARGAR SUBMARINSO ASIGNADOS
     async buscarArea() {
-      const areaEncontrada = this.areas.find(
-        (area) => area.nombreArea === this.nombreLugarBusqueda
-      );
-
-      if (areaEncontrada && areaEncontrada.coordenadas) {
-        //mostrar la colum derecha
-        this.mostrarColumnaDerecha = true;
-
-        // Restablecer las rutinas para evitar mostrar las rutinas del área anterior
-        this.rutinas = [];
-
-        // Cargar coordenadas en mapaSelect
-        this.cargarCoordenadasEnMapaSelect(areaEncontrada.coordenadas);
-        this.areaEncontrada = areaEncontrada;
-        this.areaEncontradaID = areaEncontrada._id;
-        this.nombreExistente = areaEncontrada.nombreArea;
-
-        // Mover submarinos disponibles a submarinos asignados
-        const submarinosDisponiblesEnArea = this.submarinosDisponibles.filter(
-          submarino => submarino.id_area === this.areaEncontradaID
+      if (!this.isSearchActive) {
+        const areaEncontrada = this.areas.find(
+          (area) => area.nombreArea === this.nombreLugarBusqueda
         );
 
-        this.submarinosAsignados.push(...submarinosDisponiblesEnArea);
-        this.submarinosDisponibles = this.submarinosDisponibles.filter(
-          submarino => submarino.id_area !== this.areaEncontradaID
-        );
+        if (areaEncontrada && areaEncontrada.coordenadas) {
+          //mostrar la colum derecha
+          this.mostrarColumnaDerecha = true;
 
-        // Llamar al método selectRutinas para cargar las rutinas del área encontrada
-        await this.selectRutinas(this.areaEncontradaID);
+          // Restablecer las rutinas para evitar mostrar las rutinas del área anterior
+          this.rutinas = [];
+
+          // Cargar coordenadas en mapaSelect
+          this.cargarCoordenadasEnMapaSelect(areaEncontrada.coordenadas);
+          this.areaEncontrada = areaEncontrada;
+          this.areaEncontradaID = areaEncontrada._id;
+          this.nombreExistente = areaEncontrada.nombreArea;
+
+          // Mover submarinos disponibles a submarinos asignados
+          const submarinosDisponiblesEnArea = this.submarinosDisponibles.filter(
+            submarino => submarino.id_area === this.areaEncontradaID
+          );
+
+          this.submarinosAsignados.push(...submarinosDisponiblesEnArea);
+          this.submarinosDisponibles = this.submarinosDisponibles.filter(
+            submarino => submarino.id_area !== this.areaEncontradaID
+          );
+
+          // Llamar al método selectRutinas para cargar las rutinas del área encontrada
+          await this.selectRutinas(this.areaEncontradaID);
+          this.isSearchActive = true;
+        } else {
+          // Si el área no se encuentra, limpiar las rutinas
+          this.rutinas = [];
+        }
       } else {
-        // Si el área no se encuentra, limpiar las rutinas
-        this.rutinas = [];
+        this.limpiarBusqueda();
       }
 
       this.actualizarSubmarinos();
 
       this.getSubmarino();
+    },
+
+    // LIMPIAR BUSQUEDA
+    limpiarBusqueda() {
+      this.areaEncontrada = null;
+      this.nombreLugarBusqueda = '';
+      this.isSearchActive = false;  // Desactivar el modo de búsqueda activa
+
+      this.limpiarMapaSelect();
+      this.initMapaSelect();
+      this.mostrarColumnaDerecha = false;
     },
 
     // HACER SELECT A RUTINAS
@@ -1060,7 +1109,7 @@ export default {
 
       if (minutos < 150) {
         return 'La hora de fin debe ser al menos 2 horas y 30 minutos después de la hora de inicio.';
-      } 
+      }
 
       return true;
     },
@@ -1103,14 +1152,20 @@ export default {
     console.log("MONTADO");
 
     this.$nextTick(() => {
-    this.detectScreenSize();  // Recalculate background color after everything is loaded
-  });
+      this.detectScreenSize();  // Recalculate background color after everything is loaded
+    });
+    this.initMapaSelect();
     this.getAreas();
     this.getSubmarino();
   },
 
   updated() {
     console.log("UPDATED");
+  },
+
+  destroyed() {
+    // Eliminar el listener del evento resize al destruir el componente
+    window.removeEventListener("resize", this.detectScreenSize);
   },
 };
 </script>
@@ -1121,11 +1176,14 @@ import DefaultBar from "@/layouts/default/AppBar.vue";
 </script>
 
 <style scoped>
-body, html {
+body,
+html {
   height: 100%;
   margin: 0;
-  background-color: #EFEFEF; /* Define el color de fondo aquí */
+  background-color: #EFEFEF;
+  /* Define el color de fondo aquí */
 }
+
 /* Estilo base para el checkbox */
 .checkbox-personalizado {
   -webkit-appearance: none;
