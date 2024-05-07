@@ -434,14 +434,24 @@ export default {
             alert("La asignación de la rutina se solapa con otras actividades o no respeta el intervalo de descanso requerido.");
             return;
           }
+        } else {
+          // Si se cancela la acción, no cambiar el estado del checkbox
+          return;
         }
       } else {
         if (confirm("¿Deseas desvincular esta rutina del submarino?")) {
           const index = rutina.submarinos.indexOf(submarino.id_sub);
           rutina.submarinos.splice(index, 1);
           this.actualizarBaseDeDatosRutinaEliminar(rutina, submarino);
+        } else {
+          // Si se cancela la acción, no cambiar el estado del checkbox
+          console.log("No");
+          this.$forceUpdate();
+          return;
         }
       }
+      console.log("fin");
+      this.$forceUpdate();
       // Luego de manejar la lógica de asignación/desvinculación, actualiza la disponibilidad
       this.actualizarDisponibilidad(submarino.id_sub);
     },
@@ -586,13 +596,10 @@ export default {
             if (index !== -1) {
               rutina.submarinos.splice(index, 1);
               this.actualizarBaseDeDatosRutinaEliminarAlEliminarSub(rutina, submarino);
-              console.log("DEL");
             }
           });
-
           await deleteSubMongo(this.areaEncontrada._id, submarino.id_sub);
           await deleteAreaSub(submarino.id_sub);
-
 
         } catch (err) {
           console.error("Error al desvincular el submarino:", err);
