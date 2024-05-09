@@ -1,7 +1,7 @@
 <template>
   <div class="login-container">
     <div class="login">
-      <img src="../assets/logo2.svg" alt="Logo" class="logo" />
+      <img src="../assets/logonofons.png" alt="Logo" class="logo" />
       <form @submit.prevent="login" v-if="!showRegister">
         <v-text-field
           clearable

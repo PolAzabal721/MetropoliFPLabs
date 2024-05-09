@@ -182,12 +182,20 @@
 }
 
 .seleccion {
-  /* Estilos del select según tus preferencias */
   padding: 5px;
   border-radius: 5px;
   border: 2px solid white;
   color: white;
-  /* Añade bordes */
+  /* color normal */
+  
+}
+
+.seleccion:focus,
+.seleccion option:checked {
+  color: black;
+  /* Cambiar color a negro cuando esté seleccionado o enfocado */
+  background-color: white;
+  /* Cambiar el fondo a blanco para que se vea el texto negro */
 }
 </style>
 
