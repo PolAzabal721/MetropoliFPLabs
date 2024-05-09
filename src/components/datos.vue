@@ -2,30 +2,35 @@
   <div id="appBarContainer">
     <default-bar />
   </div>
-  <v-layout class="rounded rounded-md" :style="{ backgroundColor: backgroundColor, height: `${minHeight}px` }">
+  <v-layout class="rounded rounded-md" :style="{ backgroundColor: backgroundColor, minHeight: `${minHeight}px` }">
     <v-main>
       <v-container fluid>
         <v-row>
           <!-- Submarino Info -->
           <v-col cols="5">
-            <v-card class="mx-5" max-width="800">
-              <v-card-title class="text-center">
-                <h2>Selecciona un submarino</h2>
-              </v-card-title>
-              <v-card-text class="text-center">
-                <select class="select" v-model="submarinoSeleccionado" @change="avanzar">
-                  <option disabled value="">Selecciona un submarino</option>
-                  <option v-for="submarino in submarinos" :key="submarino.id" :value="submarino">
-                    {{ submarino.nom_sub }}
-                  </option>
-                </select>
-                <span class="icon" @click="limpiarSeleccion">
+            <!-- SELECTOR SUB -->
+            <v-card class="submarino-card">
+              <v-toolbar height="60" style="background-color: #224870; color: white;">
+                <h3 style="margin-left: 15px;">Selecciona un submarino</h3>
+              </v-toolbar>
+              <v-card-text class="d-flex align-center justify-space-between">
+                <div style="flex-grow: 1; margin-right: 8px;">
+                  <select class="select" v-model="submarinoSeleccionado" @change="avanzar">
+                    <option disabled value="">Selecciona un submarino</option>
+                    <option v-for="submarino in submarinos" :key="submarino.id" :value="submarino">
+                      {{ submarino.nom_sub }}
+                    </option>
+                  </select>
+                </div>
+                <span class="icon" @click="limpiarSeleccion" style="cursor: pointer;">
                   <i class="mdi mdi-close mdi-24px"></i>
                 </span>
               </v-card-text>
             </v-card>
-            <v-card class="mx-5" height="680" width="800" style="margin-top: 10px">
-              <v-card-text class="vCardText">
+
+            <!-- DETALLES SUB -->
+            <v-card class="info-card">
+              <v-card-text>
                 <div v-if="seleccionado">
                   <p><b>Nombre del robot:</b> {{ submarinoSeleccionado.nom_sub }}</p>
                   <p><b>Estado del robot:</b> {{ motor }}</p>
@@ -40,51 +45,40 @@
 
           <!-- Opciones -->
           <v-col cols="3" style="margin-left: 50px;">
-            <v-card class="mx-auto" height="300" width="350">
-              <v-card-text class="vCardText marg text-center">
-                <h2>Opciones</h2>
-                <v-btn v-for="opcion in opciones" :key="opcion" @click="toggleOpcion(opcion)" class="filtro-btn"
-                  :class="{ 'btn-active': opcionesSeleccionadas.includes(opcion) }">
-                  {{ opcion }}
-                </v-btn>
-              </v-card-text>
+            <v-card class="options-card marg text-center">
+              <v-toolbar height="60" style="background-color: #224870; color: white;">
+                <h3 style="margin-left: 15px;">Opciones</h3>
+              </v-toolbar>
+              <v-btn v-for="opcion in opciones" :key="opcion" @click="toggleOpcion(opcion)" class="filtro-btn"
+                :class="{ 'btn-active': opcionesSeleccionadas.includes(opcion) }">
+                {{ opcion }}
+              </v-btn>
             </v-card>
           </v-col>
 
           <!-- Historial de Movimientos -->
           <v-col cols="3">
-            <v-card class="mx-auto" height="800" width="400">
-              <v-card-text class="vCardText marg text-center">
-                <h2>Historial de movimientos</h2>
-                <v-card-text class="vCardText" ref="movimientosList">
-                  <v-container fluid>
-                    <v-row>
-                      <v-col>
-                        <div class="scroll-container">
-                          <v-list>
-                            <v-list-item v-if="movimientoSub.length > 0">
-                              <v-list-item v-for="(subMovimiento, index) in movimientoSub" :key="index">
-                                <v-list-item v-for="(movimiento, indexMov) in subMovimiento.movimientos_sub"
-                                  :key="indexMov">
-                                  <v-list-item class="message">
-                                    <v-list-item-text>
-                                      <span :class="getColor(movimiento.detalle)">
-                                        {{ movimiento.fecha }} - {{ movimiento.detalle }}
-                                      </span>
-                                    </v-list-item-text>
-                                  </v-list-item>
-                                </v-list-item>
-                              </v-list-item>
-                            </v-list-item>
-                            <v-list-item v-else>
-                              <v-list-item-title>No hay movimientos</v-list-item-title>
-                            </v-list-item>
-                          </v-list>
-                        </div>
-                      </v-col>
-                    </v-row>
-                  </v-container>
-                </v-card-text>
+            <v-card class="history-card">
+              <v-toolbar height="60" style="background-color: #224870; color: white;">
+                <h3 style="margin-left: 15px;">Historial de movimientos</h3>
+              </v-toolbar>
+              <v-card-text class="marg text-center">
+                <div class="scroll-container">
+                  <v-list>
+                    <v-list-item v-if="movimientoSub.length > 0" v-for="(subMovimiento, index) in movimientoSub"
+                      :key="index">
+                      <v-list-item v-for="(movimiento, indexMov) in subMovimiento.movimientos_sub" :key="indexMov"
+                        class="message">
+                        <span :class="getColor(movimiento.detalle)">
+                          {{ movimiento.fecha }} - {{ movimiento.detalle }}
+                        </span>
+                      </v-list-item>
+                    </v-list-item>
+                    <v-list-item v-else>
+                      <v-list-item-title>No hay movimientos</v-list-item-title>
+                    </v-list-item>
+                  </v-list>
+                </div>
               </v-card-text>
             </v-card>
           </v-col>
@@ -135,7 +129,7 @@ export default {
 
     this.socket.on("actualizarMovimientos", async (mov) => {
       this.movimientos = mov;
-      console.log(this.movimientos);
+      // console.log(this.movimientos);
     });
     // Recuperar valores del almacenamiento local al iniciar la página
     if (localStorage.getItem("motor")) {
@@ -154,12 +148,12 @@ export default {
       state.ultimaConexion = localStorage.getItem("ultimaConexion");
     }
   },
-  mounted(){
+  mounted() {
     console.log("MOUNTED");
     this.updateMinHeight(); // Establece la altura inicial
     window.addEventListener('resize', this.updateMinHeight);
   },
-  
+
   beforeDestroy() {
     window.removeEventListener('resize', this.updateMinHeight); // Limpia el event listener
   },
@@ -251,14 +245,14 @@ export default {
     },
     avanzar() {
       this.seleccionado = true;
-      console.log("Submarino seleccionado:", this.submarinoSeleccionado);
+      //console.log("Submarino seleccionado:", this.submarinoSeleccionado);
       // Filtrar los movimientos para el submarino seleccionado
       this.movimientoSub = this.movimientos.filter(mov =>
         mov.idSubmarino === this.submarinoSeleccionado.id_sub
       );
       this.opcionSeleccionada = null
 
-      console.log("Movimientos filtrados:", this.movimientoSub);
+      //console.log("Movimientos filtrados:", this.movimientoSub);
     },
     limpiarSeleccion() {
       this.submarinoSeleccionado = null;
@@ -267,39 +261,40 @@ export default {
       this.seleccionado = false;
     },
 
-
     toggleOpcion(opcion) {
       const grupoRestringido = ['Home', 'Camino a casa', 'En rutina', 'En camino a destino'];
       const indice = this.opcionesSeleccionadas.indexOf(opcion);
 
-      if (indice !== -1) {
-        // Si la opción ya está seleccionada, simplemente la quitamos
-        this.opcionesSeleccionadas.splice(indice, 1);
-      } else {
-        // Verificamos si la opción pertenece al grupo restringido
-        if (grupoRestringido.includes(opcion)) {
-          // Remover otras opciones del grupo restringido que ya estén seleccionadas
-          this.opcionesSeleccionadas = this.opcionesSeleccionadas.filter(op => !grupoRestringido.includes(op));
-        }
-
-        // Verificamos si las opciones seleccionadas actuales son compatibles con la nueva opción
-        const opcionesCompatibles = this.opcionesSeleccionadas.filter(op =>
-          this.combinacionesOpciones[op].includes(opcion) || this.combinacionesOpciones[opcion].includes(op)
-        );
-
-        // Si no hay opciones compatibles o si no hay opciones seleccionadas, reiniciamos las opciones seleccionadas
-        if (opcionesCompatibles.length === 0 && this.opcionesSeleccionadas.length > 0) {
-          this.opcionesSeleccionadas = [opcion];
+      if (this.submarinoSeleccionado !== null) {
+        if (indice !== -1) {
+          // Si la opción ya está seleccionada, simplemente la quitamos
+          this.opcionesSeleccionadas.splice(indice, 1);
         } else {
-          // Si es compatible, solo añadimos la nueva opción
-          this.opcionesSeleccionadas.push(opcion);
+          // Verificamos si la opción pertenece al grupo restringido
+          if (grupoRestringido.includes(opcion)) {
+            // Remover otras opciones del grupo restringido que ya estén seleccionadas
+            this.opcionesSeleccionadas = this.opcionesSeleccionadas.filter(op => !grupoRestringido.includes(op));
+          }
+
+          // Verificamos si las opciones seleccionadas actuales son compatibles con la nueva opción
+          const opcionesCompatibles = this.opcionesSeleccionadas.filter(op =>
+            this.combinacionesOpciones[op].includes(opcion) || this.combinacionesOpciones[opcion].includes(op)
+          );
+
+          // Si no hay opciones compatibles o si no hay opciones seleccionadas, reiniciamos las opciones seleccionadas
+          if (opcionesCompatibles.length === 0 && this.opcionesSeleccionadas.length > 0) {
+            this.opcionesSeleccionadas = [opcion];
+          } else {
+            // Si es compatible, solo añadimos la nueva opción
+            this.opcionesSeleccionadas.push(opcion);
+          }
         }
+
+        this.actualizarMovimientos();
+      } else {
+        alert("Debes seleccionar un submarino para poder utilizar el filtro");
       }
-
-      this.actualizarMovimientos();
     },
-
-
 
     actualizarMovimientos() {
       if (this.opcionesSeleccionadas.length === 0) {
@@ -317,37 +312,9 @@ export default {
         }).filter(mov => mov.movimientos_sub.length > 0);
       }
 
-      console.log("Opciones seleccionadas para filtrado:", this.opcionesSeleccionadas);
-      console.log("Movimientos filtrados:", this.movimientoSub);
+      // console.log("Opciones seleccionadas para filtrado:", this.opcionesSeleccionadas);
+      // console.log("Movimientos filtrados:", this.movimientoSub);
     },
-
-
-    // //ESTO ES PARA PROBAR EL SOCKET EMIT
-    // enviarMovimientos() {
-    //   const fechaActual = new Date().toISOString().slice(0, 10); // YYYY-MM-DD
-
-    //   const movimiento = {
-    //     detalle: this.opcionSeleccionada,
-    //     fecha: fechaActual,
-    //   };// Opción seleccionada
-    //   console.log("Movimiento a enviar:", movimiento);
-    //   const idSubmarino = this.submarinoSeleccionado.id_sub; // ID del submarino
-
-    //   const datos = {
-    //     movimiento: movimiento,
-    //     idSubmarino: idSubmarino,
-    //   };
-
-    //   this.socket.emit('addMovimientos', datos, (respuesta) => {
-    //     if (respuesta.success) {
-    //       console.log('Movimiento añadido y movimientos actualizados.');
-    //     } else if (respuesta.info) {
-    //       console.log('No se realizó ninguna actualización.');
-    //     } else if (respuesta.error) {
-    //       console.error('Error al enviar datos:', respuesta.error);
-    //     }
-    //   });
-    // },
   },
   watch: {
     // Vigila los cambios en 'movimientos' y actualiza 'movimientoSub'
@@ -371,29 +338,17 @@ import DefaultBar from "@/layouts/default/AppBar.vue";
 </script>
 
 <style>
+@import url('https://fonts.googleapis.com/css2?family=Roboto:wght@400;500&display=swap');
+
 html,
 body,
 #app {
   margin: 0;
   padding: 0;
+  font-family: 'Roboto', sans-serif;
+
 }
 
-.filtro-btn {
-  margin-right: 8px;
-  margin-bottom: 8px;
-  border-radius: 12px;
-  margin-top: 10.5px;
-  padding: 8px 8px;
-  /* Ajusta el padding según tu preferencia para el tamaño de los botones */
-  font-size: 12px;
-  /* Ajusta el tamaño de la letra según tu preferencia */
-  color: #888;
-  /* Cambia el color a gris o el tono deseado */
-  background-color: #f0f0f0;
-  /* Cambia el color de fondo si es necesario */
-  border: 1px solid #ccc;
-  /* Añade un borde para resaltar el botón */
-}
 
 /* Estilos para el v-card-text */
 .vCardText {
@@ -413,13 +368,6 @@ body,
   margin: 35px 0;
 }
 
-.scroll-container {
-  overflow-y: auto;
-  overflow-x: hidden;
-  max-height: 600px;
-  /* Asegúrate de que esta altura es suficiente */
-}
-
 .message {
   padding: 0.5rem 1rem !important;
   background-color: #efefef !important;
@@ -433,36 +381,64 @@ body,
   /* Asegurar la ruptura de palabras */
 }
 
-
-.select {
-  width: 300px;
-  /* Ajusta el ancho según sea necesario */
-  padding: 10px;
-  font-size: 16px;
-  /* Ajusta el tamaño de la fuente según sea necesario */
-  text-align: center;
-  /* Centra el texto */
-  border: 2px solid #333;
-  /* Añade bordes */
-  background-color: #fff8f8;
-  /* Color de fondo más oscuro */
-  color: black;
-  /* Color del texto */
-  border-radius: 8px;
-  /* Agrega bordes redondeados */
-  margin: 0 auto;
-  /* Centra horizontalmente */
+.rounded-md {
+  border-radius: 10px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
 }
 
+.title {
+  font-size: 24px;
+  color: #333;
+}
+
+.select {
+  border: 2px solid #ccc;
+  border-radius: 8px;
+  padding: 8px 12px;
+  width: 100%;
+}
 
 .icon {
-  position: absolute;
-  top: 65%;
-  right: 160px;
-
-  size: 20px;
-  transform: translateY(-50%);
   cursor: pointer;
+  display: inline-block;
+  margin-left: 10px;
+}
+
+/* Cards */
+.submarino-card,
+.info-card,
+.options-card,
+.history-card {
+  background-color: #fff;
+  margin: 10px 5px;
+  border-radius: 15px;
+  box-shadow: 0 6px 10px rgba(0, 0, 0, 0.15);
+}
+
+/* Buttons */
+.filtro-btn {
+  margin: 10px;
+  padding: 10px 20px;
+  border-radius: 20px;
+  border: none;
+  background-color: #84ACCE;
+  color: white;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+
+.filtro-btn:hover,
+.filtro-btn.btn-active {
+  background-color: #224870;
+}
+
+/* Scroll Container */
+.scroll-container {
+  max-height: 400px;
+  overflow-y: auto;
+  padding: 10px;
+  border: 1px solid #ccc;
+  border-radius: 10px;
 }
 
 .verde-oscuro {

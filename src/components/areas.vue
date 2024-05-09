@@ -19,7 +19,7 @@
             Editar
           </v-btn>
         </div>
-        <div class="mx-auto" id="map" style="height: 850px; width: 1500px;"></div>
+        <div class="mx-auto" id="map" style="height: 750px; width: 1500px;"></div>
       </v-container>
     </v-main>
 
