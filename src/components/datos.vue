@@ -1,7 +1,9 @@
 <template>
-  <default-bar />
-  <v-layout class="rounded rounded-md"  style="background-color: #EFEFEF;">
-    <v-main style="height: 100vh">
+  <div id="appBarContainer">
+    <default-bar />
+  </div>
+  <v-layout class="rounded rounded-md" :style="{ backgroundColor: backgroundColor, height: `${minHeight}px` }">
+    <v-main>
       <v-container fluid>
         <v-row>
           <!-- Submarino Info -->
@@ -92,9 +94,6 @@
   </v-layout>
 </template>
 
-
-
-
 <script>
 import { state } from "../services/socket";
 import io from "socket.io-client";
@@ -123,7 +122,9 @@ export default {
         'En rutina': ['Inmersión', 'Ascenso', 'EMERGENCIA'],
         'En camino a destino': ['EMERGENCIA', 'Inmersión', 'Ascenso']
       },
-      opcionesSeleccionadas: []
+      opcionesSeleccionadas: [],
+      minHeight: 0,
+      backgroundColor: '#EFEFEF',
 
     };
   },
@@ -152,6 +153,15 @@ export default {
     if (localStorage.getItem("ultimaConexion")) {
       state.ultimaConexion = localStorage.getItem("ultimaConexion");
     }
+  },
+  mounted(){
+    console.log("MOUNTED");
+    this.updateMinHeight(); // Establece la altura inicial
+    window.addEventListener('resize', this.updateMinHeight);
+  },
+  
+  beforeDestroy() {
+    window.removeEventListener('resize', this.updateMinHeight); // Limpia el event listener
   },
   computed: {
     estado() {
@@ -186,6 +196,13 @@ export default {
   },
 
   methods: {
+    // Método computado para detectar el tamaño de la pantalla y establecer el color de fondo
+    updateMinHeight() {
+      const appBarElement = document.getElementById('appBarContainer');
+      const appBarHeight = appBarElement ? appBarElement.offsetHeight : 0;
+      this.minHeight = window.innerHeight - appBarHeight;
+    },
+
     getColor(detalle) {
       switch (detalle) {
         case 'Inmersión':
@@ -348,11 +365,19 @@ export default {
   },
 };
 </script>
+
 <script setup>
 import DefaultBar from "@/layouts/default/AppBar.vue";
 </script>
 
 <style>
+html,
+body,
+#app {
+  margin: 0;
+  padding: 0;
+}
+
 .filtro-btn {
   margin-right: 8px;
   margin-bottom: 8px;
@@ -434,7 +459,7 @@ import DefaultBar from "@/layouts/default/AppBar.vue";
   position: absolute;
   top: 65%;
   right: 160px;
-  
+
   size: 20px;
   transform: translateY(-50%);
   cursor: pointer;

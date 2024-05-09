@@ -7,62 +7,64 @@
     <v-main>
       <v-container fluid class="mx-auto">
         <!-- MAPA PRINCIPAL -->
-        <v-text-field v-model="nombreLugar" label="Intoduce un nombre para el area" @input="verificarLongitudNombre"
-          @paste="truncarValor" maxlength="45"></v-text-field>
-        <div class="ml-4 d-flex">
-          <v-btn @click="crearLugar"
+        <div class="d-flex align-center  justify-center">
+          <v-text-field style="height: 75px;  max-width: 1300px; font-size: auto; color: #224870;" v-model="nombreLugar"
+            label="Introduce un nombre para el área" @input="verificarLongitudNombre" @paste="truncarValor"
+            maxlength="45"></v-text-field>
+          <v-btn @click="crearLugar" style="background-color: #84ACCE; color: white; margin-left: 15px;"
             :disabled="nombreLugar === '' || drawnGeometries.length === 0 || nombreLugarExcedeLongitud">
             Crear
           </v-btn>
-
-          <v-btn @click="abrirEditarDialog" class="ml-4"> Editar </v-btn>
+          <v-btn @click="abrirEditarDialog" class="ml-4" style="background-color: #84ACCE; color: white;">
+            Editar
+          </v-btn>
         </div>
-        <br />
-        <div id="map" style="height: 665px; width: 800px"></div>
+        <div class="mx-auto" id="map" style="height: 850px; width: 1500px;"></div>
       </v-container>
     </v-main>
 
     <!-- Diálogo de Edición -->
     <v-dialog v-model="dialogEditar" max-width="600">
       <v-card height="1000" width="900">
-        <v-card-title> Editar Área </v-card-title>
-
+        <v-toolbar height="60" style="background-color: #224870; color: white;">
+          <h3 style="margin-left: 15px;">Editar Área</h3>
+        </v-toolbar>
         <v-row>
           <!-- SELECT AREA -->
           <v-col class="mr-3">
             <v-select class="editarSelect" v-model="nombreLugarBusqueda" :items="areas.map((area) => area.nombreArea)"
-              label="Selecciona el área que quieras editar"></v-select>
+              style="height: 75px; font-size: auto; color: #224870; margin-top: 15px; margin-left: 25px;"
+              :disabled="isSearchActive" label="Selecciona el área que quieras editar"></v-select>
           </v-col>
 
           <!-- NUEVO NOMBRE AREA -->
           <v-col>
             <v-text-field class="small-text-field" v-model="nuevoNombre" label="Nuevo nombre Area"
-              :disabled="!areaEncontrada" @input="verificarLongitudNuevoNombre" @paste="truncarNuevoNombre"
-              maxlength="45"></v-text-field>
+              style="height: 75px; font-size: auto; color: #224870; margin-top: 15px;" :disabled="!areaEncontrada"
+              @input="verificarLongitudNuevoNombre" @paste="truncarNuevoNombre" maxlength="45"></v-text-field>
           </v-col>
         </v-row>
-
         <v-row>
           <!-- BTN PARA BUSCAR AREA -->
           <v-col>
-            <v-btn class="editarSelect" @click="buscarArea" :disabled="nombreLugarBusqueda === ''">
-              Buscar
+            <v-btn class="ml-4 elevation-2 btnBuscar" @click="buscarArea"
+              :disabled="nombreLugarBusqueda === '' && !isSearchActive"
+              :style="{ backgroundColor: isSearchActive ? 'red' : '#84ACCE', color: 'white' }">
+              {{ isSearchActive ? 'Limpiar Área Seleccionada' : 'Buscar Área' }}
             </v-btn>
           </v-col>
 
           <!-- BTN PARA ACTIVAR Y DESACTIVAR EDITAR COORDENADAS -->
           <v-col>
-            <v-btn class="editarArea" @click="editarArea">
+            <v-btn class="editarArea" @click="editarArea" :disabled="nombreLugarBusqueda === ''"
+              style="background-color: #84ACCE; color: white; margin-left: 5px">
               {{ isEditing ? "Guardar cambios" : "Editar Coordenadas" }}
             </v-btn>
           </v-col>
         </v-row>
 
-        <br />
         <!-- MAPA PARA EDITAR AREAS -->
-        <v-card class="mx-auto slidecontainer" height="860" width="800">
-          <div id="mapaSelect" style="height: 740px; width: 800px"></div>
-        </v-card>
+        <div id="mapaSelect" style="height: 740px; width: 825px; margin: 25px;"></div>
         <v-card-actions>
           <v-btn @click="guardarCambiosClick" color="primary"> Guardar </v-btn>
           <v-btn @click="deleteArea" color="error"> Eliminar Area </v-btn>
@@ -93,6 +95,7 @@ export default {
   data() {
     return {
       drawnGeometries: [],
+      isSearchActive: false,
       minHeight: 0,
       nombreLugar: "",
       map: null,
@@ -277,11 +280,16 @@ export default {
     // ABRIR APARTADO EDITAR
     abrirEditarDialog() {
       this.dialogEditar = true;
+      this.$nextTick(() => { // Espera a que Vue actualice el DOM
+
+        this.initMapaSelect();
+      });
     },
 
     // CERRAR EDITOR DE AREAS
     cerrarEditarDialog() {
       this.dialogEditar = false;
+      this.limpiarMapaSelect();
       this.reiniciarEstado();
     },
 
@@ -351,35 +359,44 @@ export default {
     // BUSCAMOS EL AREA Y PERMITIMOS EDITAR
     async buscarArea() {
       this.isEditing = false;
-
-      const areaEncontrada = this.areas.find(
-        (area) => area.nombreArea === this.nombreLugarBusqueda
-      );
-
-      this.areaEncontrada = areaEncontrada;
-
-      if (areaEncontrada && areaEncontrada.coordenadas) {
-        const geoJsonLayer = await this.cargarCoordenadasEnMapaSelect(
-          areaEncontrada.coordenadas
+      if (!this.isSearchActive) {
+        const areaEncontrada = this.areas.find(
+          (area) => area.nombreArea === this.nombreLugarBusqueda
         );
-        // console.log(geoJsonLayer);
-        const layers = geoJsonLayer.getLayers();
 
-        // Validar el nuevo nombre
-        this.nuevoNombre = this.areaEncontrada.nombreArea;
+        this.areaEncontrada = areaEncontrada;
 
-        if (layers.length > 0) {
-          this.layerToEdit = layers[0];
+        if (areaEncontrada && areaEncontrada.coordenadas) {
+          this.isSearchActive = true;
+          const geoJsonLayer = await this.cargarCoordenadasEnMapaSelect(
+            areaEncontrada.coordenadas
+          );
+          // console.log(geoJsonLayer);
+          const layers = geoJsonLayer.getLayers();
 
-          if (this.layerToEdit && this.layerToEdit.editing) {
-            //this.layerToEdit.editing.enable();
+          // Validar el nuevo nombre
+          this.nuevoNombre = this.areaEncontrada.nombreArea;
+
+          if (layers.length > 0) {
+            this.layerToEdit = layers[0];
+
+            if (this.layerToEdit && this.layerToEdit.editing) {
+              //this.layerToEdit.editing.enable();
+            } else {
+              console.log(this.layerToEdit);
+              console.error("Editing not available on the layer.");
+            }
           } else {
-            console.log(this.layerToEdit);
-            console.error("Editing not available on the layer.");
+            console.error("No layers in drawnItems to enable editing.");
           }
-        } else {
-          console.error("No layers in drawnItems to enable editing.");
         }
+      } else {
+        // Clear the search and reset relevant data
+        this.isSearchActive = false;
+        this.nombreLugarBusqueda = "";
+        this.areaEncontrada = null;
+        this.limpiarMapaSelect();
+        this.initMapaSelect();
       }
     },
 
@@ -668,14 +685,8 @@ body,
   padding: 0;
 }
 
-.editarSelect {
-  width: 350px;
-  margin-left: 50px;
-}
-
-.editarArea {
-  width: 350px;
-  margin-left: 9px;
+.btnBuscar {
+  margin-left: 25px !important;
 }
 
 .small-text-field {
