@@ -213,10 +213,11 @@
                 <div v-for="rutina in rutinas.rutinas" :key="rutina.id" style="margin: 10px;" class="my-2">
                   <input type="checkbox" class="checkbox-personalizado"
                     :checked="estaRutinaAsignada(rutina, submarinoSeleccionado)"
-                    @change="() => toggleAsignacionRutina(rutina, submarinoSeleccionado)"
+                    @click="toggleAsignacionRutina(rutina, submarinoSeleccionado, $event)"
                     :disabled="!rutina.disponible">
                   <label style="margin-left: 5px;">{{ `${rutina.nombre} - ${rutina.repetir}` }}</label>
                 </div>
+
               </v-col>
             </v-row>
           </v-card-text>
@@ -421,40 +422,34 @@ export default {
     },
 
     // ASIGNAR Y QUITAR RUTINA    
-    toggleAsignacionRutina(rutina, submarino) {
+    toggleAsignacionRutina(rutina, submarino, event) {
+      event.preventDefault(); // Previene que el checkbox cambie automáticamente
       const asignada = this.estaRutinaAsignada(rutina, submarino);
+
       if (!asignada) {
         if (confirm("¿Deseas asignar esta rutina al submarino?")) {
           if (this.validarSolapamientos(rutina, submarino.id_sub)) {
-            // No hay solapamientos, puedes proceder a asignar
             rutina.submarinos.push(submarino.id_sub);
             this.actualizarBaseDeDatosRutina(rutina, submarino);
+            setTimeout(() => { event.target.checked = true; }, 0); // Retrasa la marcación del checkbox
           } else {
-            // Hay solapamientos, muestra un mensaje y no hagas nada
             alert("La asignación de la rutina se solapa con otras actividades o no respeta el intervalo de descanso requerido.");
-            return;
           }
-        } else {
-          // Si se cancela la acción, no cambiar el estado del checkbox
-          return;
         }
       } else {
         if (confirm("¿Deseas desvincular esta rutina del submarino?")) {
           const index = rutina.submarinos.indexOf(submarino.id_sub);
           rutina.submarinos.splice(index, 1);
           this.actualizarBaseDeDatosRutinaEliminar(rutina, submarino);
-        } else {
-          // Si se cancela la acción, no cambiar el estado del checkbox
-          console.log("No");
-          this.$forceUpdate();
-          return;
+          setTimeout(() => { event.target.checked = false; }, 0); // Retrasa la desmarcación del checkbox
         }
       }
-      console.log("fin");
-      this.$forceUpdate();
-      // Luego de manejar la lógica de asignación/desvinculación, actualiza la disponibilidad
-      this.actualizarDisponibilidad(submarino.id_sub);
+
+      this.$forceUpdate(); // Fuerza la actualización para asegurar reactividad
     },
+
+
+
 
     // INSERTAR IDS
     async actualizarBaseDeDatosRutina(rutina, submarino) {
