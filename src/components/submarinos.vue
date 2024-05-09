@@ -1,6 +1,6 @@
 <template>
   <default-bar />
-  <v-layout class="rounded rounded-md" :style="{ backgroundColor: backgroundColor }">
+  <v-layout class="rounded rounded-md" :style="{ backgroundColor: backgroundColor, minHeight: '100vh' }">
     <v-main>
       <v-row style="margin: 25px;">
         <!-- Columna izquierda (submarinos) -->
@@ -1180,10 +1180,14 @@ import DefaultBar from "@/layouts/default/AppBar.vue";
 <style scoped>
 body,
 html {
-  height: 100%;
+  height: 100% !important; 
   margin: 0;
   background-color: #EFEFEF;
   /* Define el color de fondo aquí */
+}
+
+#app, .v-application--wrap, v-layout, v-main {
+  min-height: 100% !important; /* Esto asegura que estos elementos ocupen al menos el 100% de la altura del viewport */
 }
 
 /* Estilo base para el checkbox */
