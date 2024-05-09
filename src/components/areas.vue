@@ -1,9 +1,12 @@
 <template>
-  <default-bar />
-  <v-layout class="rounded rounded-md"  style="background-color: #EFEFEF;">
-    <v-container fluid>
-      <!-- MAPA PRINCIPAL -->
-      <v-card class="mx-auto" height="800" width="800">
+  <div id="appBarContainer">
+    <default-bar />
+  </div>
+
+  <v-layout class="rounded rounded-md" :style="{ backgroundColor: backgroundColor, height: `${minHeight}px` }">
+    <v-main>
+      <v-container fluid class="mx-auto">
+        <!-- MAPA PRINCIPAL -->
         <v-text-field v-model="nombreLugar" label="Intoduce un nombre para el area" @input="verificarLongitudNombre"
           @paste="truncarValor" maxlength="45"></v-text-field>
         <div class="ml-4 d-flex">
@@ -15,59 +18,57 @@
           <v-btn @click="abrirEditarDialog" class="ml-4"> Editar </v-btn>
         </div>
         <br />
-        <v-card height="700" width="800">
-          <div id="map" style="height: 665px; width: 800px"></div>
+        <div id="map" style="height: 665px; width: 800px"></div>
+      </v-container>
+    </v-main>
+
+    <!-- Diálogo de Edición -->
+    <v-dialog v-model="dialogEditar" max-width="600">
+      <v-card height="1000" width="900">
+        <v-card-title> Editar Área </v-card-title>
+
+        <v-row>
+          <!-- SELECT AREA -->
+          <v-col class="mr-3">
+            <v-select class="editarSelect" v-model="nombreLugarBusqueda" :items="areas.map((area) => area.nombreArea)"
+              label="Selecciona el área que quieras editar"></v-select>
+          </v-col>
+
+          <!-- NUEVO NOMBRE AREA -->
+          <v-col>
+            <v-text-field class="small-text-field" v-model="nuevoNombre" label="Nuevo nombre Area"
+              :disabled="!areaEncontrada" @input="verificarLongitudNuevoNombre" @paste="truncarNuevoNombre"
+              maxlength="45"></v-text-field>
+          </v-col>
+        </v-row>
+
+        <v-row>
+          <!-- BTN PARA BUSCAR AREA -->
+          <v-col>
+            <v-btn class="editarSelect" @click="buscarArea" :disabled="nombreLugarBusqueda === ''">
+              Buscar
+            </v-btn>
+          </v-col>
+
+          <!-- BTN PARA ACTIVAR Y DESACTIVAR EDITAR COORDENADAS -->
+          <v-col>
+            <v-btn class="editarArea" @click="editarArea">
+              {{ isEditing ? "Guardar cambios" : "Editar Coordenadas" }}
+            </v-btn>
+          </v-col>
+        </v-row>
+
+        <br />
+        <!-- MAPA PARA EDITAR AREAS -->
+        <v-card class="mx-auto slidecontainer" height="860" width="800">
+          <div id="mapaSelect" style="height: 740px; width: 800px"></div>
         </v-card>
+        <v-card-actions>
+          <v-btn @click="guardarCambiosClick" color="primary"> Guardar </v-btn>
+          <v-btn @click="deleteArea" color="error"> Eliminar Area </v-btn>
+        </v-card-actions>
       </v-card>
-
-      <!-- Diálogo de Edición -->
-      <v-dialog v-model="dialogEditar" max-width="600">
-        <v-card height="1000" width="900">
-          <v-card-title> Editar Área </v-card-title>
-
-          <v-row>
-            <!-- SELECT AREA -->
-            <v-col class="mr-3">
-              <v-select class="editarSelect" v-model="nombreLugarBusqueda" :items="areas.map((area) => area.nombreArea)"
-                label="Selecciona el área que quieras editar"></v-select>
-            </v-col>
-
-            <!-- NUEVO NOMBRE AREA -->
-            <v-col>
-              <v-text-field class="small-text-field" v-model="nuevoNombre" label="Nuevo nombre Area"
-                :disabled="!areaEncontrada" @input="verificarLongitudNuevoNombre" @paste="truncarNuevoNombre"
-                maxlength="45"></v-text-field>
-            </v-col>
-          </v-row>
-
-          <v-row>
-            <!-- BTN PARA BUSCAR AREA -->
-            <v-col>
-              <v-btn class="editarSelect" @click="buscarArea" :disabled="nombreLugarBusqueda === ''">
-                Buscar
-              </v-btn>
-            </v-col>
-
-            <!-- BTN PARA ACTIVAR Y DESACTIVAR EDITAR COORDENADAS -->
-            <v-col>
-              <v-btn class="editarArea" @click="editarArea">
-                {{ isEditing ? "Guardar cambios" : "Editar Coordenadas" }}
-              </v-btn>
-            </v-col>
-          </v-row>
-
-          <br />
-          <!-- MAPA PARA EDITAR AREAS -->
-          <v-card class="mx-auto slidecontainer" height="860" width="800">
-            <div id="mapaSelect" style="height: 740px; width: 800px"></div>
-          </v-card>
-          <v-card-actions>
-            <v-btn @click="guardarCambiosClick" color="primary"> Guardar </v-btn>
-            <v-btn @click="deleteArea" color="error"> Eliminar Area </v-btn>
-          </v-card-actions>
-        </v-card>
-      </v-dialog>
-    </v-container>
+    </v-dialog>
   </v-layout>
 </template>
 
@@ -92,6 +93,7 @@ export default {
   data() {
     return {
       drawnGeometries: [],
+      minHeight: 0,
       nombreLugar: "",
       map: null,
       mapa: null,
@@ -115,6 +117,7 @@ export default {
       nombreLugarExcedeLongitud: false,
       nuevoNombreExcedeLongitud: false,
       cambiosNombre: false,
+      backgroundColor: '#EFEFEF',
     };
   },
   methods: {
@@ -296,7 +299,7 @@ export default {
         const store = useAppStore();
         const idEmpresa = store.getUserEmpresa;
         this.areas = await fetchAreas();
-        this.areas = this.areas.filter(area => area.idEmpresa === idEmpresa);  
+        this.areas = this.areas.filter(area => area.idEmpresa === idEmpresa);
 
       } catch (error) {
         console.error("Error fetching areas:", error);
@@ -616,6 +619,14 @@ export default {
       const coordenadas = geojson.geometry.coordinates;
       this.drawnGeometries.push(coordenadas);
     },
+
+    // Método computado para detectar el tamaño de la pantalla y establecer el color de fondo
+    updateMinHeight() {
+      const appBarElement = document.getElementById('appBarContainer');
+      const appBarHeight = appBarElement ? appBarElement.offsetHeight : 0;
+      this.minHeight = window.innerHeight - appBarHeight;
+    }
+
   },
   //
   computed: {},
@@ -627,6 +638,9 @@ export default {
 
   mounted() {
     console.log("MONTADO");
+    this.updateMinHeight(); // Establece la altura inicial
+    window.addEventListener('resize', this.updateMinHeight);
+
     this.getAreas();
     this.initMap();
   },
@@ -634,6 +648,10 @@ export default {
   updated() {
     console.log("UPDATED");
   },
+
+  beforeDestroy() {
+    window.removeEventListener('resize', this.updateMinHeight); // Limpia el event listener
+  }
 };
 </script>
 
@@ -643,6 +661,13 @@ import DefaultBar from "@/layouts/default/AppBar.vue";
 </script>
 
 <style scoped>
+html,
+body,
+#app {
+  margin: 0;
+  padding: 0;
+}
+
 .editarSelect {
   width: 350px;
   margin-left: 50px;
