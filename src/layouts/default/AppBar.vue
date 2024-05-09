@@ -121,8 +121,7 @@
 
 .dropdown-submari {
   color: white !important;
-  background-color: #122C34 !important;
-  padding: 5%;
+  background-color: rgba(18, 44, 52, 0.85) !important;  padding: 2%;
   position: absolute;
   left: 0;
   width: 100%;
@@ -187,7 +186,7 @@
   border: 2px solid white;
   color: white;
   /* color normal */
-  
+
 }
 
 .seleccion:focus,
