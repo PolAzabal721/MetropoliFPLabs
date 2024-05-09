@@ -262,7 +262,7 @@ export default {
 
           // Mostrar un mensaje de éxito con el nombre
           alert(`Área creada: ${this.nombreLugar}`);
-          console.log(this.drawnGeometries);
+          //console.log(this.drawnGeometries);
           // Restablecer el formulario y el mapa
           this.nombreLugar = "";
           this.drawnGeometries = [];
@@ -564,12 +564,13 @@ export default {
     // COMPROBAR EL NOMBRE ANTES DE GUARDAR
     guardarCambiosClick() {
       // Después de verificar la longitud, puedes realizar la validación de la expresión regular
-      const nuevoNombreValido = /^[a-zA-Z0-9]{3,}$/.test(this.nuevoNombre);
+      const nuevoNombreValido = /^[a-zA-Z0-9]+(?: [a-zA-Z0-9]+)*$/.test(this.nuevoNombre);
 
       if ((nuevoNombreValido || !this.nuevoNombre.trim()) && this.nuevoNombre.trim().length >= 3) {
         // Resto de tu lógica
         this.cambiosNombre = true;
         this.guardarCambios();  // Llama a guardarCambios aquí
+        this.isSearchActive= false;
       } else {
         alert("El nuevo nombre no es válido. Debe contener al menos 3 letras y solo caracteres alfabéticos.");
         return;
