@@ -349,7 +349,6 @@ body,
 
 }
 
-
 /* Estilos para el v-card-text */
 .vCardText {
   font-family: Arial, sans-serif;

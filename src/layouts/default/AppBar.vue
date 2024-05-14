@@ -138,7 +138,7 @@
 .title {
   font-size: 24px !important;
   font-weight: bold !important;
-  color: white;
+  color: white !important;
   text-decoration: none;
 }
 
