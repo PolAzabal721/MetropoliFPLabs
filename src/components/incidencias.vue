@@ -596,7 +596,7 @@ export default {
     async getReportes() {
       try {
         this.reportes = await getReports();
-        console.log(this.reportes);
+        //console.log(this.reportes);
       } catch (error) {
         console.error("Error fetching reportes:", error);
       }
