@@ -931,7 +931,7 @@ export default {
     // SELECT EMPRESAS
     async getEmpresas() {
       this.empresas = await getEmpresa();
-      console.log(this.empresas);
+     //console.log(this.empresas);
 
     },
 
