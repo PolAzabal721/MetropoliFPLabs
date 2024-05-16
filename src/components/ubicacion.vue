@@ -643,6 +643,20 @@ export default {
 
       // Dibujar el área en el mapa
       this.dibujarAreaEnMapa(coordenadas, this.submarinosAsignados);
+
+      // Agregar marcadores para cada submarino asignado
+      this.submarinosAsignados.forEach(submarino => {
+        const ubicaciones = this.ubicacionesSubmarinos[submarino.id_sub];
+        if (ubicaciones && ubicaciones.length > 0) {
+          const lastCoords = ubicaciones[ubicaciones.length - 1];
+          const pinIcon = L.icon({
+            iconUrl: chincheta, // Ruta de la imagen de la chincheta
+            iconSize: [51, 60], // Tamaño del icono
+            iconAnchor: [25, 50] // Punto de anclaje del icono (centro inferior)
+          });
+          L.marker([parseFloat(lastCoords[0]), parseFloat(lastCoords[1])], { icon: pinIcon }).addTo(this.mapa);
+        }
+      });
     },
 
     // DIBUJAR COODS + SUBS EN EL MAPA
@@ -667,6 +681,21 @@ export default {
       });
       // Update the map view
       this.mapa.fitBounds(geoJsonLayer.getBounds());
+
+      // Mostrar chincheta en las ubicaciones de los submarinos asignados
+      this.submarinosAsignados.forEach(submarino => {
+        const ubicaciones = this.ubicacionesSubmarinos[submarino.id_sub];
+        if (ubicaciones && ubicaciones.length > 0) {
+          const lastCoords = ubicaciones[ubicaciones.length - 1];
+          const pinIcon = L.icon({
+            iconUrl: chincheta, // Ruta de la imagen de la chincheta
+            iconSize: [51, 60], // Tamaño del icono
+            iconAnchor: [25, 50] // Punto de anclaje del icono (centro inferior)
+          });
+          const mapaActivo = this.mapa || this.mapaGlobal;
+          L.marker([parseFloat(lastCoords[0]), parseFloat(lastCoords[1])], { icon: pinIcon }).addTo(mapaActivo);
+        }
+      });
     },
 
     // DIBUJAR SUBS FILTRADOS POR TAREA
@@ -769,11 +798,17 @@ export default {
         this.mapaGlobal.fitBounds(bounds, { padding: [50, 50] }); // Ajustar el mapa para mostrar todos los límites con un padding
       }
 
-      // Verificar la última ubicación de cada submarino
+      // Agregar marcadores en la última ubicación de cada submarino
       submarinosConUbicaciones.forEach(submarino => {
-        if (this.ubicacionesSubmarinos[submarino.id_sub] && this.ubicacionesSubmarinos[submarino.id_sub].length > 0) {
-          const lastCoords = this.ubicacionesSubmarinos[submarino.id_sub][this.ubicacionesSubmarinos[submarino.id_sub].length - 1];
-          // console.log(`Última ubicación de ${submarino.nom_sub}:`, lastCoords);
+        const ubicaciones = this.ubicacionesSubmarinos[submarino.id_sub];
+        if (ubicaciones && ubicaciones.length > 0) {
+          const lastCoords = ubicaciones[ubicaciones.length - 1];
+          const pinIcon = L.icon({
+            iconUrl: chincheta, // Ruta de la imagen de la chincheta
+            iconSize: [51, 60], // Tamaño del icono
+            iconAnchor: [25, 50]
+          });
+          L.marker([parseFloat(lastCoords[0]), parseFloat(lastCoords[1])], { icon: pinIcon }).addTo(this.mapaGlobal);
         }
       });
 
