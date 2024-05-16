@@ -181,7 +181,7 @@ export default {
           }
         }
       } else {
-       
+
       }
     },
 
@@ -716,10 +716,19 @@ export default {
         bounds.extend(polyline.getBounds());
       });
 
-
       if (bounds.isValid()) {
         this.mapaGlobal.fitBounds(bounds, { padding: [50, 50] }); // Ajustar el mapa para mostrar todos los límites con un padding
       }
+
+      // Verificar la última ubicación de cada submarino
+      submarinosConUbicaciones.forEach(submarino => {
+        if (this.ubicacionesSubmarinos[submarino.id_sub] && this.ubicacionesSubmarinos[submarino.id_sub].length > 0) {
+          const lastCoords = this.ubicacionesSubmarinos[submarino.id_sub][this.ubicacionesSubmarinos[submarino.id_sub].length - 1];
+         // console.log(`Última ubicación de ${submarino.nom_sub}:`, lastCoords);
+        }
+      });
+
+      this.addPinMarker();
     },
 
     // MAPA INICIAL DONDE SE VEN TODAS LAS UBIS DE LOS SUBS
@@ -727,7 +736,7 @@ export default {
       if (!this.mapaGlobal) {
         this.mapaGlobal = L.map('mapaSelect', {
           center: [41.38879, 2.15899], // Centro inicial del mapa
-          zoom: 10, // Nivel de zoom inicial configurado a 13
+          zoom: 10, // Nivel de zoom inicial configurado a 10
           maxZoom: 19 // Establece el máximo zoom permitido a 19
         });
         L.tileLayer('https://cartodb-basemaps-{s}.global.ssl.fastly.net/rastertiles/voyager/{z}/{x}/{y}.png', {
@@ -739,6 +748,40 @@ export default {
         // Otras configuraciones y controles pueden ser añadidos aquí
       } else {
         console.log("El mapa global ya está inicializado.");
+      }
+    },
+
+    // Función para obtener la última ubicación de los submarinos
+    obtenerUltimaUbicacionSubmarino() {
+      const submarinoConUbicaciones = this.submarinos.find(submarino =>
+        this.ubicacionesSubmarinos[submarino.id_sub] && this.ubicacionesSubmarinos[submarino.id_sub].length > 0
+      );
+
+      if (submarinoConUbicaciones) {
+        const ubicaciones = this.ubicacionesSubmarinos[submarinoConUbicaciones.id_sub];
+        const lastCoords = ubicaciones[ubicaciones.length - 1];
+
+        // Asegurarse de que las coordenadas son números
+        return [parseFloat(lastCoords[0]), parseFloat(lastCoords[1])];
+      } else {
+        return null;
+      }
+    },
+
+    // MARCADOR DE UBI DEL SUBMARINO
+    addPinMarker() {
+      const pinIcon = L.divIcon({
+        html: '📍', // Emoji de chincheta
+        className: 'custom-pin-icon', // Clase CSS personalizada para el icono
+       
+      });
+
+      // Obtener la última ubicación de los submarinos
+      const lastCoords = this.obtenerUltimaUbicacionSubmarino();
+      if (lastCoords) {
+        L.marker(lastCoords, { icon: pinIcon }).addTo(this.mapaGlobal);
+      } else {
+        console.log("No se encontraron ubicaciones de submarinos.");
       }
     },
 
@@ -769,7 +812,8 @@ export default {
     },
 
   },
-  //
+
+  // FIlTRO DE LOS SUBS
   computed: {
     submarinosAsignadosFiltrados() {
       return this.submarinosAsignados.filter(
@@ -820,11 +864,14 @@ import DefaultBar from "@/layouts/default/AppBar.vue";
 </script>
 
 <style scoped>
-body, html {
+body,
+html {
   height: 100%;
   margin: 0;
-  background-color: #EFEFEF; /* Define el color de fondo aquí */
+  background-color: #EFEFEF;
+  /* Define el color de fondo aquí */
 }
+
 .navDrawer {
   float: left;
   z-index: -1 !important;

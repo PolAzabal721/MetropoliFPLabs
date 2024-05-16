@@ -38,7 +38,6 @@
     </v-layout>
 </template>
 
-
 <script>
 import { socket, state } from '../services/socket';
 
