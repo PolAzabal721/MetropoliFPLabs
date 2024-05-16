@@ -98,6 +98,7 @@ import {
   selectRutinas
 } from "@/services/connectionManager.js";
 import { useAppStore } from "@/store/app";
+import chincheta from '../assets/chincheta.png';
 
 export default {
   data() {
@@ -178,6 +179,15 @@ export default {
 
             const polyline = L.polyline(ubicaciones, { color: '#122C34' }).addTo(mapaActivo);
             mapaActivo.fitBounds(polyline.getBounds());
+
+            // Agregar marcador en la última ubicación del submarino
+            const lastCoords = ubicaciones[ubicaciones.length - 1];
+            const pinIcon = L.icon({
+              iconUrl: chincheta, // Ruta de la imagen de la chincheta
+              iconSize: [51, 60], // Tamaño del icono
+              iconAnchor: [25, 50]
+            });
+            L.marker([parseFloat(lastCoords[0]), parseFloat(lastCoords[1])], { icon: pinIcon }).addTo(mapaActivo);
           }
         }
       } else {
@@ -209,6 +219,15 @@ export default {
 
             const polyline = L.polyline(ubicaciones, { color: '#122C34' }).addTo(mapaActivo);
             mapaActivo.fitBounds(polyline.getBounds());
+
+            // Agregar marcador en la última ubicación del submarino
+            const lastCoords = ubicaciones[ubicaciones.length - 1];
+            const pinIcon = L.icon({
+              iconUrl: chincheta, // Ruta de la imagen de la chincheta
+              iconSize: [51, 60], // Tamaño del icono
+              iconAnchor: [25, 50]
+            });
+            L.marker([parseFloat(lastCoords[0]), parseFloat(lastCoords[1])], { icon: pinIcon }).addTo(mapaActivo);
           }
         }
       } else {
@@ -359,6 +378,21 @@ export default {
           this.submarinosAsignados = [];
         }
       }
+
+      // Mostrar chincheta en las ubicaciones de los submarinos asignados
+      this.submarinosAsignados.forEach(submarino => {
+        const ubicaciones = this.ubicacionesSubmarinos[submarino.id_sub];
+        if (ubicaciones && ubicaciones.length > 0) {
+          const lastCoords = ubicaciones[ubicaciones.length - 1];
+          const pinIcon = L.icon({
+            iconUrl: chincheta, // Ruta de la imagen de la chincheta
+            iconSize: [51, 60], // Tamaño del icono
+            iconAnchor: [25, 50] // Punto de anclaje del icono (centro inferior)
+          });
+          const mapaActivo = this.mapa || this.mapaGlobal;
+          L.marker([parseFloat(lastCoords[0]), parseFloat(lastCoords[1])], { icon: pinIcon }).addTo(mapaActivo);
+        }
+      });
     },
 
     // Clasificación de submarinos por su estado marino después de aplicar el filtro de tareas
@@ -464,6 +498,21 @@ export default {
 
           this.cargarCoordenadasEnMapaSelect(areaEncontrada.coordenadas);
           this.areaSeleccionada = true;
+
+          // Mostrar chincheta en las ubicaciones de los submarinos asignados
+          this.submarinosAsignados.forEach(submarino => {
+            const ubicaciones = this.ubicacionesSubmarinos[submarino.id_sub];
+            if (ubicaciones && ubicaciones.length > 0) {
+              const lastCoords = ubicaciones[ubicaciones.length - 1];
+              const pinIcon = L.icon({
+                iconUrl: chincheta, // Ruta de la imagen de la chincheta
+                iconSize: [51, 60], // Tamaño del icono
+                iconAnchor: [25, 50] // Punto de anclaje del icono (centro inferior)
+              });
+              const mapaActivo = this.mapa || this.mapaGlobal;
+              L.marker([parseFloat(lastCoords[0]), parseFloat(lastCoords[1])], { icon: pinIcon }).addTo(mapaActivo);
+            }
+          });
         } else {
           // Restablecer el estado de la aplicación a su estado inicial si no se encuentra el área
           this.areaEncontrada = null;
@@ -724,7 +773,7 @@ export default {
       submarinosConUbicaciones.forEach(submarino => {
         if (this.ubicacionesSubmarinos[submarino.id_sub] && this.ubicacionesSubmarinos[submarino.id_sub].length > 0) {
           const lastCoords = this.ubicacionesSubmarinos[submarino.id_sub][this.ubicacionesSubmarinos[submarino.id_sub].length - 1];
-         // console.log(`Última ubicación de ${submarino.nom_sub}:`, lastCoords);
+          // console.log(`Última ubicación de ${submarino.nom_sub}:`, lastCoords);
         }
       });
 
@@ -770,10 +819,10 @@ export default {
 
     // MARCADOR DE UBI DEL SUBMARINO
     addPinMarker() {
-      const pinIcon = L.divIcon({
-        html: '📍', // Emoji de chincheta
-        className: 'custom-pin-icon', // Clase CSS personalizada para el icono
-       
+      const pinIcon = L.icon({
+        iconUrl: chincheta, // Emoji de chincheta
+        iconSize: [51, 60], // Tamaño del icono
+        iconAnchor: [25, 50]
       });
 
       // Obtener la última ubicación de los submarinos
