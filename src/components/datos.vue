@@ -6,6 +6,23 @@
     <v-main>
       <v-container fluid>
         <v-row>
+          <!-- Barra lateral para filtros -->
+          <v-col cols="2">
+            <v-card class="filter-card" style="margin-top: 10px;">
+              <v-toolbar height="60" style="background-color: #224870; color: white;">
+                <h3 style="margin-left: 15px;">Filtros</h3>
+              </v-toolbar>
+              <v-card-text>
+                <div class="filter-container">
+                  <v-btn v-for="opcion in opciones" :key="opcion" @click="toggleOpcion(opcion)" class="filtro-btn"
+                    :class="{ 'btn-active': opcionesSeleccionadas.includes(opcion) }">
+                    {{ opcion }}
+                  </v-btn>
+                </div>
+              </v-card-text>
+            </v-card>
+          </v-col>
+
           <!-- Submarino Info -->
           <v-col cols="5">
             <!-- SELECTOR SUB -->
@@ -43,21 +60,8 @@
             </v-card>
           </v-col>
 
-          <!-- Opciones -->
-          <v-col cols="3" style="margin-left: 50px;">
-            <v-card class="options-card marg text-center">
-              <v-toolbar height="60" style="background-color: #224870; color: white;">
-                <h3 style="margin-left: 15px;">Opciones</h3>
-              </v-toolbar>
-              <v-btn v-for="opcion in opciones" :key="opcion" @click="toggleOpcion(opcion)" class="filtro-btn"
-                :class="{ 'btn-active': opcionesSeleccionadas.includes(opcion) }">
-                {{ opcion }}
-              </v-btn>
-            </v-card>
-          </v-col>
-
           <!-- Historial de Movimientos -->
-          <v-col cols="3">
+          <v-col cols="5">
             <v-card class="history-card">
               <v-toolbar height="60" style="background-color: #224870; color: white;">
                 <h3 style="margin-left: 15px;">Historial de movimientos</h3>

@@ -647,7 +647,7 @@ export default {
       }
     },
 
-    // ELIMINAR EMPRESA
+    // ELIMINAR PLAN
     async eliminarPlan(plan) {
       const confirmacion = confirm("¿Estás seguro que quieres eliminar la empresa " + plan.nombre + "?");
       if (confirmacion) {
@@ -931,7 +931,7 @@ export default {
     // SELECT EMPRESAS
     async getEmpresas() {
       this.empresas = await getEmpresa();
-      //console.log(this.empresas);
+      console.log(this.empresas);
 
     },
 
@@ -1116,7 +1116,7 @@ export default {
     },
     async getPlanes() {
       this.planes = await getSuscripciones();
-      console.log(this.planes);
+      //console.log(this.planes);
 
     }
 
