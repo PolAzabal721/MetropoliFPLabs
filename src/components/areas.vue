@@ -24,52 +24,55 @@
     </v-main>
 
     <!-- Diálogo de Edición -->
-    <v-dialog v-model="dialogEditar" max-width="600">
-      <v-card height="1000" width="900">
-        <v-toolbar height="60" style="background-color: #224870; color: white;">
-          <h3 style="margin-left: 15px;">Editar Área</h3>
-        </v-toolbar>
-        <v-row>
-          <!-- SELECT AREA -->
-          <v-col class="mr-3">
-            <v-select class="editarSelect" v-model="nombreLugarBusqueda" :items="areas.map((area) => area.nombreArea)"
-              style="height: 75px; font-size: auto; color: #224870; margin-top: 15px; margin-left: 25px;"
-              :disabled="isSearchActive" label="Selecciona el área que quieras editar"></v-select>
-          </v-col>
+    <v-dialog v-model="dialogEditar">
+      <div class="d-flex align-center  justify-center">
+        <v-card height="1020" width="1550">
+          <v-toolbar height="60" style="background-color: #224870; color: white;">
+            <h3 style="margin-left: 15px;">Editar Área</h3>
+          </v-toolbar>
+          <v-row>
+            <!-- SELECT AREA -->
+            <v-col class="mr-3">
+              <v-select class="editarSelect" v-model="nombreLugarBusqueda" :items="areas.map((area) => area.nombreArea)"
+                style="height: 75px; font-size: auto; color: #224870; margin-top: 15px; margin-left: 25px;"
+                :disabled="isSearchActive" label="Selecciona el área que quieras editar"></v-select>
+            </v-col>
 
-          <!-- NUEVO NOMBRE AREA -->
-          <v-col>
-            <v-text-field class="small-text-field" v-model="nuevoNombre" label="Nuevo nombre Area"
-              style="height: 75px; font-size: auto; color: #224870; margin-top: 15px;" :disabled="!areaEncontrada"
-              @input="verificarLongitudNuevoNombre" @paste="truncarNuevoNombre" maxlength="45"></v-text-field>
-          </v-col>
-        </v-row>
-        <v-row>
-          <!-- BTN PARA BUSCAR AREA -->
-          <v-col>
-            <v-btn class="ml-4 elevation-2 btnBuscar" @click="buscarArea"
-              :disabled="nombreLugarBusqueda === '' && !isSearchActive"
-              :style="{ backgroundColor: isSearchActive ? 'red' : '#84ACCE', color: 'white' }">
-              {{ isSearchActive ? 'Limpiar Área Seleccionada' : 'Buscar Área' }}
-            </v-btn>
-          </v-col>
+            <!-- NUEVO NOMBRE AREA -->
+            <v-col>
+              <v-text-field class="small-text-field" v-model="nuevoNombre" label="Nuevo nombre Area"
+                style="height: 75px; font-size: auto; color: #224870; margin-top: 15px;" :disabled="!areaEncontrada"
+                @input="verificarLongitudNuevoNombre" @paste="truncarNuevoNombre" maxlength="45"></v-text-field>
+            </v-col>
+          </v-row>
 
-          <!-- BTN PARA ACTIVAR Y DESACTIVAR EDITAR COORDENADAS -->
-          <v-col>
-            <v-btn class="editarArea" @click="editarArea" :disabled="nombreLugarBusqueda === ''"
-              style="background-color: #84ACCE; color: white; margin-left: 5px">
-              {{ isEditing ? "Guardar cambios" : "Editar Coordenadas" }}
-            </v-btn>
-          </v-col>
-        </v-row>
+          <v-row style="margin-top: -20px;">
+            <!-- BTN PARA BUSCAR AREA -->
+            <v-col >
+              <v-btn class="ml-4 elevation-2 btnBuscar" @click="buscarArea"
+                :disabled="nombreLugarBusqueda === '' && !isSearchActive"
+                :style="{ backgroundColor: isSearchActive ? 'red' : '#84ACCE', color: 'white' }">
+                {{ isSearchActive ? 'Limpiar Área Seleccionada' : 'Buscar Área' }}
+              </v-btn>
+            </v-col>
 
-        <!-- MAPA PARA EDITAR AREAS -->
-        <div id="mapaSelect" style="height: 740px; width: 825px; margin: 25px;"></div>
-        <v-card-actions>
-          <v-btn @click="guardarCambiosClick" color="primary"> Guardar </v-btn>
-          <v-btn @click="deleteArea" color="error"> Eliminar Area </v-btn>
-        </v-card-actions>
-      </v-card>
+            <!-- BTN PARA ACTIVAR Y DESACTIVAR EDITAR COORDENADAS -->
+            <v-col>
+              <v-btn class="editarArea" @click="editarArea" :disabled="nombreLugarBusqueda === ''"
+                style="background-color: #84ACCE; color: white; margin-left: 5px">
+                {{ isEditing ? "Guardar cambios" : "Editar Coordenadas" }}
+              </v-btn>
+            </v-col>
+          </v-row>
+
+          <!-- MAPA PARA EDITAR AREAS -->
+          <div id="mapaSelect" style="height: 730px; width: 1500px; margin: 25px;"></div>
+          <v-card-actions>
+            <v-btn @click="guardarCambiosClick" color="primary"> Guardar </v-btn>
+            <v-btn @click="deleteArea" color="error"> Eliminar Area </v-btn>
+          </v-card-actions>
+        </v-card>
+      </div>
     </v-dialog>
   </v-layout>
 </template>
@@ -570,7 +573,7 @@ export default {
         // Resto de tu lógica
         this.cambiosNombre = true;
         this.guardarCambios();  // Llama a guardarCambios aquí
-        this.isSearchActive= false;
+        this.isSearchActive = false;
       } else {
         alert("El nuevo nombre no es válido. Debe contener al menos 3 letras y solo caracteres alfabéticos.");
         return;
