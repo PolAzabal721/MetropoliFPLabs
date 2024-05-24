@@ -1,5 +1,6 @@
 # essentials
 
+Aquesta branch s'ha de posar dins de la carpeta Web de la main branch quan ja estigui ok
 ## Project setup
 
 ```
