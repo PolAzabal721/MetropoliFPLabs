@@ -9,7 +9,7 @@
         <!-- MAPA PRINCIPAL -->
         <div class="d-flex align-center  justify-center">
           <v-text-field style="height: 75px;  max-width: 1300px; font-size: auto; color: #224870;" v-model="nombreLugar"
-            label="Introduce un nombre para el área" @input="verificarLongitudNombre" @paste="truncarValor"
+            label="Introdueix un nom per a l'àrea" @input="verificarLongitudNombre" @paste="truncarValor"
             maxlength="45"></v-text-field>
           <v-btn @click="crearLugar" style="background-color: #84ACCE; color: white; margin-left: 15px;"
             :disabled="nombreLugar === '' || drawnGeometries.length === 0 || nombreLugarExcedeLongitud">
@@ -28,19 +28,19 @@
       <div class="d-flex align-center  justify-center">
         <v-card height="1020" width="1550">
           <v-toolbar height="60" style="background-color: #224870; color: white;">
-            <h3 style="margin-left: 15px;">Editar Área</h3>
+            <h3 style="margin-left: 15px;">Editar Àrea</h3>
           </v-toolbar>
           <v-row>
             <!-- SELECT AREA -->
             <v-col class="mr-3">
               <v-select class="editarSelect" v-model="nombreLugarBusqueda" :items="areas.map((area) => area.nombreArea)"
                 style="height: 75px; font-size: auto; color: #224870; margin-top: 15px; margin-left: 25px;"
-                :disabled="isSearchActive" label="Selecciona el área que quieras editar"></v-select>
+                :disabled="isSearchActive" label="Selecciona l'àrea que vulguis editar"></v-select>
             </v-col>
 
             <!-- NUEVO NOMBRE AREA -->
             <v-col>
-              <v-text-field class="small-text-field" v-model="nuevoNombre" label="Nuevo nombre Area"
+              <v-text-field class="small-text-field" v-model="nuevoNombre" label="Nou nom àrea"
                 style="height: 75px; font-size: auto; color: #224870; margin-top: 15px;" :disabled="!areaEncontrada"
                 @input="verificarLongitudNuevoNombre" @paste="truncarNuevoNombre" maxlength="45"></v-text-field>
             </v-col>
@@ -52,7 +52,7 @@
               <v-btn class="ml-4 elevation-2 btnBuscar" @click="buscarArea"
                 :disabled="nombreLugarBusqueda === '' && !isSearchActive"
                 :style="{ backgroundColor: isSearchActive ? 'red' : '#84ACCE', color: 'white' }">
-                {{ isSearchActive ? 'Limpiar Área Seleccionada' : 'Buscar Área' }}
+                {{ isSearchActive ? 'Netejar àrea seleccionada' : 'Buscar àrea' }}
               </v-btn>
             </v-col>
 
@@ -60,7 +60,7 @@
             <v-col>
               <v-btn class="editarArea" @click="editarArea" :disabled="nombreLugarBusqueda === ''"
                 style="background-color: #84ACCE; color: white; margin-left: 5px">
-                {{ isEditing ? "Guardar cambios" : "Editar Coordenadas" }}
+                {{ isEditing ? "Guardar canvis" : "Editar coordenades" }}
               </v-btn>
             </v-col>
           </v-row>
@@ -69,7 +69,7 @@
           <div id="mapaSelect" style="height: 730px; width: 1500px; margin: 25px;"></div>
           <v-card-actions>
             <v-btn @click="guardarCambiosClick" color="primary"> Guardar </v-btn>
-            <v-btn @click="deleteArea" color="error"> Eliminar Area </v-btn>
+            <v-btn @click="deleteArea" color="error"> Eliminar àrea </v-btn>
           </v-card-actions>
         </v-card>
       </div>
@@ -133,7 +133,7 @@ export default {
       if (this.nombreLugar.length > 45) {
         this.nombreLugar = this.nombreLugar.slice(0, 45);
         this.nombreLugarExcedeLongitud = true;
-        alert('El nombre no puede exceder los 45 caracteres.');
+        alert('El nombre no pot excedir els 45 caràcters.');
       } else {
         this.nombreLugarExcedeLongitud = false;
       }
@@ -146,7 +146,7 @@ export default {
         event.preventDefault();
         const truncatedText = pastedText.slice(0, 45);
         this.nombreLugar = truncatedText;
-        alert('El valor ha sido truncado a 45 caracteres.');
+        alert('El valor ha estat truncat a 45 caràcters.');
       }
     },
 
@@ -156,7 +156,7 @@ export default {
       if (this.nuevoNombre.length > 45) {
         this.nuevoNombre = this.nuevoNombre.slice(0, 45);
         this.nuevoNombreExcedeLongitud = true;
-        alert('El nuevo nombre no puede exceder los 45 caracteres.');
+        alert('El nom nou no pot excedir els 45 caràcters.');
       } else {
         this.nuevoNombreExcedeLongitud = false;
       }
@@ -169,7 +169,7 @@ export default {
         event.preventDefault();
         const truncatedText = pastedText.slice(0, 45);
         this.nuevoNombre = truncatedText;
-        alert('El nuevo nombre ha sido truncado a 45 caracteres.');
+        alert('El nou nom ha estat truncat a 45 caràcters.');
       }
     },
 
@@ -264,7 +264,7 @@ export default {
           );
 
           // Mostrar un mensaje de éxito con el nombre
-          alert(`Área creada: ${this.nombreLugar}`);
+          alert(`Àrea creada: ${this.nombreLugar}`);
           //console.log(this.drawnGeometries);
           // Restablecer el formulario y el mapa
           this.nombreLugar = "";
@@ -272,7 +272,7 @@ export default {
           this.selectedSubmarine = "";
         } catch (error) {
           console.error("Error saving area:", error);
-          alert("Error al guardar el área");
+          alert("Error al guardar l'àrea");
         }
         this.limpiarMapa();
         this.isCreatingArea = false;
@@ -510,7 +510,7 @@ export default {
     deleteArea() {
       if (this.areaEncontrada) {
         const confirmDelete = window.confirm(
-          `¿Estás seguro de querer eliminar el área "${this.areaEncontrada.nombreArea}"?`
+          `¿Estàs segur de voler eliminar l'àrea "${this.areaEncontrada.nombreArea}"?`
         );
 
         if (confirmDelete) {
@@ -537,7 +537,7 @@ export default {
               console.error("Error al eliminar el área:", error);
             });
         } else {
-          alert("Eliminación cancelada.");
+          alert("Eliminació cancel·lada.");
         }
       } else {
         console.error("No area to delete");
@@ -575,7 +575,7 @@ export default {
         this.guardarCambios();  // Llama a guardarCambios aquí
         this.isSearchActive = false;
       } else {
-        alert("El nuevo nombre no es válido. Debe contener al menos 3 letras y solo caracteres alfabéticos.");
+        alert("El nom nou no és vàlid. Ha de contenir almenys 3 lletres i només caràcters alfabètics.");
         return;
       }
     },
@@ -604,24 +604,24 @@ export default {
           );
           if (this.cambiosNombre && cambiosCoordenadas) {
             alert(
-              "El nombre y las coordenadas se han cambiado y guardado exitosamente."
+              "El nom i les coordenades s'han canviat i desat amb èxit."
             );
           } else if (this.cambiosNombre) {
             alert(
-              "El nombre se ha cambiado y guardado exitosamente."
+              "El nom s'ha canviat i desat amb èxit."
             );
           } else {
             alert(
-              "Las coordenadas se han cambiado y guardado exitosamente."
+              "Les coordenades s'han canviat i guardat amb èxit."
             );
           }
         } catch (error) {
           console.error("Error guardando cambios:", error);
-          alert("Error al guardar cambios");
+          alert("Error en desar canvis");
           return;
         }
       } else {
-        alert("No se ha realizado ningún cambio.");
+        alert("No s'ha fet cap canvi.");
         return;
       }
 

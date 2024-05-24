@@ -31,14 +31,14 @@
 
         <!-- CLIENTE SIN INICIAR SESION -->
         <div style="width: 50%" v-if="userRole === ''">
-          <router-link :to="'/login'" class="colorBoton">Iniciar Sesión</router-link>
-          <router-link :to="'/camara'" class="colorBoton"> Càmera</router-link>
+          <router-link :to="'/login'" class="colorBoton">Iniciar Sessió</router-link>
+          <router-link :to="'/camara'" class="colorBoton">Càmera</router-link>
         </div>
 
         <!-- CLIENTE CON SESION INICIADA -->
         <div style="width: 50%" v-if="userRole === 'cliente'">
           <router-link :to="'/'" class="colorBoton" @click.prevent="logout">Tancar Sessió</router-link>
-          <router-link :to="'/camara'" class="colorBoton"> Càmera</router-link>
+          <router-link :to="'/camara'" class="colorBoton">Càmera</router-link>
         </div>
 
         <!-- TECNICO WEB -->
@@ -56,8 +56,8 @@
           <v-btn id="gestioSubmari" class="colorBoton" @mouseover="mostrarSubmari = true"
             @mouseleave="mostrarSubmari = false">Gestiò Sumbarins</v-btn>
           <router-link :to="'/incidencias'" class="colorBoton">Gestiò Incidències</router-link>
-          <router-link :to="'/camara'" class="colorBoton"> Càmera</router-link>
-          <router-link :to="'/gestioEmpresas'" class="colorBoton"> Empresas</router-link>
+          <router-link :to="'/camara'" class="colorBoton">Càmera</router-link>
+          <router-link :to="'/gestioEmpresas'" class="colorBoton">Empreses</router-link>
 
 
         </div>
@@ -83,13 +83,12 @@
     <div v-if="mostrarSubmari" class="dropdown-submari" @mouseover="mostrarSubmari = true"
       @mouseleave="mostrarSubmari = false">
 
-      <router-link :to="'/datos'" class="colorBoton"> Dades</router-link>
-      <router-link :to="'/ubicacion'" class="colorBoton"> Ubicació</router-link>
-      <router-link :to="'/areas'" class="colorBoton">
-        Configurar àrees</router-link>
+      <router-link :to="'/datos'" class="colorBoton">Dades</router-link>
+      <router-link :to="'/ubicacion'" class="colorBoton">Ubicació</router-link>
+      <router-link :to="'/areas'" class="colorBoton">Configurar àrees</router-link>
       <router-link :to="'/submarinos'" class="colorBoton">
         Submarins</router-link>
-      <router-link :to="'/informes'" class="colorBoton"> Informes</router-link>
+      <router-link :to="'/informes'" class="colorBoton">Informes</router-link>
     </div>
 
   </transition>

@@ -28,12 +28,12 @@
             <!-- SELECTOR SUB -->
             <v-card class="submarino-card">
               <v-toolbar height="60" style="background-color: #224870; color: white;">
-                <h3 style="margin-left: 15px;">Selecciona un submarino</h3>
+                <h3 style="margin-left: 15px;">Selecciona un submarí</h3>
               </v-toolbar>
               <v-card-text class="d-flex align-center justify-space-between">
                 <div style="flex-grow: 1; margin-right: 8px;">
                   <select class="select" v-model="submarinoSeleccionado" @change="avanzar">
-                    <option disabled value="">Selecciona un submarino</option>
+                    <option disabled value="">Selecciona un submarí</option>
                     <option v-for="submarino in submarinos" :key="submarino.id" :value="submarino">
                       {{ submarino.nom_sub }}
                     </option>
@@ -49,12 +49,12 @@
             <v-card class="info-card">
               <v-card-text>
                 <div v-if="seleccionado">
-                  <p><b>Nombre del robot:</b> {{ submarinoSeleccionado.nom_sub }}</p>
-                  <p><b>Estado del robot:</b> {{ motor }}</p>
-                  <p><b>Estado de la cámara:</b> {{ camara }}</p>
-                  <p><b>Última conexión:</b> {{ ultimaConexion }}</p>
-                  <p><b>Tiempo encendido:</b> {{ msToTime(timeON) }}</p>
-                  <p><b>Rutina en curso:</b> {{ movimientoSub[0]?.rutina }}</p>
+                  <p><b>Nom del robot:</b> {{ submarinoSeleccionado.nom_sub }}</p>
+                  <p><b>Estat del robot:</b> {{ motor }}</p>
+                  <p><b>Estat de la càmera:</b> {{ camara }}</p>
+                  <p><b>Última connexió:</b> {{ ultimaConexion }}</p>
+                  <p><b>Temps encès:</b> {{ msToTime(timeON) }}</p>
+                  <p><b>Rutina en curs:</b> {{ movimientoSub[0]?.rutina }}</p>
                 </div>
               </v-card-text>
             </v-card>
@@ -64,7 +64,7 @@
           <v-col cols="5">
             <v-card class="history-card">
               <v-toolbar height="60" style="background-color: #224870; color: white;">
-                <h3 style="margin-left: 15px;">Historial de movimientos</h3>
+                <h3 style="margin-left: 15px;">Historial de moviments</h3>
               </v-toolbar>
               <v-card-text class="marg text-center">
                 <div class="scroll-container">
@@ -79,7 +79,7 @@
                       </v-list-item>
                     </v-list-item>
                     <v-list-item v-else>
-                      <v-list-item-title>No hay movimientos</v-list-item-title>
+                      <v-list-item-title>No hi ha moviments</v-list-item-title>
                     </v-list-item>
                   </v-list>
                 </div>
@@ -296,7 +296,7 @@ export default {
 
         this.actualizarMovimientos();
       } else {
-        alert("Debes seleccionar un submarino para poder utilizar el filtro");
+        alert("Heu de seleccionar un submarí per poder utilitzar el filtre");
       }
     },
 

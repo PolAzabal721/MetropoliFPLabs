@@ -8,7 +8,7 @@
           <v-card style="max-width: 300px;">
             <!-- Contenido submarinos -->
             <v-toolbar height="60" style="background-color: #224870;">
-              <h3 style="margin-left: 15px; color: white;">Submarinos Disponibles</h3>
+              <h3 style="margin-left: 15px; color: white;">Submarins Disponibles</h3>
             </v-toolbar>
             <v-container>
               <v-row>
@@ -18,8 +18,8 @@
               </v-row>
             </v-container>
             <v-card-actions class="d-flex justify-center">
-              <v-btn @click="asignarSubmarinos" style="background-color: #84ACCE; color: white;">Añadir
-                Submarinos</v-btn>
+              <v-btn @click="asignarSubmarinos" style="background-color: #84ACCE; color: white;">Afegir
+                Submarins</v-btn>
             </v-card-actions>
           </v-card>
         </v-col>
@@ -29,13 +29,13 @@
           <!-- CONFIG MAPA + SELECT AREA -->
           <div class="d-flex align-center">
             <v-select style="height: 75px; font-size: auto; color: #224870;" v-model="nombreLugarBusqueda"
-              :items="areas.map((area) => area.nombreArea)" label="Seleccionar Área" @change="actualizarSubmarinos"
+              :items="areas.map((area) => area.nombreArea)" label="Seleccionar àrea" @change="actualizarSubmarinos"
               :disabled="isSearchActive"></v-select>
 
             <v-btn class="ml-4 elevation-2" @click="buscarArea"
               :disabled="nombreLugarBusqueda === '' && !isSearchActive"
               :style="{ backgroundColor: isSearchActive ? 'red' : '#84ACCE', color: 'white' }">
-              {{ isSearchActive ? 'Limpiar Área Seleccionada' : 'Buscar Área' }}
+              {{ isSearchActive ? 'Netejar àrea seleccionada' : 'Buscar àrea' }}
             </v-btn>
           </div>
 
@@ -49,11 +49,11 @@
           <v-row v-if="mostrarColumnaDerecha">
             <!-- Opciones para submarinos -->
             <v-col class="text-center">
-              <v-btn style="background-color: #84ACCE; color: white;" @click="crearRutina">Actividades de los
-                submarinos</v-btn>
+              <v-btn style="background-color: #84ACCE; color: white;" @click="crearRutina">Activitats dels
+                submarins</v-btn>
 
               <!-- Lista submarinos -->
-              <h3 style="margin-top: 25px;" class="text-center">Submarinos Asignados a {{ nombreLugarBusqueda }}</h3>
+              <h3 style="margin-top: 25px;" class="text-center">Submarins assignats a {{ nombreLugarBusqueda }}</h3>
               <v-row style="margin-top: 10px;">
                 <v-col cols="12" v-for="submarino in submarinosAsignadosFiltrados" :key="submarino.id_sub"
                   class="justify-center align-center">
@@ -65,12 +65,12 @@
                       {{ submarino.nom_sub }}
                     </v-card-title>
                     <v-card-text class="text-left">
-                      <p>Estado: {{ submarino.estado_sub }}</p>
-                      <p>Ubicación: {{ submarino.ruta }}</p>
+                      <p>Estat: {{ submarino.estado_sub }}</p>
+                      <p>Ubicació: {{ submarino.ruta }}</p>
                     </v-card-text>
                     <v-card-actions class="justify-center" style="margin-top: -25px;">
                       <v-btn style="background-color: #84ACCE; color: white;"
-                        @click="abrirDialogoSubmarino(submarino)">Ver Tareas y Rutinas</v-btn>
+                        @click="abrirDialogoSubmarino(submarino)">Veure tasques i rutines</v-btn>
                       <v-btn color="red" icon @click="desvincularSubmarino(submarino)">
                         <v-icon>mdi-delete</v-icon>
                       </v-btn>
@@ -88,7 +88,7 @@
       <v-dialog v-model="dialogRutina" max-height="855" max-width="800">
         <v-card height="855" width="800">
           <v-toolbar height="60" style="background-color: #224870; color: white;">
-            <h3 style="margin-left: 15px;">Rutinas del submarino</h3>
+            <h3 style="margin-left: 15px;">Rutines del submarí</h3>
           </v-toolbar>
           <v-card-text>
             <v-row>
@@ -96,26 +96,26 @@
               <v-col cols="6">
                 <!-- Formulario para añadir hacerRutinas -->
                 <v-form ref="taskForm" @submit.prevent="agregarRutina">
-                  <v-text-field ref="nombreRutina" v-model="nuevaRutina" label="* Nombre la rutina"></v-text-field>
+                  <v-text-field ref="nombreRutina" v-model="nuevaRutina" label="* Nombri la rutina"></v-text-field>
                   <v-text-field style="height: 500px; margin-bottom: -210px" v-model="nuevaDescripcion"
-                    label="Descripción"></v-text-field>
+                    label="Descripció"></v-text-field>
 
                   <!-- Campo para la fecha de inicio, cambiado a v-text-field -->
-                  <v-text-field ref="fechaRutina" v-model="selectedDate" label="Día de inicio" type="date"
+                  <v-text-field ref="fechaRutina" v-model="selectedDate" label="Dia d'inici" type="date"
                     :rules="[() => validarFecha(selectedDate) || 'Fecha inválida']" required></v-text-field>
 
                   <!-- Campo para la hora de inicio -->
-                  <v-text-field ref="horaInicioRutina" v-model="nuevaHoraInicio" label="Hora de inicio" type="time"
+                  <v-text-field ref="horaInicioRutina" v-model="nuevaHoraInicio" label="Hora d'inici" type="time"
                     :rules="[() => validarHora(nuevaHoraInicio) || 'Hora inválida']" required></v-text-field>
 
                   <!-- Campo de selección de hora de fin para agregar nuevas rutinas -->
-                  <v-text-field ref="horaFinNuevaRutina" v-model="nuevaHoraFin" label="Hora de fin" type="time"
+                  <v-text-field ref="horaFinNuevaRutina" v-model="nuevaHoraFin" label="Hora de fi" type="time"
                     :rules="[() => validarHoraFin(selectedDate, nuevaHoraInicio, nuevaHoraFin) || 'Hora inválida']"
                     required></v-text-field>
                   <!-- Campo para la repetición -->
                   <v-select ref="repetirRutina" v-model="nuevaRepetir" :items="repetirOpciones" label="Repetir"
                     required></v-select>
-                  <v-btn @click="agregarRutina" style="background-color: #84ACCE; color: white;">Agregar Rutina</v-btn>
+                  <v-btn @click="agregarRutina" style="background-color: #84ACCE; color: white;">Afegeix rutina</v-btn>
                 </v-form>
               </v-col>
 
@@ -140,7 +140,7 @@
             </v-row>
           </v-card-text>
           <v-card-actions>
-            <v-btn @click="cerrarDialogRutina" style="color: red;">Cerrar</v-btn>
+            <v-btn @click="cerrarDialogRutina" style="color: red;">Tancar</v-btn>
           </v-card-actions>
         </v-card>
       </v-dialog>
@@ -149,29 +149,29 @@
       <v-dialog v-model="showDialogEdicion" position="center" max-width="800">
         <v-card height="855" width="800">
           <v-toolbar height="60" style="background-color: #224870; color: white;">
-            <h3 style="margin-left: 15px;">Editar Rutina</h3>
+            <h3 style="margin-left: 15px;">Editar rutina</h3>
           </v-toolbar>
           <v-card-text>
             <v-form @submit.prevent="actualizarRutinaEditada(editingTaskIndex)"> <!-- Pasar el índice -->
-              <v-text-field ref="nombreRutinaEditada" v-model="rutinaEnEdicion.nombre" label="* Nombre de la rutina"
+              <v-text-field ref="nombreRutinaEditada" v-model="rutinaEnEdicion.nombre" label="* Nom de la rutina"
                 required></v-text-field>
               <v-text-field style="height: 500px; margin-bottom: -210px" v-model="rutinaEnEdicion.descripcion"
-                label="Descripción"></v-text-field>
+                label="Descripció"></v-text-field>
 
               <!-- Campo de selección de día, cambiado a v-text-field -->
-              <v-text-field ref="diaRutinaEditada" v-model="rutinaEnEdicion.selectedDate" label="Día de inicio"
+              <v-text-field ref="diaRutinaEditada" v-model="rutinaEnEdicion.selectedDate" label="Dia d'inici"
                 type="date" :rules="[() => validarFecha(rutinaEnEdicion.selectedDate) || 'Fecha inválida']"
                 required></v-text-field>
 
               <!-- Campo de selección de dia -->
-              <v-text-field ref="horaInicioRutinaEditada" v-model="rutinaEnEdicion.horaInicio" label="dia de inicio"
+              <v-text-field ref="horaInicioRutinaEditada" v-model="rutinaEnEdicion.horaInicio" label="Hora d'inici"
                 type="time"
                 :rules="[() => validarHoraEditar(rutinaEnEdicion.selectedDate, rutinaEnEdicion.horaInicio) || 'Hora inválida']"
                 required></v-text-field>
               <!-- Fin de la selección de dia -->
 
               <!-- Campo de selección de hora de fin -->
-              <v-text-field ref="horaFinRutinaEditada" v-model="rutinaEnEdicion.horaFin" label="Hora de fin" type="time"
+              <v-text-field ref="horaFinRutinaEditada" v-model="rutinaEnEdicion.horaFin" label="Hora de fi" type="time"
                 :rules="[() => validarHoraFin(rutinaEnEdicion.selectedDate, rutinaEnEdicion.horaInicio, rutinaEnEdicion.horaFin) || 'Hora inválida']"
                 required></v-text-field>
               <!-- Fin de la selección de hora de fin -->
@@ -183,7 +183,7 @@
           </v-card-text>
           <v-card-actions>
             <v-btn style="background-color: #84ACCE; color: white;"
-              @click="actualizarRutinaEditada(editingTaskIndex)">Actualizar Rutina</v-btn>
+              @click="actualizarRutinaEditada(editingTaskIndex)">Actualitzar rutina</v-btn>
             <v-btn style="color: red;" @click="this.showDialogEdicion = false">Cancelar</v-btn>
           </v-card-actions>
         </v-card>
@@ -195,7 +195,7 @@
           <v-card-title>Error de validación</v-card-title>
           <v-card-text>{{ errorMessage }}</v-card-text>
           <v-card-actions>
-            <v-btn color="primary" text @click="showAlert = false">Aceptar</v-btn>
+            <v-btn color="primary" text @click="showAlert = false">Acceptar</v-btn>
           </v-card-actions>
         </v-card>
       </v-dialog>
@@ -209,7 +209,7 @@
           <v-card-text>
             <v-row>
               <v-col cols="6">
-                <h3>Rutinas</h3>
+                <h3>Rutines</h3>
                 <div v-for="rutina in rutinas.rutinas" :key="rutina.id" style="margin: 10px;" class="my-2">
                   <input type="checkbox" class="checkbox-personalizado"
                     :checked="estaRutinaAsignada(rutina, submarinoSeleccionado)"
@@ -222,7 +222,7 @@
             </v-row>
           </v-card-text>
           <v-card-actions>
-            <v-btn color="red" @click="dialogoSubmarinoVisible = false">Cerrar</v-btn>
+            <v-btn color="red" @click="dialogoSubmarinoVisible = false">Tancar</v-btn>
           </v-card-actions>
         </v-card>
       </v-dialog>
@@ -350,7 +350,7 @@ export default {
             const existenteFin = existenteRep.fechaHoraFin.getTime();
 
             if (!(nuevaInicio >= existenteFin || nuevaFin <= existenteInicio)) {
-              alert(`Solapamiento detectado entre ${nuevaActividad.nombre} y ${act.nombre}`);
+              alert(`Solapament detectat entre ${nuevaActividad.nombre} i ${act.nombre}`);
               return false;
             }
           }
@@ -427,17 +427,17 @@ export default {
       const asignada = this.estaRutinaAsignada(rutina, submarino);
 
       if (!asignada) {
-        if (confirm("¿Deseas asignar esta rutina al submarino?")) {
+        if (confirm("Voleu assignar aquesta rutina al submarí?")) {
           if (this.validarSolapamientos(rutina, submarino.id_sub)) {
             rutina.submarinos.push(submarino.id_sub);
             this.actualizarBaseDeDatosRutina(rutina, submarino);
             setTimeout(() => { event.target.checked = true; }, 0); // Retrasa la marcación del checkbox
           } else {
-            alert("La asignación de la rutina se solapa con otras actividades o no respeta el intervalo de descanso requerido.");
+            alert("L'assignació de la rutina es solapa amb altres activitats o no respecta l'interval de descans requerit.");
           }
         }
       } else {
-        if (confirm("¿Deseas desvincular esta rutina del submarino?")) {
+        if (confirm("Vols desvincular aquesta rutina del submarí?")) {
           const index = rutina.submarinos.indexOf(submarino.id_sub);
           rutina.submarinos.splice(index, 1);
           this.actualizarBaseDeDatosRutinaEliminar(rutina, submarino);
@@ -521,7 +521,7 @@ export default {
       // Verificar si hay un área seleccionada
       if (!this.areaEncontrada || !this.areaEncontrada._id) {
         // Mostrar alerta si no hay área seleccionada
-        alert("Debes seleccionar un área antes de poder añadir submarinos.");
+        alert("Heu de seleccionar una àrea abans de poder afegir submarins.");
         return; // Terminar la ejecución del método si no hay área seleccionada
       }
 
@@ -577,7 +577,7 @@ export default {
 
     async desvincularSubmarino(submarino) {
       // Mostrar un cuadro de diálogo de confirmación antes de proceder
-      if (confirm("¿Estás seguro de que quieres desvincular el submarino?")) {
+      if (confirm("Estàs segur que vols desvincular el submarí?")) {
         submarino.area = null;  // Desvincular el submarino del área seleccionada
         this.submarinosAsignados = this.submarinosAsignados.filter(
           (sub) => sub !== submarino
@@ -662,13 +662,13 @@ export default {
             this.selectedDate = null;
           } catch (error) {
             console.error("Error al agregar la rutina:", error);
-            alert("No se pudo agregar la rutina debido a un error interno.");
+            alert("No s'ha pogut afegir la rutina degut a un error intern.");
           }
         }
         this.selectRutinas();
       } else {
         console.error("Error en la validación: No se puede agregar la rutina debido a datos inválidos.");
-        alert("Error en la validación: No se puede agregar la rutina debido a datos inválidos.");
+        alert("Error en la validació: No es pot afegir la rutina a causa de dades invàlides.");
       }
     },
 
@@ -734,7 +734,7 @@ export default {
 
     // ELIMINAR RUTINA
     async confirmarEliminar(index) {
-      if (confirm("¿Estás seguro de que deseas eliminar esta rutina?")) {
+      if (confirm("Estàs segur que vols eliminar aquesta rutina?")) {
         try {
           const id_area = this.areaEncontradaID;
           const id_rutina = this.rutinas.rutinas[index].id;
@@ -960,7 +960,7 @@ export default {
       });
 
       if (!camposCompletos) {
-        window.alert('Por favor, rellene todos los campos obligatorios.');
+        window.alert('Si us plau, ompliu tots els camps obligatoris.');
 
       }
 
@@ -996,7 +996,7 @@ export default {
 
 
       if (!camposCompletos) {
-        window.alert('Por favor, rellene todos los campos obligatorios.');
+        window.alert('Si us plau, ompliu tots els camps obligatoris.');
 
       }
 
@@ -1008,7 +1008,7 @@ export default {
       const hoy = new Date(this.minDate + 'T00:00:00');
       const fechaSeleccionada = new Date(fecha + 'T00:00:00');
       if (fechaSeleccionada < hoy) {
-        this.mostrarAlerta('La fecha debe ser hoy o en el futuro');
+        this.mostrarAlerta('La data ha de ser avui o en el futur');
         return false;
       }
       return true;
@@ -1021,7 +1021,7 @@ export default {
       if (fechaSeleccionada.toDateString() === hoy.toDateString()) {
         const horaActual = `${hoy.getHours()}:${hoy.getMinutes()}`;
         if (hora < horaActual) {
-          this.mostrarAlerta('La hora debe ser en el futuro');
+          this.mostrarAlerta('L\'hora ha de ser al futur');
           return false;
         }
       }
@@ -1035,7 +1035,7 @@ export default {
       if (fechaSeleccionada.toDateString() === hoy.toDateString()) {
         const horaActual = `${hoy.getHours()}:${hoy.getMinutes() < 10 ? '0' + hoy.getMinutes() : hoy.getMinutes()}`;
         if (hora < horaActual) {
-          this.mostrarAlerta('La hora debe ser en el futuro');
+          this.mostrarAlerta('L\'hora ha de ser al futur');
           return false;
         }
       }
@@ -1047,7 +1047,7 @@ export default {
       const ahora = new Date();
       const fechaHoraSeleccionada = new Date(fecha + 'T' + hora);
       if (fechaHoraSeleccionada < ahora) {
-        this.mostrarAlerta('La fecha y hora deben ser en el futuro.');
+        this.mostrarAlerta('La data i l\'hora han de ser en el futur.');
         return false;
       }
       return true;
@@ -1058,11 +1058,11 @@ export default {
       const inicio = new Date(fechaInicio + 'T' + horaInicio);
       const fin = new Date(fechaFin + 'T' + horaFin);
       if (fin <= inicio) {
-        this.mostrarAlerta('La fecha y hora de fin deben ser posteriores a la de inicio.');
+        this.mostrarAlerta('La data i l\'hora de fi han de ser posteriors a la d\'inici.');
         return false;
       }
       if (fin.getTime() - inicio.getTime() < 3600000) { // 3600000 ms = 1 hora
-        this.mostrarAlerta('La hora de fin debe ser al menos una hora después de la hora de inicio.');
+        this.mostrarAlerta('L\'hora de fi ha de ser com a mínim una hora després de l\'hora d\'inici.');
         return false;
       }
       return true;
@@ -1082,7 +1082,7 @@ export default {
     validarHoraFin(selectedDate, horaInicio, horaFin) {
       // Primero, verifica que ninguna de las horas sea undefined
       if (!horaInicio || !horaFin) {
-        return 'La hora de inicio y la hora de fin son requeridas.';
+        return 'L\'hora d\'inici i l\'hora final són requerides.';
       }
 
       const inicioSplit = horaInicio.split(':');
@@ -1090,7 +1090,7 @@ export default {
 
       if (inicioSplit.length < 2 || finSplit.length < 2) {
         // Verifica que ambos tiempos tengan el formato esperado
-        return 'Formato de hora incorrecto.';
+        return 'Format d\'hora incorrecte.';
       }
 
       const fechaInicio = new Date(selectedDate);
@@ -1103,14 +1103,14 @@ export default {
       const diferencia = fechaFin - fechaInicio;
 
       if (diferencia < 0) {
-        return 'La hora de fin no puede ser anterior a la hora de inicio.';
+        return 'L\'hora final no pot ser anterior a l\'hora d\'inici.';
       }
 
       // Convertir diferencia a minutos
       const minutos = diferencia / 60000; // 1000 ms * 60 s
 
       if (minutos < 150) {
-        return 'La hora de fin debe ser al menos 2 horas y 30 minutos después de la hora de inicio.';
+        return 'L\'hora de fi ha de ser com a mínim 2 hores i 30 minuts després de l\'hora d\'inici.';
       }
 
       return true;

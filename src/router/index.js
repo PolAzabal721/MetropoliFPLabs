@@ -51,7 +51,7 @@ const routes = [
         path: '/areas/',
         component: () =>
             import ('@/components/areas.vue'),
-        meta: { title: 'Sea Shepherd - Gestionar áreas' }
+        meta: { title: 'Sea Shepherd - Gestionar àrees' }
 
     },
 
@@ -60,7 +60,7 @@ const routes = [
         path: '/submarinos/',
         component: () =>
             import ('@/components/submarinos.vue'),
-        meta: { title: 'Sea Shepherd - Submarinos' }
+        meta: { title: 'Sea Shepherd - Submarins' }
 
     },
 
@@ -69,7 +69,7 @@ const routes = [
         path: '/incidencias/',
         component: () =>
             import ('@/components/incidencias.vue'),
-        meta: { title: 'Sea Shepherd - Incidencies' }
+        meta: { title: 'Sea Shepherd - Incidències' }
 
     },
 
@@ -78,7 +78,7 @@ const routes = [
         path: '/login',
         component: () =>
             import ('@/components/login.vue'),
-        meta: { title: 'Sea Shepherd - Login' }
+        meta: { title: 'Sea Shepherd - Inici de sessió' }
 
     },
 
@@ -89,7 +89,7 @@ const routes = [
         path: '/gestioEmpresas',
         component: () =>
             import ('@/components/gestioEmpresas.vue'),
-        meta: { title: 'Sea Shepherd - Gestio Empreses' }
+        meta: { title: 'Sea Shepherd - Gestió Empreses' }
 
     },
 ]
@@ -112,10 +112,10 @@ router.beforeEach((to, from, next) => {
 
     // Comprueba si el usuario es administrador, técnico web o está en una ruta permitida
     if ((!isAdmin && !isTecnicoWeb) && !allowedRoutes.includes(to.path)) {
-        window.alert('Acceso denegado: no eres administrador ni técnico web');
+        window.alert('Accés denegat: no ets administrador ni tècnic web');
         next('/'); // Redirige al usuario a la página de inicio
     } else if (isTecnicoWeb && disallowedRoutesTecnicoWeb.includes(to.path)) {
-        window.alert('Acceso denegado: no tienes permiso para acceder a esta página');
+        window.alert('Accés denegat: no tens permís per accedir a aquesta pàgina');
         next('/'); // Redirige al usuario a la página de inicio
     } else {
         document.title = to.meta.title || 'Default Title';

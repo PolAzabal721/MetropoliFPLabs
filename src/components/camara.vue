@@ -55,7 +55,7 @@ export default {
     methods: {
         // Lógica para mostrar la grabación seleccionada
         showRecording(recording) {
-            console.log('Mostrar grabación:', recording.title);
+            console.log('Mostra enregistrament:', recording.title);
             // Aquí podrías cargar la grabación en la vista principal o abrir un reproductor, etc.
         }
     },

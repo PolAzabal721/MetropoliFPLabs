@@ -8,13 +8,13 @@
             <!-- Sección del select y el botón -->
             <div class="d-flex align-center">
               <v-select id="select-ruta" v-model="nombreLugarBusqueda" :items="areas.map((area) => area.nombreArea)"
-                label="Selecciona el área que quieras editar" :disabled="isSearchActive"
+                label="Seleccioneu l'àrea que voleu editar" :disabled="isSearchActive"
                 style="color: #224870;"></v-select>
 
               <v-btn class="ml-4 elevation-2" @click="buscarArea"
                 :disabled="nombreLugarBusqueda === '' && !isSearchActive"
                 :style="{ backgroundColor: isSearchActive ? 'red' : '#84ACCE', color: 'white' }">
-                {{ isSearchActive ? 'Limpiar Área Seleccionada' : 'Buscar Área' }}
+                {{ isSearchActive ? 'Netejar àrea seleccionada' : 'Buscar àrea' }}
               </v-btn>
             </div>
 

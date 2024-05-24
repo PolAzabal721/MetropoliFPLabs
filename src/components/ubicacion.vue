@@ -8,7 +8,7 @@
         <v-col cols="12" sm="3">
           <v-card>
             <v-toolbar height="60" style="background-color: #224870; color: white;">
-              <h3 style="margin-left: 15px;">Submarinos Fuera del Agua</h3>
+              <h3 style="margin-left: 15px;">Submarins Fora de l'Aigua</h3>
             </v-toolbar>
             <v-container>
               <v-row>
@@ -17,7 +17,7 @@
                     @click="mostrarUbicacionSubmarino(submarino.id_sub) || mostrarUbicacionSubmarinoSinFiltros(submarino.id_sub)"
                     style="background-color: #84ACCE; color: white;">
                     <v-card-title>{{ submarino.nom_sub }}</v-card-title>
-                    <v-card-text>Estado: {{ submarino.estado_sub }}</v-card-text>
+                    <v-card-text>Estat: {{ submarino.estado_sub }}</v-card-text>
                   </v-card>
 
                 </v-col>
@@ -31,12 +31,12 @@
 
           <!-- Selector de Área -->
           <v-select v-model="nombreLugarBusqueda" :items="[...areas.map(area => area.nombreArea)]"
-            label="Seleccionar Área" @change="actualizarSubmarinos" :disabled="areaSeleccionada"
+            label="Seleccionar àrea" @change="actualizarSubmarinos" :disabled="areaSeleccionada"
             style="color: #224870;">
           </v-select>
 
           <!-- Selector de Tarea/Rutina -->
-          <v-select v-model="filtroTarea" :items="[...tareasDisponibles]" label="Filtrar por Tarea/Rutina"
+          <v-select v-model="filtroTarea" :items="[...tareasDisponibles]" label="Filtrar per Tasca/Rutina"
             @change="filtrarSubmarinosPorTarea" :disabled="!areaSeleccionada || tareaSeleccionada"
             style="color: #224870;">
           </v-select>
@@ -44,14 +44,14 @@
           <!-- btn para filtrar area -->
           <v-btn @click="buscarArea" :disabled="!nombreLugarBusqueda" :color="areaSeleccionada ? 'red' : '#84ACCE'"
             dark>
-            {{ areaSeleccionada ? 'Limpiar Área' : 'Buscar' }}
+            {{ areaSeleccionada ? 'Netejar àrea' : 'Cerca' }}
           </v-btn>
 
           <!-- btn para filtar tarea -->
           <v-btn style="margin-left: 15px;" @click="filtrarSubmarinosPorTarea"
             :disabled="!nombreLugarBusqueda || !filtroTarea || filtroTarea === null"
             :color="tareaSeleccionada ? 'red' : '#84ACCE'">
-            {{ tareaSeleccionada ? 'Limpiar Filtro' : 'Filtrar por Tarea' }}
+            {{ tareaSeleccionada ? 'Netejar filtre' : 'Filtrar per tasca' }}
           </v-btn>
 
           <v-card style="margin-top: 20px;" class="mx-auto slidecontainer" max-height="700" max-width="850">
@@ -63,12 +63,12 @@
         <v-col cols="12" sm="3">
           <v-row>
             <v-col class="text-center">
-              <h3>Submarinos Sumergidos</h3>
+              <h3>Submarins Submergits</h3>
               <v-row>
                 <v-col v-for="submarino in submarinosSumergidos" :key="submarino.id_sub" cols="12">
                   <v-card :class="{ 'estado-activo': true }">
                     <v-card-title>{{ submarino.nom_sub }}</v-card-title>
-                    <v-card-text>Última ubicación: {{ submarino.ruta }}</v-card-text>
+                    <v-card-text>Última ubicació: {{ submarino.ruta }}</v-card-text>
                   </v-card>
                 </v-col>
               </v-row>
@@ -232,7 +232,7 @@ export default {
         }
       } else {
         // Si no tiene ubicaciones, muestra una alerta al usuario
-        alert("Este submarino no tiene una ubicación.");
+        alert("Aquest submarí no té una ubicació.");
       }
 
     },

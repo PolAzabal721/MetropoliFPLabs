@@ -21,7 +21,7 @@
           @click:append="togglePasswordVisibility()"
         >
         </v-text-field>
-        <button type="submit">Iniciar sesión</button>
+        <button type="submit">Iniciar sessió</button>
 
         <!-- INICIAR SESION CON GOOGLE -->
         <button class="button">
@@ -47,30 +47,30 @@
               d="M130.55 50.479c24.514 0 41.05 10.589 50.479 19.438l36.844-35.974C195.245 12.91 165.798 0 130.55 0 79.49 0 35.393 29.301 13.925 71.947l42.211 32.783c10.59-31.477 39.891-54.251 74.414-54.251"
             ></path>
           </svg>
-          Iniciar sesión con Google
+          Inicia sessió amb Google
         </button>
-        <p @click="showRegister = true" class="register-link">Registrate</p>
+        <p @click="showRegister = true" class="register-link">Registra't</p>
       </form>
       <form v-if="showRegister" @submit.prevent="register">
         <v-text-field
           clearable
           v-model="name"
           prepend-inner-icon="mdi-account"
-          label="Nombre"
+          label="Nom"
           required
         ></v-text-field>
         <v-text-field
           clearable
           v-model="surname"
           prepend-inner-icon="mdi-account"
-          label="Apellidos"
+          label="Cognoms"
           required
         ></v-text-field>
         <v-text-field
           clearable
           v-model="email"
           prepend-inner-icon="mdi-email"
-          label="Correo"
+          label="Correu"
           required
         ></v-text-field>
         <v-text-field
@@ -78,13 +78,13 @@
           v-model="password"
           :type="showPassword ? 'text' : 'password'"
           prepend-inner-icon="mdi-lock-outline"
-          label="Contraseña"
+          label="Contrasenya"
           required
           :append-icon="showPassword ? 'mdi-eye' : 'mdi-eye-off'"
           @click:append="togglePasswordVisibility()"
         >
         </v-text-field>
-        <button type="submit">Registrarse</button>
+        <button type="submit">Registrar-se</button>
         <!-- REGISTRARSE CON GOOGLE -->
         <button class="button">
           <svg
@@ -109,9 +109,9 @@
               d="M130.55 50.479c24.514 0 41.05 10.589 50.479 19.438l36.844-35.974C195.245 12.91 165.798 0 130.55 0 79.49 0 35.393 29.301 13.925 71.947l42.211 32.783c10.59-31.477 39.891-54.251 74.414-54.251"
             ></path>
           </svg>
-          Registrarse con Google
+          Registrar-se amb Google
         </button>
-        <p @click="showRegister = false" class="register-link">Inicia Sesión</p>
+        <p @click="showRegister = false" class="register-link">Inicia Sessió</p>
       </form>
     </div>
   </div>
@@ -159,7 +159,7 @@ export default {
           this.rol
         );
         console.log("Registro exitoso:", result);
-        window.alert("Te has registrado correctamente");
+        window.alert("T'has registrat correctament");
         this.$router.push("/");
       } catch (error) {
         console.error("Error en el registro:", error);
@@ -191,7 +191,7 @@ export default {
 
         this.$router.push("/");
       } else {
-        window.alert("Nombre de usuario o contraseña incorrectos");
+        window.alert("Nom d'usuari o contrasenya incorrectes");
       }
     });
   },

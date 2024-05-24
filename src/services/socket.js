@@ -6,7 +6,7 @@ export const state = reactive({
     motor: "OFF",
     tiempoEncendido: false,
     camara: "OFF",
-    ultimaConexion: "Sin última conexión",
+    ultimaConexion: "Sense última connexió",
     frame: "",
     movimiento: "",
     latitud: 41.38879,

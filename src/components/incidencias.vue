@@ -3,10 +3,10 @@
   <v-layout class="rounded rounded-md">
     <v-main>
       <div>
-        <v-btn class="ml-4" style="margin-top: 20px" color="#84ACCE" @click="mostrarDialogo">Crear Incidencia</v-btn>
+        <v-btn class="ml-4" style="margin-top: 20px" color="#84ACCE" @click="mostrarDialogo">Crear incidència</v-btn>
 
         <v-btn class="ml-4" style="margin-top: 20px" @click="toggleFiltro" text color="#84ACCE">
-          Filtro <v-icon>mdi-menu-down</v-icon>
+          Filtre <v-icon>mdi-menu-down</v-icon>
         </v-btn>
 
         <!-- Filtro de incidencias -->
@@ -24,19 +24,19 @@
           <table class="table">
             <thead>
               <tr>
-                <th>Asunto de la incidencia</th>
-                <th>Submarino</th>
+                <th>Assumpte de la incidència</th>
+                <th>Submarí</th>
                 <th>Autor</th>
                 <th>Responsable</th>
-                <th>Prioridad</th>
-                <th>Estado</th>
-                <th>Tipo</th>
+                <th>Prioritat</th>
+                <th>Estat</th>
+                <th>Tipus</th>
                 <th @click="ordenarPor('fechaInicio')">
-                  Fecha de inicio
+                  Data d'inici
                   <v-icon>{{ obtenerIconoOrden("fechaInicio") }}</v-icon>
                 </th>
                 <th @click="ordenarPor('fechaFin')">
-                  Fecha de fin
+                  Data de fi
                   <v-icon>{{ obtenerIconoOrden("fechaFin") }}</v-icon>
                 </th>
               </tr>
@@ -76,13 +76,13 @@
       <v-dialog v-model="dialogDescripcion" max-width="500">
         <v-card>
           <v-toolbar height="60" style="background-color: #224870; color: white;">
-            <h3 style="margin-left: 15px;">Descripción de la incidencia</h3>
+            <h3 style="margin-left: 15px;">Descripció de la incidència</h3>
           </v-toolbar>
           <v-card-text>
             {{ descripcionSeleccionada }}
           </v-card-text>
           <v-card-actions>
-            <v-btn color="primary" @click="dialogDescripcion = false">Cerrar</v-btn>
+            <v-btn color="primary" @click="dialogDescripcion = false">Tancar</v-btn>
           </v-card-actions>
         </v-card>
       </v-dialog>
@@ -90,7 +90,7 @@
       <v-dialog v-model="dialogReport" max-width="500">
         <v-card>
           <v-toolbar height="60" style="background-color: #224870; color: white;">
-            <h3 style="margin-left: 15px;">Historial de reportes de la incidencia</h3>
+            <h3 style="margin-left: 15px;">Historial de reports de la incidència</h3>
           </v-toolbar>
           <v-list>
             <v-list-item v-for="(reporte, index) in reporteSeleccionado" :key="index">
@@ -104,7 +104,7 @@
           </v-list>
 
           <v-card-actions>
-            <v-btn color="primary" @click="dialogReport = false">Cerrar</v-btn>
+            <v-btn color="primary" @click="dialogReport = false">Tancar</v-btn>
           </v-card-actions>
         </v-card>
       </v-dialog>
@@ -113,12 +113,12 @@
       <v-dialog v-model="dialogoVisible" max-width="600px">
         <v-card>
           <v-toolbar height="60" style="background-color: #224870; color: white;">
-            <h3 style="margin-left: 15px;">Crear Nueva Incidencia</h3>
+            <h3 style="margin-left: 15px;">Crear nova incidència</h3>
           </v-toolbar>
           <v-card-text>
-            <v-text-field v-model="nuevaIncidencia.nombre" label="Asunto de la incidencia"></v-text-field>
-            <v-textarea v-model="nuevaIncidencia.descripcion" label="Descripción de la incidencia"></v-textarea>
-            <v-select v-model="nuevaIncidencia.submarinoSeleccionado" label="Submarino" :items="submarinos.map((submarino) => submarino.nom_sub)
+            <v-text-field v-model="nuevaIncidencia.nombre" label="Assumpte de la incidència"></v-text-field>
+            <v-textarea v-model="nuevaIncidencia.descripcion" label="Descripció de la incidència"></v-textarea>
+            <v-select v-model="nuevaIncidencia.submarinoSeleccionado" label="Submarí" :items="submarinos.map((submarino) => submarino.nom_sub)
           " item-text="text" item-value="value"></v-select>
 
             <v-select v-model="nuevaIncidencia.tipo" :items="['Actualización software', 'Reparación']"
@@ -126,7 +126,7 @@
             <v-select v-model="nuevaIncidencia.prioridad" :items="prioridades" label="Prioridad"></v-select>
           </v-card-text>
           <v-card-actions>
-            <v-btn color="primary" @click="guardarIncidencia">Crear y guardar</v-btn>
+            <v-btn color="primary" @click="guardarIncidencia">Crear i desar</v-btn>
             <v-btn color="error" @click="cerrarDialogo">Cancelar</v-btn>
           </v-card-actions>
         </v-card>
@@ -136,15 +136,15 @@
       <v-dialog v-model="dialogoEdicionVisible" max-width="600px">
         <v-card>
           <v-toolbar height="60" style="background-color: #224870; color: white;">
-            <h3 style="margin-left: 15px;">Editar Incidencia</h3>
+            <h3 style="margin-left: 15px;">Editar incidència</h3>
           </v-toolbar>
           <v-card-text>
-            <v-text-field v-model="edicionIncidencia.nombre" label="Nuevo nombre"></v-text-field>
-            <v-textarea v-model="edicionIncidencia.descripcion" label="Nueva descripción"></v-textarea>
-            <v-select v-model="edicionIncidencia.prioridad" :items="prioridades" label="Cambiar prioridad"></v-select>
+            <v-text-field v-model="edicionIncidencia.nombre" label="Nou nom"></v-text-field>
+            <v-textarea v-model="edicionIncidencia.descripcion" label="Nova descripció"></v-textarea>
+            <v-select v-model="edicionIncidencia.prioridad" :items="prioridades" label="Canviar prioritat"></v-select>
           </v-card-text>
           <v-card-actions>
-            <v-btn color="primary" @click="guardarEdicionIncidencia">Guardar</v-btn>
+            <v-btn color="primary" @click="guardarEdicionIncidencia">Desar</v-btn>
             <v-btn color="error" @click="cancelarEdicion">Cancelar</v-btn>
           </v-card-actions>
         </v-card>
@@ -281,20 +281,20 @@ export default {
       ) {
         // Mostrar un mensaje de error indicando que todos los campos son obligatorios
         alert(
-          "Todos los campos son obligatorios. Por favor, completa la información."
+          "Tots els camps són obligatoris. Si us plau, completa la informació."
         );
         return;
       }
 
       // Validar la longitud máxima del nombre
       if (this.nuevaIncidencia.nombre.length > 45) {
-        alert("El nombre no puede tener más de 45 caracteres.");
+        alert("El nom no pot tenir més de 45 caràcters.");
         return;
       }
 
       // Validar la longitud máxima de la descripción
       if (this.nuevaIncidencia.descripcion.length > 250) {
-        alert("La descripción no puede tener más de 250 caracteres.");
+        alert("La descripció no pot tenir més de 250 caràcters.");
         return;
       }
       this.nomCompleto = store.getUserName + " " + store.getUserApellido;
@@ -335,17 +335,17 @@ export default {
       };
       this.socket.emit('insertarIncidencia', dataToSend, (response) => {
         if (response.status === 200) {
-          window.alert('Incidencia insertada correctamente')
+          window.alert('Incidència inserida correctament')
         } else {
-          window.alert('Error al insertar la incidencia')
+          window.alert('Error en inserir la incidència')
         }
       });
 
       this.socket.emit('SelectReports', id, (response) => {
         if (response.status === 200) {
-          window.alert('Incidencia insertada correctamente')
+          window.alert('Incidència inserida correctament')
         } else {
-          window.alert('Error al insertar la incidencia')
+          window.alert('Error en inserir la incidència')
         }
       });
 
@@ -476,7 +476,7 @@ export default {
         this.dialogReport = true;
       } else {
         // Si no se encontró ningún reporte, puedes manejarlo como desees
-        window.alert('No se encontró ningún reporte en esa incidencia.');
+        window.alert('No es va trobar cap report en aquesta incidència.');
         // Podrías mostrar un mensaje de error o tomar alguna otra acción
       }
     },
@@ -497,20 +497,20 @@ export default {
         ) {
           // Mostrar un mensaje de error indicando que todos los campos son obligatorios
           alert(
-            "Todos los campos son obligatorios. Por favor, completa la información."
+            "Tots els camps són obligatoris. Si us plau, completa la informació."
           );
           return;
         }
 
         // Validar la longitud máxima del nombre
         if (this.edicionIncidencia.nombre.length > 45) {
-          alert("El nombre no puede tener más de 45 caracteres.");
+          alert("El nom no pot tenir més de 45 caràcters.");
           return;
         }
 
         // Validar la longitud máxima de la descripción
         if (this.edicionIncidencia.descripcion.length > 250) {
-          alert("La descripción no puede tener más de 250 caracteres.");
+          alert("La descripció no pot tenir més de 250 caràcters.");
           return;
         }
 
@@ -536,14 +536,14 @@ export default {
         this.socket.emit('updateIncidencia', dataToSend, (response) => {
           if (response.status === 200) {
           } else {
-            window.alert('Error al insertar la incidencia')
+            window.alert('Error en inserir la incidència')
           }
         });
 
         this.socket.emit('SelectReports', id, (response) => {
           if (response.status === 200) {
           } else {
-            window.alert('Error al insertar la incidencia')
+            window.alert('Error en inserir la incidència')
           }
         });
 
