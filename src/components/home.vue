@@ -11,7 +11,7 @@
             <v-row>
                 <v-col cols="3"></v-col>
                 <v-col cols="6" style="text-align: center;"><img class="bounce-out-down flechas"
-                        src="@/assets/flechas.png"></v-col>
+                        src="@/assets/flechas.png" @click="scrollToBottom"></v-col>
                 <v-col cols="3"></v-col>
             </v-row>
             <v-row class="mb-12">
@@ -51,7 +51,7 @@
                     </v-card>
                 </v-col>
             </v-row>
-            <v-row>
+            <v-row id="bottom-row">
                 <v-col cols="12">
                     <v-card variant="outlined">
                         <v-card-item>
@@ -71,7 +71,14 @@
                     </v-card>
                 </v-col>
             </v-row>
-           
+            <v-row class="mb-12">
+            </v-row><v-row class="mb-12">
+            </v-row><v-row class="mb-12">
+            </v-row><v-row class="mb-12">
+            </v-row><v-row class="mb-12">
+            </v-row><v-row class="mb-12">
+            </v-row><v-row class="mb-12">
+            </v-row>
         </v-container>
     </v-layout>
 </template>
@@ -99,7 +106,10 @@ export default { //192.168.205.140
     },
 
     methods: {
-
+        scrollToBottom() {
+            const bottomRow = document.getElementById('bottom-row');
+            bottomRow.scrollIntoView({ behavior: 'smooth' });
+        }
     },
 };
 </script>
