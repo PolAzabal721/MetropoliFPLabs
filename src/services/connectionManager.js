@@ -1,13 +1,13 @@
 // TEMP + COORDENADAS + HORARIO
 export async function getDades() {
-    const response = await fetch('http://localhost:3169/getDadesCoordenades');
+    const response = await fetch('http://seashepherd.duckdns.org:3170/getDadesCoordenades');
     const result = await response.json();
     return result;
 }
 
 export async function insertarArea(coordenadas, nombreArea, idEmpresa, idSubmarino) {
     try {
-        const response = await fetch('http://localhost:3169/areas', {
+        const response = await fetch('http://seashepherd.duckdns.org:3170/areas', {
             method: 'PUT',
             headers: {
                 'Content-Type': 'application/json'
@@ -34,7 +34,7 @@ export async function insertarArea(coordenadas, nombreArea, idEmpresa, idSubmari
 
 export async function register(nom, apellido, correo, contra, rol) {
     try {
-        const response = await fetch('http://localhost:3169/register', {
+        const response = await fetch('http://seashepherd.duckdns.org:3170/register', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'
@@ -61,7 +61,7 @@ export async function register(nom, apellido, correo, contra, rol) {
 
 export async function fetchAreas() {
     try {
-        const response = await fetch('http://localhost:3169/getareas');
+        const response = await fetch('http://seashepherd.duckdns.org:3170/getareas');
         if (!response.ok) {
             throw new Error('Error getting areas');
         }
@@ -77,7 +77,7 @@ export async function fetchAreas() {
 
 export async function getMovimientos() {
     try {
-        const response = await fetch('http://localhost:3169/movimientos');
+        const response = await fetch('http://seashepherd.duckdns.org:3170/movimientos');
         if (!response.ok) {
             throw new Error('Error getting movimientos');
         }
@@ -92,7 +92,7 @@ export async function getMovimientos() {
 
 export async function deletearea(id) {
     try {
-        const response = await fetch('http://localhost:3169/deletearea', {
+        const response = await fetch('http://seashepherd.duckdns.org:3170/deletearea', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'
@@ -115,7 +115,7 @@ export async function deletearea(id) {
 
 export async function getSubmarinos(id_empresa) {
     try {
-        const response = await fetch("http://localhost:3169/getSubmarino", {
+        const response = await fetch("http://seashepherd.duckdns.org:3170/getSubmarino", {
             method: "POST",
             headers: {
                 "Content-Type": "application/json"
@@ -137,7 +137,7 @@ export async function getSubmarinos(id_empresa) {
 
 export async function selectIncidenciasEmpresa(id_empresa) {
     try {
-        const response = await fetch("http://localhost:3169/selectIncidenciaEmpresa", {
+        const response = await fetch("http://seashepherd.duckdns.org:3170/selectIncidenciaEmpresa", {
             method: "POST",
             headers: {
                 "Content-Type": "application/json"
@@ -159,7 +159,7 @@ export async function selectIncidenciasEmpresa(id_empresa) {
 
 export async function updateSubmarino(id, submarino) {
     try {
-        const response = await fetch("http://localhost:3169/updatesubmarino", {
+        const response = await fetch("http://seashepherd.duckdns.org:3170/updatesubmarino", {
             method: "POST",
             headers: {
                 'Content-Type': 'application/json'
@@ -182,7 +182,7 @@ export async function updateSubmarino(id, submarino) {
 
 export async function updateAreaSub(id_area, id_sub) {
     try {
-        const response = await fetch("http://localhost:3169/updateAreaSub", {
+        const response = await fetch("http://seashepherd.duckdns.org:3170/updateAreaSub", {
             method: "POST",
             headers: {
                 'Content-Type': 'application/json'
@@ -196,7 +196,7 @@ export async function updateAreaSub(id_area, id_sub) {
 
 export async function deleteAreaSub(id_sub) {
     try {
-        const response = await fetch("http://localhost:3169/deleteAreaSub", {
+        const response = await fetch("http://seashepherd.duckdns.org:3170/deleteAreaSub", {
             method: "POST",
             headers: {
                 'Content-Type': 'application/json'
@@ -210,7 +210,7 @@ export async function deleteAreaSub(id_sub) {
 
 export async function deleteSubMongo(id_area, id_sub) {
     try {
-        const response = await fetch("http://localhost:3169/deleteSubmarinomongo", {
+        const response = await fetch("http://seashepherd.duckdns.org:3170/deleteSubmarinomongo", {
             method: "POST",
             headers: {
                 'Content-Type': 'application/json'
@@ -225,7 +225,7 @@ export async function deleteSubMongo(id_area, id_sub) {
 // INSERT RUTINAS
 export async function addRutina(areaId, rutinaData) {
     try {
-        const response = await fetch('http://localhost:3169/addrutina', {
+        const response = await fetch('http://seashepherd.duckdns.org:3170/addrutina', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'
@@ -248,7 +248,7 @@ export async function addRutina(areaId, rutinaData) {
 
 // HACER SELECT RUTINAS 
 export async function selectRutinas(areaId) {
-    const url = `http://localhost:3169/selectRutinas/${areaId}`;
+    const url = `http://seashepherd.duckdns.org:3170/selectRutinas/${areaId}`;
 
     try {
         const response = await fetch(url);
@@ -263,7 +263,7 @@ export async function selectRutinas(areaId) {
 // ELIMINAR RUTINAS
 export async function eliminartRutinas(id_area, id) {
     try {
-        const response = await fetch("http://localhost:3169/deleteRutinasMongo", {
+        const response = await fetch("http://seashepherd.duckdns.org:3170/deleteRutinasMongo", {
             method: "POST",
             headers: {
                 'Content-Type': 'application/json'
@@ -278,7 +278,7 @@ export async function eliminartRutinas(id_area, id) {
 // UPDATE RUTINAS
 export async function updateRutinasMongo(nombre, descripcion, fechaHoraInicio, horaFinFormatted, repetir, areaId, rutinaId) {
     try {
-        const response = await fetch('http://localhost:3169/updateRutinasMongo', {
+        const response = await fetch('http://seashepherd.duckdns.org:3170/updateRutinasMongo', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'
@@ -309,7 +309,7 @@ export async function updateRutinasMongo(nombre, descripcion, fechaHoraInicio, h
 
 export async function insertIncidencia(listaItems) {
     try {
-        const response = await fetch('http://localhost:3169/insertarIncidencia', {
+        const response = await fetch('http://seashepherd.duckdns.org:3170/insertarIncidencia', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'
@@ -332,7 +332,7 @@ export async function insertIncidencia(listaItems) {
 
 export async function insertEmpresa(listaItems) {
     try {
-        const response = await fetch('http://localhost:3169/insertarEmpresa', {
+        const response = await fetch('http://seashepherd.duckdns.org:3170/insertarEmpresa', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'
@@ -355,7 +355,7 @@ export async function insertEmpresa(listaItems) {
 
 export async function insertSuscripcion(listaItems) {
     try {
-        const response = await fetch('http://localhost:3169/insertarSuscripcion', {
+        const response = await fetch('http://seashepherd.duckdns.org:3170/insertarSuscripcion', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'
@@ -378,7 +378,7 @@ export async function insertSuscripcion(listaItems) {
 
 export async function updateEmpresa(listaItems) {
     try {
-        const response = await fetch('http://localhost:3169/updateEmpresa', {
+        const response = await fetch('http://seashepherd.duckdns.org:3170/updateEmpresa', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'
@@ -401,7 +401,7 @@ export async function updateEmpresa(listaItems) {
 
 export async function updateSuscripcion(listaItems) {
     try {
-        const response = await fetch('http://localhost:3169/updateSuscripcion', {
+        const response = await fetch('http://seashepherd.duckdns.org:3170/updateSuscripcion', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'
@@ -424,7 +424,7 @@ export async function updateSuscripcion(listaItems) {
 
 export async function deleteEmpresa(id_empresa) {
     try {
-        const response = await fetch('http://localhost:3169/deleteEmpresa', {
+        const response = await fetch('http://seashepherd.duckdns.org:3170/deleteEmpresa', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'
@@ -447,7 +447,7 @@ export async function deleteEmpresa(id_empresa) {
 
 export async function deleteSuscripcion(id_sub) {
     try {
-        const response = await fetch('http://localhost:3169/deleteSuscripcion', {
+        const response = await fetch('http://seashepherd.duckdns.org:3170/deleteSuscripcion', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'
@@ -470,7 +470,7 @@ export async function deleteSuscripcion(id_sub) {
 
 export async function getIncidencias() {
     try {
-        const response = await fetch('http://localhost:3169/getIncidencias');
+        const response = await fetch('http://seashepherd.duckdns.org:3170/getIncidencias');
         if (!response.ok) {
             throw new Error('Error al obtener las incidencias');
         }
@@ -484,7 +484,7 @@ export async function getIncidencias() {
 
 export async function getEmpresa() {
     try {
-        const response = await fetch('http://localhost:3169/getEmpresa');
+        const response = await fetch('http://seashepherd.duckdns.org:3170/getEmpresa');
         if (!response.ok) {
             throw new Error('Error al obtener las empresas');
         }
@@ -498,7 +498,7 @@ export async function getEmpresa() {
 
 export async function getSuscripciones() {
     try {
-        const response = await fetch('http://localhost:3169/getSuscripcion');
+        const response = await fetch('http://seashepherd.duckdns.org:3170/getSuscripcion');
         if (!response.ok) {
             throw new Error('Error al obtener las subs');
         }
@@ -512,7 +512,7 @@ export async function getSuscripciones() {
 
 export async function getReports() {
     try {
-        const response = await fetch('http://localhost:3169/getReportes');
+        const response = await fetch('http://seashepherd.duckdns.org:3170/getReportes');
         if (!response.ok) {
             throw new Error('Error al obtener los reportes');
         }
@@ -526,7 +526,7 @@ export async function getReports() {
 
 export async function updateIncidencias(asunto, descripcio, prioridad, idIncidencia) {
     try {
-        const response = await fetch('http://localhost:3169/updateIncidencia', {
+        const response = await fetch('http://seashepherd.duckdns.org:3170/updateIncidencia', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'
@@ -549,7 +549,7 @@ export async function updateIncidencias(asunto, descripcio, prioridad, idInciden
 
 export async function updateArea(id, nombre, coordenadas) {
     try {
-        const response = await fetch('http://localhost:3169/updatearea', {
+        const response = await fetch('http://seashepherd.duckdns.org:3170/updatearea', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'
@@ -572,7 +572,7 @@ export async function updateArea(id, nombre, coordenadas) {
 
 export async function insertEmpresaSub(id_empresa, id_sub, autorenovable) {
     try {
-        const response = await fetch('http://localhost:3169/insertEmpresaSub', {
+        const response = await fetch('http://seashepherd.duckdns.org:3170/insertEmpresaSub', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'
@@ -595,7 +595,7 @@ export async function insertEmpresaSub(id_empresa, id_sub, autorenovable) {
 
 export async function deleteSubEmpresa(id_empresa) {
     try {
-        const response = await fetch('http://localhost:3169/deleteSubEmpresa', {
+        const response = await fetch('http://seashepherd.duckdns.org:3170/deleteSubEmpresa', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'
@@ -618,7 +618,7 @@ export async function deleteSubEmpresa(id_empresa) {
 
 export async function editSubEmpresa(id_empresa, id_sub, autorenovable) {
     try {
-        const response = await fetch('http://localhost:3169/editSubEmpresa', {
+        const response = await fetch('http://seashepherd.duckdns.org:3170/editSubEmpresa', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'
@@ -643,7 +643,7 @@ export async function editSubEmpresa(id_empresa, id_sub, autorenovable) {
 // INSERTAR ID SUBMARINO A LA TAREA
 export async function insertarIdSubmarino(areaId, rutinaId, idSubmarino) {
     try {
-        const response = await fetch('http://localhost:3169/insertarIdSubmarino', {
+        const response = await fetch('http://seashepherd.duckdns.org:3170/insertarIdSubmarino', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'
@@ -667,7 +667,7 @@ export async function insertarIdSubmarino(areaId, rutinaId, idSubmarino) {
 // ELIMINAR ID SUBMARINO DE LA TAREA
 export async function eliminarIdSubmarino(areaId, rutinaId, idSubmarino) {
     try {
-        const response = await fetch('http://localhost:3169/eliminarIdSubmarino', {
+        const response = await fetch('http://seashepherd.duckdns.org:3170/eliminarIdSubmarino', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'
@@ -691,7 +691,7 @@ export async function eliminarIdSubmarino(areaId, rutinaId, idSubmarino) {
 // AÑADIR ID RUTINA AL SUBMARINO
 export async function insertarIdRutinaEnSubmarino(areaId, rutinaId, submarinoId) {
     try {
-        const response = await fetch('http://localhost:3169/insertarIdRutinaEnSubmarino', {
+        const response = await fetch('http://seashepherd.duckdns.org:3170/insertarIdRutinaEnSubmarino', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'
@@ -715,7 +715,7 @@ export async function insertarIdRutinaEnSubmarino(areaId, rutinaId, submarinoId)
 // ELIMINAR ID RUTINA DE LAS ACTIVIDADES DEL SUBMARINO
 export async function eliminarIdRutinaDeSubmarino(areaId, rutinaId, submarinoId) {
     try {
-        const response = await fetch('http://localhost:3169/eliminarIdRutinaDeSubmarino', {
+        const response = await fetch('http://seashepherd.duckdns.org:3170/eliminarIdRutinaDeSubmarino', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'
@@ -741,7 +741,7 @@ export async function eliminarIdRutinaDeSubmarino(areaId, rutinaId, submarinoId)
  
 // SELECT SUBMARINO DE MONGO (SOLO LOS QUE ESTAN ASIGNADOS A UN AREA)
 export async function selectSubmarinosMongo(areaId) {
-    const url = `http://localhost:3169/selectSubmarinosMongo/${areaId}`;
+    const url = `http://seashepherd.duckdns.org:3170/selectSubmarinosMongo/${areaId}`;
 
     try {
         const response = await fetch(url);

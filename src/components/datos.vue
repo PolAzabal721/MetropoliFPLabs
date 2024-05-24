@@ -129,7 +129,7 @@ export default {
 
   created() {
     this.getSubmarino();
-    this.socket = io("http://localhost:3169/");
+    this.socket = io("http://seashepherd.duckdns.org:3170/");
 
     this.socket.on("actualizarMovimientos", async (mov) => {
       this.movimientos = mov;

@@ -606,7 +606,7 @@ export default {
 
   //CONSOLA
   created() {
-    this.socket = io("http://localhost:3169/");
+    this.socket = io("http://seashepherd.duckdns.org:3170/");
     const store = useAppStore();
     const userEmpresa = store.getUserEmpresa;
 
