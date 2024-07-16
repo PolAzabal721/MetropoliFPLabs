@@ -2,25 +2,21 @@
     <default-bar />
     <v-layout class="rounded rounded-md" style="background-color: #EFEFEF;">
 
-        <!-- Barra lateral con archivos o grabaciones anteriores -->
-        <v-navigation-drawer class="navDrawer">
+        <!-- Barra lateral con buscador y vcards -->
+        <v-col cols="3" style="background-color: white;">
             <v-card>
-                <v-toolbar height="60">
-                    <v-toolbar-title>Vídeos</v-toolbar-title>
-
-                    <v-spacer></v-spacer>
-                    <!--<v-btn @click="initializeCamera">boto</v-btn>-->
-
-                    <v-btn variant="text" icon="mdi-magnify"></v-btn>
-                </v-toolbar>
+                <v-text-field label="Buscar" prepend-inner-icon="mdi-magnify" class="mx-4"></v-text-field>
 
                 <v-list height="932">
-                    <template v-slot:subtitle="{ subtitle }">
-                        <div v-html="subtitle"></div>
-                    </template>
+                    <v-list-item v-for="n in 10" :key="n">
+                        <v-card class="mb-2">
+                            <v-card-title>Vídeo {{ n }}</v-card-title>
+                            <v-card-subtitle>Descripción del vídeo {{ n }}</v-card-subtitle>
+                        </v-card>
+                    </v-list-item>
                 </v-list>
             </v-card>
-        </v-navigation-drawer>
+        </v-col>
 
         <v-main>
             <br>
@@ -92,10 +88,5 @@ import DefaultBar from "@/layouts/default/AppBar.vue";
 </script>
 
 <style>
-.navDrawer {
-    top: 62 !important;
-    float: left;
-    z-index: -1 !important;
-    position: relative !important;
-}
+
 </style>
